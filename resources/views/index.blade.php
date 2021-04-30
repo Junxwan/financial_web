@@ -40,11 +40,12 @@
     關鍵字:<input type="text" name="key" value="{{ $key }}">
     <button type="submit">查詢</button>
     @if ($page > 1)
-        <a href="{{ url("?page={$prev_page}") }}" style="color: black">上一頁</a>
+        <a href="{{ url("?page={$prev_page}&key={$key}") }}" style="color: black">上一頁</a>
     @endif
-    <a href="{{ url("?page={$next_page}") }}" style="color: black">下一頁</a>
+    <a href="{{ url("?page={$next_page}&key={$key}") }}" style="color: black">下一頁</a>
+    <a href="{{ url("/") }}" style="color: black">首頁</a>
     <a href="{{ url("/info") }}" style="color: black" target="_blank">info</a>
-
+    {{ count($list) }}
     @if (count($list) > 0)
         <table class="table table-striped table-dark">
             <thead>
@@ -66,9 +67,9 @@
 </form>
 
 @if ($page > 1)
-    <a href="{{ url("?page={$prev_page}") }}" style="color: black">上一頁</a>
+    <a href="{{ url("?page={$prev_page}&key={$key}") }}" style="color: black">上一頁</a>
 @endif
-<a href="{{ url("?page={$next_page}") }}" style="color: black">下一頁</a>
+<a href="{{ url("?page={$next_page}&key={$key}") }}" style="color: black">下一頁</a>
 
 </body>
 </html>
