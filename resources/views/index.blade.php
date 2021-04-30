@@ -7,26 +7,56 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
 </head>
+
+<style>
+    a:link {
+        color: whitesmoke;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    a:visited {
+        color: cadetblue;
+        background-color: transparent;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: whitesmoke;
+        background-color: transparent;
+        text-decoration: underline;
+    }
+
+    a:active {
+        color: whitesmoke;
+        background-color: transparent;
+        text-decoration: underline;
+    }
+</style>
+
 <body style="background-color:gray;">
-<form action="{{ url("/key") }}" method="post">
+<form action="{{ url("/") }}" method="post">
     @csrf
-    關鍵字:<input type="text" name="key">
+    關鍵字:<input type="text" name="key" value="{{ $key }}">
     <button type="submit">查詢</button>
+    @if ($page > 1)
+        <a href="{{ url("?page={$prev_page}") }}" style="color: black">上一頁</a>
+    @endif
+    <a href="{{ url("?page={$next_page}") }}" style="color: black">下一頁</a>
+    <a href="{{ url("/info") }}" style="color: black" target="_blank">info</a>
 
     @if (count($list) > 0)
         <table class="table table-striped table-dark">
             <thead>
             <tr>
                 <th scope="col">標題</th>
-                <th scope="col">連結</th>
                 <th scope="col">時間</th>
             </tr>
             </thead>
             <tbody>
             @foreach ($list as $value)
                 <tr>
-                    <td>{{ $value->title }}</td>
-                    <td><a href="{{ $value->url }}" target="_blank">連結</a></td>
+                    <td><a href="{{ $value->url }}" target="_blank">{{ $value->title }}</a></td>
                     <td>{{ $value->publish_time }}</td>
                 </tr>
             @endforeach
@@ -34,5 +64,11 @@
         </table>
     @endif
 </form>
+
+@if ($page > 1)
+    <a href="{{ url("?page={$prev_page}") }}" style="color: black">上一頁</a>
+@endif
+<a href="{{ url("?page={$next_page}") }}" style="color: black">下一頁</a>
+
 </body>
 </html>

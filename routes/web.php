@@ -15,4 +15,5 @@ use Illuminate\Support\Facades\Validator;
 */
 
 Route::get('/', [\App\Http\Controllers\IndexController::class, 'index']);
-Route::post('/key', [\App\Http\Controllers\IndexController::class, 'keyWord']);
+Route::post('/', [\App\Http\Controllers\IndexController::class, 'index']);
+Route::get('/info', [\App\Http\Controllers\IndexController::class, 'info']);
