@@ -39,10 +39,12 @@
     @csrf
     關鍵字:<input type="text" name="key" value="{{ $key }}">
     <button type="submit">查詢</button>
+    開始:<input name="start_date" type="date" value="{{ $start_date }}">
+    結束:<input name="end_date" type="date" value="{{ $end_date }}">
     @if ($page > 1)
-        <a href="{{ url("?page={$prev_page}&key={$key}") }}" style="color: black">上一頁</a>
+        <a href="{{ url("?page={$prev_page}&key={$key}&start_date={$start_date}&end_date={$end_date}") }}" style="color: black">上一頁</a>
     @endif
-    <a href="{{ url("?page={$next_page}&key={$key}") }}" style="color: black">下一頁</a>
+    <a href="{{ url("?page={$next_page}&key={$key}&start_date={$start_date}&end_date={$end_date}") }}" style="color: black">下一頁</a>
     <a href="{{ url("/") }}" style="color: black">首頁</a>
     <a href="{{ url("/info") }}" style="color: black" target="_blank">info</a>
     {{ count($list) }}
@@ -67,9 +69,9 @@
 </form>
 
 @if ($page > 1)
-    <a href="{{ url("?page={$prev_page}&key={$key}") }}" style="color: black">上一頁</a>
+    <a href="{{ url("?page={$prev_page}&key={$key}&start_date={$start_date}&end_date={$end_date}") }}" style="color: black">上一頁</a>
 @endif
-<a href="{{ url("?page={$next_page}&key={$key}") }}" style="color: black">下一頁</a>
+<a href="{{ url("?page={$next_page}&key={$key}&start_date={$start_date}&end_date={$end_date}") }}" style="color: black">下一頁</a>
 
 </body>
 </html>

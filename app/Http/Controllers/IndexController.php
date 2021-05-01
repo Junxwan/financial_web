@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class IndexController extends BaseController
@@ -19,6 +20,9 @@ class IndexController extends BaseController
         $key = $request->get('key', '');
         $sql = 'SELECT title,url,publish_time FROM news ';
         $bindings = [];
+        $where = [];
+        $startDate = null;
+        $endDate = null;
 
         if ($key != '') {
             $key = "%{$key}%";
@@ -27,10 +31,28 @@ class IndexController extends BaseController
                 $key,
             ];
 
-            $sql .= "WHERE context LIKE ? or title LIKE ? ";
+            $where[] = "(context LIKE ? or title LIKE ?) ";
         }
 
-        $data = DB::select($sql . "ORDER BY publish_time DESC LIMIT ? OFFSET ?",
+        $startDate = $request->get('start_date', null);
+        $endDate = $request->get('end_date', null);
+
+        if (! is_null($startDate) && ! is_null($endDate)) {
+            $where[] = "publish_time between ? AND ? ";
+            $bindings = array_merge($bindings, [$endDate, $startDate]);
+        } elseif (! is_null($startDate)) {
+            $where[] = "publish_time <= ? ";
+            $bindings = array_merge($bindings, [$startDate]);
+        } elseif (! is_null($endDate)) {
+            $where[] = "publish_time >= ? ";
+            $bindings = array_merge($bindings, [$endDate]);
+        }
+
+        if (count($where) > 0) {
+            $sql .= " WHERE " . implode(' AND ', $where);
+        }
+
+        $data = DB::select($sql . " ORDER BY publish_time DESC LIMIT ? OFFSET ?",
             array_merge($bindings, [$this->limit, $this->limit * $page])
         );
 
@@ -40,6 +62,8 @@ class IndexController extends BaseController
             'prev_page' => $page > 1 ? $page - 1 : 1,
             'next_page' => $page == 0 ? 2 : $page + 1,
             'key' => $request->get('key', ''),
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ]);
     }
 
