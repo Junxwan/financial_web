@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Validator;
 |
 */
 
-Route::get('/', [\App\Http\Controllers\IndexController::class, 'index']);
+Route::get('/', [\App\Http\Controllers\IndexController::class, 'index'])->name('index');

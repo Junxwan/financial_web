@@ -25,18 +25,8 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(Factory $view, Dispatcher $events, Repository $config)
+    public function boot()
     {
-        $this->registerViewComposers($view);
-    }
-
-    /**
-     * Register the package's view composers.
-     *
-     * @return void
-     */
-    private function registerViewComposers(Factory $view)
-    {
-        $view->composer('page', AdminLteComposer::class);
+        //
     }
 }
