@@ -17,8 +17,18 @@
                         </div><div class="sidebar-search-results"><div class="list-group"><a href="#" class="list-group-item"><div class="search-title"><strong class="text-light"></strong>N<strong class="text-light"></strong>o<strong class="text-light"></strong> <strong class="text-light"></strong>e<strong class="text-light"></strong>l<strong class="text-light"></strong>e<strong class="text-light"></strong>m<strong class="text-light"></strong>e<strong class="text-light"></strong>n<strong class="text-light"></strong>t<strong class="text-light"></strong> <strong class="text-light"></strong>f<strong class="text-light"></strong>o<strong class="text-light"></strong>u<strong class="text-light"></strong>n<strong class="text-light"></strong>d<strong class="text-light"></strong>!<strong class="text-light"></strong></div><div class="search-path"></div></a></div></div>
                     </div>
                 </li>
-                
-                @include('partials.menu-item')
+
+                @foreach($menu as $v)
+                    @php
+                        $u = route($v['route']);
+                    @endphp
+                    <li class="nav-item">
+                        <a href="{{ $u }}" class="nav-link @if($url == $u) active @endif">
+                            <i class="nav-icon {{ $v['icon'] }}"></i>
+                            <p>{{ $v['name'] }}</p>
+                        </a>
+                    </li>
+                @endforeach
             </ul>
         </nav>
     </div>
