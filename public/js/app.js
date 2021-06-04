@@ -130,7 +130,7 @@ function NewTable(config) {
         buttons: config.buttons,
         processing: true,
         serverSide: true,
-        pageLength: 10,
+        pageLength: config.pageLength,
         paging: true,
         lengthChange: false,
         searching: false,

@@ -73,9 +73,9 @@
                             @endif
                             <div class="input-group mb-1">
                                 @if($v['type'] == 'select')
-                                    <select class="custom-select" id="modal-{{ $value['id'] }}-type">
+                                    <select class="custom-select" id="modal-{{ $value['id'] }}-{{ $v['id'] }}">
                                         @foreach($v['value'] as $a)
-                                            <option value="{{ $a->code }}">{{ $a->name }}</option>
+                                            <option value="{{ $a->value }}">{{ $a->name }}</option>
                                         @endforeach
                                     </select>
                                     <div class="input-group-append">

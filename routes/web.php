@@ -22,3 +22,13 @@ Route::get('/news/list', [\App\Http\Controllers\NewsController::class, 'list'])-
 Route::put('/news/{id}', [\App\Http\Controllers\NewsController::class, 'update'])->name('news.update');
 Route::delete('/news/{id}', [\App\Http\Controllers\NewsController::class, 'delete'])->name('news.delete');
 Route::post('/news/clear', [\App\Http\Controllers\NewsController::class, 'clear'])->name('news.clear');
+
+// 個股
+Route::get('/stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index');
+Route::get('/stock/list', [\App\Http\Controllers\StockController::class, 'list'])->name('stock.list');
+Route::post('/stock', [\App\Http\Controllers\StockController::class, 'create'])->name('stock.create');
+Route::delete('/stock/{id}', [\App\Http\Controllers\StockController::class, 'delete'])->name('stock.delete');
+Route::put('/stock/{id}', [\App\Http\Controllers\StockController::class, 'update'])->name('stock.update');
+
+// 投資報告
+Route::get('/report', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');

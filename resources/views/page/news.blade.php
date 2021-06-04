@@ -145,6 +145,7 @@
                 edit: edit,
                 delete: del,
                 update: update,
+                pageLength: 10,
             })
 
             $('.right').html(
