@@ -27,8 +27,8 @@
         }
 
         .ck-editor__editable {
-            min-width: 400px;
-            min-height: 300px;
+            min-width: 765px;
+            min-height: 310px;
         }
 
         .ck-content {
@@ -49,6 +49,8 @@
                 $('#modal-edit-publish_time').val(data.publish_time)
                 if (data.remark !== null) {
                     window.editor.setData(data.remark)
+                } else {
+                    window.editor.setData("")
                 }
 
                 $('#modal-id').val(data.id)
