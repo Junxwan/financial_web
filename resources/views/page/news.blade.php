@@ -25,90 +25,77 @@
             background-color: transparent;
             text-decoration: underline;
         }
+
+        .ck-editor__editable {
+            min-width: 400px;
+            min-height: 300px;
+        }
+
+        .ck-content {
+            color: #343a40;
+        }
+
     </style>
 @stop
 
 @section('table_js')
+    <script src="{{ asset('js/ckeditor.js') }}"></script>
+    <script src="{{ asset('js/ckeditor.translations.zh.js') }}"></script>
+
     <script>
         $(document).ready(function () {
             var edit = function (data) {
-                // $('#modal-edit-code').val(data.code)
-                // $('#modal-edit-name').val(data.name)
-                // $('#modal-edit-type').val(data.type)
-                // $('#modal-edit-upper').val(data.upper)
-                // $('#modal-edit-down').val(data.down)
-                // $('#modal-edit-order').val(data.order)
-                // $('#modal-edit-desc').val(data.desc)
-                // $('#modal-edit-id').val(table.row(this).index())
+                $('#modal-edit-title').val(data.title)
+                $('#modal-edit-publish_time').val(data.publish_time)
+                if (data.remark !== null) {
+                    window.editor.setData(data.remark)
+                }
+
+                $('#modal-id').val(data.id)
             }
 
             var del = function (data) {
-                {{--axios.post("{{ route('parameter.delete') }}", data).then(function (response) {--}}
-                {{--    if (response.data.result) {--}}
-                {{--        toastr.success('刪除成功')--}}
-                {{--        table.ajax.reload(null, false);--}}
-                {{--    } else {--}}
-                {{--        if (response.data.message != '') {--}}
-                {{--            toastr.error(response.data.message)--}}
-                {{--        } else {--}}
-                {{--            toastr.error('刪除失敗')--}}
-                {{--        }--}}
-                {{--    }--}}
-                {{--}).catch(function (error) {--}}
-                {{--    toastr.error('刪除失敗')--}}
-                {{--}).finally(function () {--}}
-                {{--})--}}
+                var url = '{{ route("news.delete", ":id") }}';
+                axios.delete(url.replace(':id', data.id), data).then(function (response) {
+                    if (response.data.result) {
+                        toastr.success('刪除成功')
+                        table.ajax.reload(null, false);
+                    } else {
+                        if (response.data.message != '') {
+                            toastr.error(response.data.message)
+                        } else {
+                            toastr.error('刪除失敗')
+                        }
+                    }
+                }).catch(function (error) {
+                    toastr.error('刪除失敗')
+                }).finally(function () {
+                })
             }
 
             var update = function () {
-                {{--var name = $('#modal-edit-name').val()--}}
-                {{--var upper = $('#modal-edit-upper').val()--}}
-                {{--var down = $('#modal-edit-down').val()--}}
-                {{--var order = $('#modal-edit-order').val()--}}
-                {{--var desc = $('#modal-edit-desc').val()--}}
-
-                {{--if (name === '') {--}}
-                {{--    toastr.error('名稱 欄位必填')--}}
-                {{--    return--}}
-                {{--}--}}
-
-                {{--if (order === '') {--}}
-                {{--    toastr.error('排序 欄位必填')--}}
-                {{--    return--}}
-                {{--}--}}
-
-                {{--if (desc === '') {--}}
-                {{--    toastr.error('說明 欄位必填')--}}
-                {{--    return--}}
-                {{--}--}}
-
-                {{--axios.put("{{ route('parameter.update') }}", {--}}
-                {{--    'code': $('#modal-edit-code').val(),--}}
-                {{--    "type": $('#modal-edit-type').val(),--}}
-                {{--    'name': name,--}}
-                {{--    "upper": upper,--}}
-                {{--    "down": down,--}}
-                {{--    "order": order,--}}
-                {{--    "desc": desc,--}}
-                {{--}).then(function (response) {--}}
-                {{--    if (response.data.result) {--}}
-                {{--        table.row($('#modal-id').val()).remove().draw(false)--}}
-                {{--        toastr.success('保存成功')--}}
-                {{--    } else {--}}
-                {{--        if (response.data.message != '') {--}}
-                {{--            toastr.error(response.data.message)--}}
-                {{--        } else {--}}
-                {{--            toastr.error('更新失敗')--}}
-                {{--        }--}}
-                {{--    }--}}
-                {{--}).catch(function (error) {--}}
-                {{--    toastr.error('更新失敗')--}}
-                {{--}).finally(function () {--}}
-                {{--    $('#modal-edit').modal('toggle');--}}
-                {{--})--}}
+                var url = '{{ route("news.update", ":id") }}';
+                axios.put(url.replace(':id', $('#modal-id').val()), {
+                    'remark': window.editor.getData(),
+                }).then(function (response) {
+                    if (response.data.result) {
+                        table.row($('#modal-id').val()).remove().draw(false)
+                        toastr.success('保存成功')
+                    } else {
+                        if (response.data.message != '') {
+                            toastr.error(response.data.message)
+                        } else {
+                            toastr.error('更新失敗')
+                        }
+                    }
+                }).catch(function (error) {
+                    toastr.error('更新失敗')
+                }).finally(function () {
+                    $('#modal-edit').modal('toggle');
+                })
             }
 
-            var table = NewTable({
+            NewTable({
                 name: '#list',
                 url: "{{ route('news.list') }}",
                 columns: [
@@ -122,20 +109,60 @@
                     {data: "publish_time", width: '18%'},
                     editorEditBtn, editorDelete
                 ],
-                buttons: [reloadBtn, selectBtn],
+                buttons: [reloadBtn, selectBtn,
+                    {
+                        text: '清除',
+                        className: "bg-gradient-primary",
+                        action: function (e, dt, node, config) {
+                            $('#search-input').val('')
+                            $('#start-date').val('')
+                            $('#end-date').val('')
+                        }
+                    },
+                    {
+                        text: '整理',
+                        className: "bg-gradient-primary",
+                        action: function (e, dt, node, config) {
+                            axios.post('{{ route("news.clear") }}').then(function (response) {
+                                if (response.data.result) {
+                                    toastr.success('整理成功: ' + response.data.count)
+                                    table.ajax.reload(null, false);
+                                } else {
+                                    if (response.data.message != '') {
+                                        toastr.error(response.data.message)
+                                    } else {
+                                        toastr.error('整理失敗')
+                                    }
+                                }
+                            }).catch(function (error) {
+                                toastr.error('整理失敗')
+                            })
+                        }
+                    }
+                ],
                 edit: edit,
                 delete: del,
                 update: update,
-                search:@json($search),
             })
 
             $('.right').html(
                 '<div id="example_filter" class="dataTables_filter">' +
-                '<input id="start_date" type="date" value="">' +
-                '<input id="end_date" type="date" value="">' +
+                '<input type="date" id="start-date" value="">' +
+                '<input type="date" id="end-date" value="">' +
                 '<input type="search" id="search-input">' +
                 '</div>'
             )
+
+            ClassicEditor
+                .create(document.querySelector('.modal-textarea'), {
+                    language: 'zh'
+                })
+                .then(editor => {
+                    window.editor = editor;
+                })
+                .catch(err => {
+                    console.error(err.stack);
+                });
         });
     </script>
 @stop

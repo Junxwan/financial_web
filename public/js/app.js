@@ -106,6 +106,7 @@ var reloadBtn = {
     }
 }
 
+
 function NewTable(config) {
     table = $(config.name).DataTable({
         ajax: {
@@ -118,8 +119,8 @@ function NewTable(config) {
                     'search': {
                         'name': $('#search-select').val(),
                         'value': $('#search-input').val(),
-                        'start_date': $('#start_date').val(),
-                        'end_date': $('#end_date').val(),
+                        'start_date': $('#start-date').val(),
+                        'end_date': $('#end-date').val(),
                     },
                 }
             }
@@ -134,21 +135,23 @@ function NewTable(config) {
         lengthChange: false,
         searching: false,
         ordering: false,
-        info: false,
+        info: true,
         autoWidth: false,
         responsive: false,
         language: language,
     })
 
     // 編輯視窗
-    $(name).on('click', 'td.editor-edit', function () {
+    $(config.name).on('click', 'td.editor-edit', function () {
         config.edit(table.row(this).data())
         $('#modal-edit').modal('toggle');
     })
 
     // 刪除
-    $(name).on('click', 'td.editor-delete', function () {
-        config.delete(table.row(this).data())
+    $(config.name).on('click', 'td.editor-delete', function () {
+        if (confirm("確定刪除?")) {
+            config.delete(table.row(this).data())
+        }
     })
 
     // 更新
@@ -160,23 +163,6 @@ function NewTable(config) {
     $('#modal-create-btn').on('click', function () {
         config.create()
     })
-
-    if (config.search && config.search.length > 0) {
-        var option = ''
-
-        config.search.forEach(function (item) {
-            option += "<option value=" + '"' + item['value'] + '">' + item['name'] + "</option>"
-        })
-
-        $('.search').html('<div id="example_filter" class="dataTables_filter">' +
-            '<label>欄位 ' +
-            '<select id="search-select" name="search-select">' +
-            '<option selected value=""></option>' +
-            option +
-            '</select>' +
-            '</label>' +
-            '<input type="search" id="search-input"></div>')
-    }
 
     return table
 }

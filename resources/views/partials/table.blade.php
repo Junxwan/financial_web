@@ -16,7 +16,6 @@
         .table td, .table th {
             padding: .30rem;
         }
-
     </style>
 
     @yield('table_css')
@@ -54,7 +53,7 @@
 
     @foreach($modal as $value)
         <div class="modal fade" id="modal-{{ $value['id'] }}">
-            <div class="modal-dialog modal-sm">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 id="modal-title" class="modal-title">{{ $value['title'] }}</h4>
@@ -90,6 +89,10 @@
                                         </div>
                                     </div>
                                     <input type="text" class="form-control" value="{{ $v['name'] }}" {{ $t }}>
+                                @elseif($v['type'] == 'edit')
+                                    <div class="form-control modal-textarea"
+                                         id="modal-{{ $value['id'] }}-{{ $v['id'] }}">
+                                    </div>
                                 @else
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">{{ $v['name'] }}</span>

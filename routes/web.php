@@ -21,3 +21,4 @@ Route::get('/news', [\App\Http\Controllers\NewsController::class, 'index'])->nam
 Route::get('/news/list', [\App\Http\Controllers\NewsController::class, 'list'])->name('news.list');
 Route::put('/news/{id}', [\App\Http\Controllers\NewsController::class, 'update'])->name('news.update');
 Route::delete('/news/{id}', [\App\Http\Controllers\NewsController::class, 'delete'])->name('news.delete');
+Route::post('/news/clear', [\App\Http\Controllers\NewsController::class, 'clear'])->name('news.clear');
