@@ -166,3 +166,14 @@ function NewTable(config) {
 
     return table
 }
+
+// 百萬轉億
+function roundText(a) {
+    var t = (a / 100)
+    if (t >= 10 && t <= 99.99) {
+        t = Math.round(t * 10) / 10
+    } else if (t > 100) {
+        t = Math.round(t)
+    }
+    return t + '億'
+}
