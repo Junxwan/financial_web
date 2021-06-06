@@ -172,6 +172,12 @@
                 profitB: {},
                 profitA: {},
                 main: {},
+                eps: {
+                    eps_1: getValue('#eps_q_1', 0),
+                    eps_2: getValue('#eps_q_2', 0),
+                    eps_3: getValue('#eps_q_3', 0),
+                    eps_4: getValue('#eps_q_4', 0),
+                },
                 desc: window.editor_desc.getData(),
                 desc_total: window.editor_total.getData(),
                 desc_revenue: window.editor_revenue.getData(),

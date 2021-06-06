@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use App\Models\Stock;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportController
 {
@@ -13,7 +15,178 @@ class ReportController
      */
     public function index()
     {
-        return view('page.report', [
+        return view('page.report.index', [
+            'header' => [
+                '代碼',
+                '名稱',
+                '標題',
+                '預估EPS',
+                '預估股價',
+                '方向',
+                '日期',
+                '編輯',
+                '刪除',
+            ],
+            'modal' => [],
+        ]);
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function createView()
+    {
+        return view('page.report.create', $this->viewData());
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function list(Request $request)
+    {
+        $data = $request->all();
+        $query = Report::query()->select(
+            DB::raw('reports.id'),
+            'date', 'title', 'code', 'name', 'price_f', 'action', 'eps_1', 'eps_2', 'eps_3', 'eps_4', 'pe'
+        )->join('stocks', 'reports.code_id', '=', 'stocks.id');
+        $queryTotal = Report::query();
+
+        if (isset($data['search'])) {
+            $search = $data['search'];
+            if (isset($search['value']) && ! empty($search['value'])) {
+                switch ($search['name']) {
+                    case 'code':
+                        $query = $this->whereCode($query, $search['value']);
+                        $queryTotal = $this->whereCode($queryTotal, $search['value'])
+                            ->join('stocks', 'reports.code_id', '=', 'stocks.id');
+                        break;
+                    case 'title':
+                        $query = $this->whereLikeTitle($query, $search['value']);
+                        $queryTotal = $this->whereLikeTitle($queryTotal, $search['value']);
+                        break;
+                }
+            }
+
+            $query = $this->whereDate($query, $search);
+            $queryTotal = $this->whereDate($queryTotal, $search);
+        }
+
+        $total = $queryTotal->count();
+
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $total,
+            'recordsFiltered' => $total,
+            'data' => $query->offset($request->get('start'))
+                ->limit($request->get('limit'))
+                ->orderByDesc('date')
+                ->get(),
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function create(Request $request)
+    {
+        $data = $request->all();
+        $insert = array_merge([
+            'code_id' => Stock::query()->where('code', $data['code'])->first()->id,
+            'title' => $data['title'],
+            'date' => $data['date'],
+            'action' => $data['action'],
+            'market_eps_f' => $data['market_eps_f'],
+            'open_date' => $data['open_date'],
+            'pe' => $data['pe'],
+            'desc' => $data['desc'],
+            'desc_total' => $data['desc_total'],
+            'desc_revenue' => $data['desc_revenue'],
+            'desc_gross' => $data['desc_gross'],
+            'desc_fee' => $data['desc_fee'],
+            'desc_outside' => $data['desc_outside'],
+            'desc_other' => $data['desc_other'],
+            'desc_tax' => $data['desc_tax'],
+            'desc_non' => $data['desc_non'],
+        ],
+            $data['eps'],
+            $data['revenue'],
+            $this->ar($data['gross']),
+            $this->ar($data['fee']),
+            $this->ar($data['outside']),
+            $this->ar($data['other']),
+            $this->ar($data['tax']),
+            $this->ar($data['non']),
+        );
+
+        return response()->json([
+            'result' => Report::query()->insert($insert),
+        ]);
+    }
+
+    /**
+     * @param Builder $query
+     * @param $value
+     *
+     * @return Builder
+     */
+    private function whereLikeTitle(Builder $query, $value)
+    {
+        return $query->where('title', 'like', "%{$value}%");
+    }
+
+    /**
+     * @param Builder $query
+     * @param $value
+     *
+     * @return Builder
+     */
+    private function whereCode(Builder $query, $value)
+    {
+        return $query->where(DB::raw('`stocks`.`code`'), $value);
+    }
+
+    /**
+     * @param Builder $query
+     * @param array $data
+     *
+     * @return Builder
+     */
+    private function whereDate(Builder $query, array $data)
+    {
+        if (! is_null($data['start_date']) && ! is_null($data['end_date'])) {
+            return $query->whereBetween('date', [$data['start_date'], $data['end_date']]);
+        } elseif (! is_null($data['start_date'])) {
+            return $query->where('date', '<=', "{$data['start_date']} 23:59:59");
+        } elseif (! is_null($data['end_date'])) {
+            return $query->where('date', '>=', "{$data['end_date']} 00:00:00");
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    private function ar(array $data)
+    {
+        $d = [];
+        foreach ($data as $k => $v) {
+            $d[substr($k, 2)] = $v;
+        }
+
+        return $d;
+    }
+
+    /**
+     * @return array[]
+     */
+    private function viewData()
+    {
+        return [
             'qs' => [
                 [
                     [
@@ -76,74 +249,6 @@ class ReportController
                     [],
                 ],
             ],
-        ]);
-    }
-
-    public function list()
-    {
-        //        return response()->json([
-        //            'draw' => $request->get('draw'),
-        //            'recordsTotal' => $total,
-        //            'recordsFiltered' => $total,
-        //            'data' => $query->offset($request->get('start'))
-        //                ->limit($request->get('limit'))
-        //                ->orderByDesc('publish_time')
-        //                ->get(),
-        //        ]);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function create(Request $request)
-    {
-        $data = $request->all();
-        $insert = array_merge([
-            'code_id' => Stock::query()->where('code', $data['code'])->first()->id,
-            'title' => $data['title'],
-            'date' => $data['date'],
-            'action' => $data['action'],
-            'market_eps_f' => $data['market_eps_f'],
-            'open_date' => $data['open_date'],
-            'pe' => $data['pe'],
-            'desc' => $data['desc'],
-            'desc_total' => $data['desc_total'],
-            'desc_revenue' => $data['desc_revenue'],
-            'desc_gross' => $data['desc_gross'],
-            'desc_fee' => $data['desc_fee'],
-            'desc_outside' => $data['desc_outside'],
-            'desc_other' => $data['desc_other'],
-            'desc_tax' => $data['desc_tax'],
-            'desc_non' => $data['desc_non'],
-        ],
-            $data['revenue'],
-            $this->ar($data['gross']),
-            $this->ar($data['fee']),
-            $this->ar($data['outside']),
-            $this->ar($data['other']),
-            $this->ar($data['tax']),
-            $this->ar($data['non']),
-        );
-
-        return response()->json([
-            'result' => Report::query()->insert($insert),
-        ]);
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return array
-     */
-    private function ar(array $data)
-    {
-        $d = [];
-        foreach ($data as $k => $v) {
-            $d[substr($k, 2)] = $v;
-        }
-
-        return $d;
+        ];
     }
 }

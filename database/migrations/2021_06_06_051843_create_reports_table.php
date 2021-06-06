@@ -20,11 +20,15 @@ class CreateReportsTable extends Migration
             $table->date('date')->comment('日期');
             $table->string('title')->comment('標題');
             $table->tinyInteger('action')->comment('1:多,0:空');
-            $table->tinyInteger('market_eps_f')->default(0)->comment('市場財測');
+            $table->float('market_eps_f')->default(0)->comment('市場財測');
             $table->date('open_date')->comment('財報公佈');
             $table->tinyInteger('pe')->default(0)->comment('pe');
-            $table->smallInteger('price_f')->default(0)->comment('預估股價');
-            $table->smallInteger('price_f_4')->default(0)->comment('預估股價(四季)');
+            $table->float('price_f')->default(0)->comment('預估股價');
+            $table->float('price_f_4')->default(0)->comment('預估股價(四季)');
+            $table->float('eps_1')->default(0)->comment('Q1 eps');
+            $table->float('eps_2')->default(0)->comment('Q2 eps');
+            $table->float('eps_3')->default(0)->comment('Q3 eps');
+            $table->float('eps_4')->default(0)->comment('Q4 eps');
             $table->integer('revenue_1')->default(0)->comment('1月營收');
             $table->integer('revenue_2')->default(0)->comment('2月營收');
             $table->integer('revenue_3')->default(0)->comment('3月營收');

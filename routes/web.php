@@ -33,4 +33,6 @@ Route::put('/stock/{id}', [\App\Http\Controllers\StockController::class, 'update
 
 // 投資報告
 Route::get('/report', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
+Route::get('/report/create', [\App\Http\Controllers\ReportController::class, 'createView'])->name('report.create.view');
+Route::get('/report/list', [\App\Http\Controllers\ReportController::class, 'list'])->name('report.list');
 Route::post('/report', [\App\Http\Controllers\ReportController::class, 'create'])->name('report.create');
