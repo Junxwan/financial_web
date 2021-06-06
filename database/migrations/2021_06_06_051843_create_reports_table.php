@@ -23,6 +23,7 @@ class CreateReportsTable extends Migration
             $table->float('market_eps_f')->default(0)->comment('市場財測');
             $table->date('open_date')->comment('財報公佈');
             $table->tinyInteger('pe')->default(0)->comment('pe');
+            $table->float('value')->default(0)->comment('淨值');
             $table->float('price_f')->default(0)->comment('預估股價');
             $table->float('price_f_4')->default(0)->comment('預估股價(四季)');
             $table->float('eps_1')->default(0)->comment('Q1 eps');

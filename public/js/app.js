@@ -306,13 +306,17 @@ function reloadProfitA(q) {
 function reloadTax(q) {
     name = '#q_tax_' + q
     v = getTax(q)
-
     if (v === '' || v === 0) {
         return
     }
 
+    v1 = getProfitB(q)
+    if (v1 === '' || v1 === 0) {
+        return
+    }
+
     reload(name, q, v)
-    $(name + '_b').html((Math.round((v / getProfitB(q)) * 10000) / 100) + '%');
+    $(name + '_b').html((Math.round((v / v1) * 10000) / 100) + '%');
 }
 
 // 重整非控制權益
@@ -381,7 +385,7 @@ function readTotal() {
 
     $('#revenue').val(totalRevenue)
     $('#revenue_s').html(roundText(totalRevenue))
-    $('#eps').val(totalEps)
+    $('#eps').val(Math.round(totalEps*100)/100)
 
     var list = ['gross', 'fee', 'outside', 'other', 'tax', 'profit', 'profitB', 'profitA', 'non', 'main']
 

@@ -85,14 +85,68 @@ class ReportController
     }
 
     /**
+     * @param int $id
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edit(int $id)
+    {
+        return view('page.report.create', array_merge($this->viewData(), [
+            'data' => Report::query()
+                ->join('stocks', 'reports.code_id', '=', 'stocks.id')
+                ->where(DB::raw('`reports`.`id`'), $id)
+                ->first()
+                ->toArray(),
+            'id' => $id,
+        ]));
+    }
+
+    /**
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse
      */
     public function create(Request $request)
     {
+        return response()->json([
+            'result' => Report::query()->insert($this->getData($request)),
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, int $id)
+    {
+        return response()->json([
+            'result' => Report::query()->where('id', $id)->update($this->getData($request)),
+        ]);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delete(int $id)
+    {
+        return response()->json([
+            'result' => Report::query()->where('id', $id)->delete(),
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return mixed
+     */
+    private function getData(Request $request)
+    {
         $data = $request->all();
-        $insert = array_merge([
+        return array_merge([
             'code_id' => Stock::query()->where('code', $data['code'])->first()->id,
             'title' => $data['title'],
             'date' => $data['date'],
@@ -119,10 +173,6 @@ class ReportController
             $this->ar($data['tax']),
             $this->ar($data['non']),
         );
-
-        return response()->json([
-            'result' => Report::query()->insert($insert),
-        ]);
     }
 
     /**

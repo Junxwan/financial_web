@@ -91,21 +91,6 @@
 
             setRevenueText(m, $(this).val())
             reloadRevenueQ(q)
-
-            // 全年營收
-            total = 0;
-            $('.input-group-q-r').find('input').each(function () {
-                v = parseInt($(this).val())
-                if (!isNaN(v)) {
-                    total += v;
-                }
-            })
-
-            $('#year_revenue').val(total)
-
-            // 全年營收text
-            $('#year_revenue_s').html(roundText(total))
-
             reloadAll(q)
             readTotal()
         })
@@ -148,6 +133,112 @@
 
         // 新增
         $('#create-btn').click(function () {
+            body = getBody()
+            if (body.code === '' || body.name === '') {
+                toastr.error("沒有個股資料")
+                return
+            }
+
+            axios.post('{{ route("report.create") }}', body).then(function (response) {
+                if (response.data.result) {
+                    toastr.success('新增成功')
+                } else {
+                    toastr.error('新增失敗')
+                }
+            }).catch(function (error) {
+                toastr.error('新增失敗')
+            })
+        })
+
+        @if(isset($id))
+        // 更新
+        $('#update-btn').click(function () {
+            body = getBody()
+
+            if (body.code === '' || body.name === '') {
+                toastr.error("沒有個股資料")
+                return
+            }
+
+            var url = '{{ route("report.update", ":id") }}';
+            axios.put(url.replace(':id', " {{ $id }}"), body).then(function (response) {
+                if (response.data.result) {
+                    toastr.success('新增成功')
+                } else {
+                    toastr.error('新增失敗')
+                }
+            }).catch(function (error) {
+                toastr.error('新增失敗')
+            })
+        })
+        @endif
+
+        // 刷新
+        $('#refresh-btn').click(function () {
+            location.reload()
+        })
+
+        // 重算
+        $('#reload-btn').click(function () {
+            reloadAll(1)
+            reloadAll(2)
+            reloadAll(3)
+            reloadAll(4)
+            readTotal()
+            reloadPriceF()
+        })
+
+        @if(isset($data))
+        var data = @json($data)
+
+        $('#title').val(data.title)
+        $('#code').val(data.code)
+        $('#name').val(data.name)
+        $('#date').val(data.date)
+        $('#value').val(data.value)
+        $('#action').val(data.action)
+        $('#market_eps_f').val(data.market_eps_f)
+        $('#open_date').val(data.open_date)
+        $('#end_capital').val(data.capital)
+        $('#pe').val(data.pe)
+        $('#id').val(data.id)
+        $('#price_f').val(Math.round(((data.eps_1 + data.eps_2 + data.eps_3 + data.eps_4) * data.pe) * 100) / 100)
+
+        // 月營收
+        for (var i = 1; i <= 12; i++) {
+            v = data['revenue_' + i]
+            setRevenueText(i, v)
+            $('#revenue_' + i).val(v)
+
+            if ((i % 3) == 0) {
+                reloadRevenueQ(i / 3)
+            }
+        }
+
+        for (var i = 1; i <= 4; i++) {
+            $('#q_gross_' + i).val(data['gross_' + i])
+            $('#q_fee_' + i).val(data['fee_' + i])
+            $('#q_outside_' + i).val(data['outside_' + i])
+            $('#q_other_' + i).val(data['other_' + i])
+            $('#q_tax_' + i).val(data['tax_' + i])
+            $('#q_non_' + i).val(data['non_' + i])
+            $('#eps_q_' + i).val(data['eps_' + i])
+        }
+
+        $('#editor-desc').html(data.desc)
+        $('#editor-total').html(data.desc_total)
+        $('#editor-revenue').html(data.desc_revenue)
+        $('#editor-gross').html(data.desc_gross)
+        $('#editor-fee').html(data.desc_fee)
+        $('#editor-outside').html(data.desc_outside)
+        $('#editor-other').html(data.desc_other)
+        $('#editor-tax').html(data.desc_tax)
+        $('#editor-non').html(data.desc_non)
+
+        document.getElementById('reload-btn').click();
+        @endif
+
+        function getBody() {
             var code = $('#code').val()
             var date = $('#date').val()
             var open_date = $('#open_date').val()
@@ -161,6 +252,7 @@
                 market_eps_f: $('#market_eps_f').val(),
                 open_date: open_date,
                 pe: pe,
+                value: $('#value').val(),
                 revenue: {},
                 gross: {},
                 fee: {},
@@ -189,11 +281,6 @@
                 desc_non: window.editor_non.getData(),
             }
 
-            if (code === '' || name === '') {
-                toastr.error("沒有個股資料")
-                return
-            }
-
             $('.form-group-r').find('input').each(function () {
                 v = parseInt($(this).val())
                 if (!isNaN(v)) {
@@ -208,41 +295,14 @@
                 }
             })
 
-            axios.post('{{ route("report.create") }}', body).then(function (response) {
-                if (response.data.result) {
-                    toastr.success('新增成功')
-                } else {
-                    toastr.error('新增失敗')
-                }
-            }).catch(function (error) {
-                toastr.error('新增失敗')
-            })
-        })
-
-        // 更新
-        $('#update-btn').click(function () {
-
-        })
-
-        // 刷新
-        $('#refresh-btn').click(function () {
-
-        })
-
-        // 重算
-        $('#reload-btn').click(function () {
-            reloadAll(1)
-            reloadAll(2)
-            reloadAll(3)
-            reloadAll(4)
-            readTotal()
-            reloadPriceF()
-        })
+            return body
+        }
 
     </script>
 @stop
 
 @section('content')
+    <input type="hidden" id="id" value="">
     <div class="card card-default">
         <div class="card-header">
             <h3 class="card-title">基本</h3>
@@ -393,12 +453,16 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <div class="input-group">
-                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="create-btn">
+                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
+                                    id="create-btn">
                                 新增
                             </button>
-                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="update-btn">
-                                更新
-                            </button>
+                            @if(isset($id))
+                                <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
+                                        id="update-btn">
+                                    更新
+                                </button>
+                            @endif
                             <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="refresh-btn">
                                 刷新
                             </button>
@@ -441,7 +505,7 @@
         </div>
         <div class="card-body" style="display: block;">
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-5">
                     @for($i = 1; $i <= 4; $i++)
                         <div class="form-group">
                             <div class="input-group">
@@ -463,7 +527,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     @for($i = 1; $i <= 4; $i++)
                         <div class="form-group">
                             <div class="input-group">
@@ -483,7 +547,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+            </div>
+            <div class="row">
+                <div class="col-md-5">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -535,7 +601,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
