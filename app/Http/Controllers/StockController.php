@@ -108,6 +108,21 @@ class StockController
     }
 
     /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(string $code)
+    {
+        return response()->json(
+            Stock::query()
+                ->select('id', 'name', 'capital')
+                ->where('code', $code)
+                ->first()
+        );
+    }
+
+    /**
      * @param Request $request
      *
      * @return \Illuminate\Http\JsonResponse

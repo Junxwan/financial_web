@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Report;
+use App\Models\Stock;
+use Illuminate\Http\Request;
+
 class ReportController
 {
     /**
@@ -10,72 +14,62 @@ class ReportController
     public function index()
     {
         return view('page.report', [
-            'q' => [
+            'qs' => [
                 [
                     [
-                        'id' => 'g',
+                        'id' => 'gross',
                         'name' => '毛利(百萬)',
-                        'value' => 'gross',
-                        'editor' => 'gross',
+                        'editor' => true,
                     ],
                     [
-                        'id' => 'c',
+                        'id' => 'fee',
                         'name' => '費用(百萬)',
-                        'value' => 'cost',
-                        'editor' => 'cost',
+                        'editor' => true,
                     ],
                     [
-                        'id' => 'o',
+                        'id' => 'outside',
                         'name' => '業外(百萬)',
-                        'value' => 'outside',
-                        'editor' => 'outside',
+                        'editor' => true,
                     ],
                 ],
                 [
                     [
-                        'id' => 'i',
+                        'id' => 'other',
                         'name' => '其他收益(百萬)',
-                        'value' => 'other',
-                        'editor' => 'other',
+                        'editor' => true,
                     ],
                     [
-                        'id' => 't',
+                        'id' => 'tax',
                         'name' => '所得稅(百萬)',
-                        'value' => 'tax',
-                        'editor' => 'tax',
+                        'editor' => true,
                     ],
                     [
-                        'id' => 'n',
+                        'id' => 'non',
                         'name' => '非控制權益(百萬)',
-                        'value' => 'non',
-                        'editor' => 'non',
+                        'editor' => true,
                     ],
                 ],
                 [
                     [
-                        'id' => 'p',
+                        'id' => 'profit',
                         'name' => '利益(百萬)',
-                        'value' => 'profit',
                         'readonly' => true,
                     ],
                     [
-                        'id' => 'pb',
+                        'id' => 'profitB',
                         'name' => '稅前(百萬)',
-                        'value' => 'profitb',
                         'readonly' => true,
                     ],
                     [
-                        'id' => 'pa',
+                        'id' => 'profitA',
                         'name' => '稅後(百萬)',
-                        'value' => 'profita',
                         'readonly' => true,
                     ],
                 ],
                 [
                     [
-                        'id' => 'm',
+                        'id' => 'main',
                         'name' => '母權益(百萬)',
-                        'value' => 'main',
                         'readonly' => true,
                     ],
                     [],
@@ -96,5 +90,60 @@ class ReportController
         //                ->orderByDesc('publish_time')
         //                ->get(),
         //        ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function create(Request $request)
+    {
+        $data = $request->all();
+        $insert = array_merge([
+            'code_id' => Stock::query()->where('code', $data['code'])->first()->id,
+            'title' => $data['title'],
+            'date' => $data['date'],
+            'action' => $data['action'],
+            'market_eps_f' => $data['market_eps_f'],
+            'open_date' => $data['open_date'],
+            'pe' => $data['pe'],
+            'desc' => $data['desc'],
+            'desc_total' => $data['desc_total'],
+            'desc_revenue' => $data['desc_revenue'],
+            'desc_gross' => $data['desc_gross'],
+            'desc_fee' => $data['desc_fee'],
+            'desc_outside' => $data['desc_outside'],
+            'desc_other' => $data['desc_other'],
+            'desc_tax' => $data['desc_tax'],
+            'desc_non' => $data['desc_non'],
+        ],
+            $data['revenue'],
+            $this->ar($data['gross']),
+            $this->ar($data['fee']),
+            $this->ar($data['outside']),
+            $this->ar($data['other']),
+            $this->ar($data['tax']),
+            $this->ar($data['non']),
+        );
+
+        return response()->json([
+            'result' => Report::query()->insert($insert),
+        ]);
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    private function ar(array $data)
+    {
+        $d = [];
+        foreach ($data as $k => $v) {
+            $d[substr($k, 2)] = $v;
+        }
+
+        return $d;
     }
 }

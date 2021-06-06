@@ -18,6 +18,10 @@
             background: #343a40;
         }
 
+        .dark-mode .bg-gradient-secondary {
+            color: #0c0c0c;
+        }
+
         .ck-editor__editable {
             min-width: 100%;
             min-height: 200px;
@@ -40,10 +44,10 @@
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <script src="{{ asset('js/app.js?_=' . $time) }}"></script>
     <script>
-        ClassicEditor.create(document.querySelector('#editor-base'), {
+        ClassicEditor.create(document.querySelector('#editor-desc'), {
             language: 'zh'
         }).then(editor => {
-            window.editor_base = editor;
+            window.editor_desc = editor;
         }).catch(err => {
             console.error(err.stack);
         });
@@ -64,13 +68,13 @@
             console.error(err.stack);
         });
 
-        @foreach($q as $v)
+        @foreach($qs as $v)
         @foreach($v as $a)
-        @if(isset($a['editor']))
-        ClassicEditor.create(document.querySelector('#editor-{{ $a['editor'] }}'), {
+        @if(isset($a['editor']) && $a['editor'])
+        ClassicEditor.create(document.querySelector('#editor-{{ $a['id'] }}'), {
             language: 'zh'
         }).then(editor => {
-            window.editor_{{ $a['editor'] }} = editor;
+            window.editor_{{ $a['id'] }} = editor;
         }).catch(err => {
             console.error(err.stack);
         });
@@ -78,234 +82,7 @@
         @endforeach
         @endforeach
 
-        // 某季營收
-        function getRevenueQ(q) {
-            return $('#qr' + q).val()
-        }
-
-        // 某季毛利
-        function getGross(q) {
-            return $('#qg' + q).val()
-        }
-
-        // 某季費用
-        function getCost(q) {
-            return $('#qc' + q).val()
-        }
-
-        // 某季業外
-        function getOutside(q) {
-            return $('#qo' + q).val()
-        }
-
-        // 某季其他收益
-        function getOther(q) {
-            return $('#qi' + q).val()
-        }
-
-        // 某季所得稅
-        function getTax(q) {
-            return $('#qt' + q).val()
-        }
-
-        // 某季利益
-        function getProfit(q) {
-            return $('#qp' + q).val()
-        }
-
-        // 某季稅前
-        function getProfitB(q) {
-            return $('#qpb' + q).val()
-        }
-
-        // 某季稅後
-        function getProfitA(q) {
-            return $('#qpa' + q).val()
-        }
-
-        // 某季非控制權益
-        function getNon(q) {
-            return $('#qn' + q).val()
-        }
-
-        // 某季母控制權益
-        function getMain(q) {
-            return $('#qm' + q).val()
-        }
-
-        // 佔季營收比例
-        function revenueQProportion(q, v) {
-            return Math.round((v / getRevenueQ(q)) * 10000) / 100
-        }
-
-        // 設置月營收text
-        function setRevenueText(m, v) {
-            $('#r' + m + '_s').html(roundText(v))
-        }
-
-        // 設置各項值與Text
-        function reload(name, q, v) {
-            if (isNaN(v) || v === '' || v === 0) {
-                return
-            }
-
-            $(name).val(v)
-            $(name + '_s').html(roundText(v));
-            $(name + '_b').html(revenueQProportion(q, v) + '%');
-        }
-
-        // 重整季營收
-        function reloadRevenueQ(q) {
-            var total = 0;
-            $('.input-group-q-' + q).find('input').each(function () {
-                v = parseInt($(this).val())
-                if (!isNaN(v)) {
-                    total += v;
-                }
-            })
-
-            reload('#qr' + q, q, total)
-        }
-
-        // 重整毛利
-        function reloadGross(q) {
-            reload('#qg' + q, q, getGross(q))
-        }
-
-        // 重整費用
-        function reloadCost(q) {
-            reload('#qc' + q, q, getCost(q))
-        }
-
-        // 重整業外
-        function reloadOutside(q) {
-            reload('#qo' + q, q, getOutside(q))
-        }
-
-        // 重整其他收益
-        function reloadOther(q) {
-            reload('#qi' + q, q, getOther(q))
-        }
-
-        // 設置利益
-        function reloadProfit(q) {
-            reload('#qp' + q, q, getGross(q) - getCost(q))
-        }
-
-        // 重整稅前
-        function reloadProfitB(q) {
-            reload('#qpb' + q, q, parseInt(getProfit(q)) + parseInt(getOutside(q)) + parseInt(getOther(q)))
-        }
-
-        // 重整稅後
-        function reloadProfitA(q) {
-            reload('#qpa' + q, q, getProfitB(q) - getTax(q))
-        }
-
-        // 重整季所得稅與Text
-        function reloadTax(q) {
-            name = '#qt' + q
-            v = getTax(q)
-
-            if (v === '' || v === 0) {
-                return
-            }
-
-            reload(name, q, v)
-            $(name + '_b').html((Math.round((v / getProfitB(q)) * 10000) / 100) + '%');
-        }
-
-        // 重整非控制權益
-        function reloadNon(q) {
-            reload('#qn' + q, q, getNon(q))
-        }
-
-        // 重整母控制權益
-        function reloadMain(q) {
-            reload('#qm' + q, q, getProfitA(q) - getNon(q))
-        }
-
-        // 重整預估價格
-        function reloadPriceF() {
-            pe = $('#pe').val()
-            if (pe === '' || pe === 0 || isNaN(pe)) {
-                return
-            }
-
-            eps = $('#eps').val()
-            if (eps === '' || eps === 0 || isNaN(eps)) {
-                return
-            }
-
-            $('#pricef').val(Math.round((pe * eps) * 100) / 100)
-        }
-
-        // 整個重計算
-        function reloadAll(q) {
-            reloadGross(q)
-            reloadCost(q)
-            reloadOutside(q)
-            reloadProfit(q)
-            reloadProfitB(q)
-            reloadTax(q)
-            reloadProfitA(q)
-            reloadNon(q)
-            reloadMain(q)
-            readTotal()
-        }
-
-        // 整理總結
-        function readTotal() {
-            var totalRevenue = 0
-            var totalEps = 0
-            var capital = $('#end_capital').val()
-
-            for (var i = 1; i <= 4; i++) {
-                // 營收
-                v = getRevenueQ(i)
-                $('#q' + i + 'rt').val(v)
-                $('#rq' + i + '_s_t').html(roundText(v));
-                totalRevenue += parseInt(v)
-
-                // eps
-                v = getMain(i)
-
-                if (capital === '' || capital === 0 || isNaN(capital) || v === '' || v === 0 || isNaN(v)) {
-                    continue
-                }
-
-                eps = Math.round((v / capital) * 1000) / 100
-                $('#epsq' + i + 'rt').val(eps)
-                totalEps += eps
-            }
-
-            $('#revenue').val(totalRevenue)
-            $('#revenue_s').html(roundText(totalRevenue))
-            $('#eps').val(totalEps)
-
-            var list = ['gross', 'cost', 'outside', 'other', 'tax', 'profit', 'profitb', 'profita', 'non', 'main']
-
-            list.forEach(function (name) {
-                var total = 0
-
-                $('.form-group-' + name).find('input').each(function () {
-                    v = parseInt($(this).val())
-                    if (!isNaN(v)) {
-                        total += v;
-                    }
-                })
-
-                $('#' + name).val(total)
-                $('#' + name + '_t_s').html(roundText(total))
-                $('#' + name + '_t_b').html((Math.round((total / totalRevenue) * 10000) / 100) + '%')
-            })
-
-            // 修正所得稅率
-            $('#tax_t_b').html((Math.round(($('#tax').val() / $('#profitb').val()) * 10000) / 100) + '%')
-
-            // 預估股價
-            reloadPriceF()
-        }
+        $('#date').val((new Date()).toLocaleDateString())
 
         // 月營收
         $('.form-group-r').on('change', 'input', function () {
@@ -330,14 +107,14 @@
             $('#year_revenue_s').html(roundText(total))
 
             reloadAll(q)
+            readTotal()
         })
 
         // 毛利 費用 業外 其他 所得稅 利益 稅前 稅後 非控制
         $('.form-group-q').on('change', 'input', function () {
             var q = $(this).data('q')
-            var id = $(this).data('id')
 
-            reload('#q' + id + q, q, $(this).val())
+            reload('#' + $(this).attr('id'), q, $(this).val())
             reloadAll(q)
             readTotal()
         })
@@ -357,6 +134,105 @@
         // 本益比
         $('#pe').on('change', reloadPriceF)
 
+        // 代碼
+        $('#code').on('change', function () {
+            var url = '{{ route("stock.search", ":code") }}';
+            axios.get(url.replace(':code', $(this).val())).then(function (response) {
+                $('#name').val(response.data.name)
+                $('#end_capital').val(response.data.capital)
+                toastr.success('查訊成功')
+            }).catch(function (error) {
+                toastr.error('查無資料')
+            })
+        })
+
+        // 新增
+        $('#create-btn').click(function () {
+            var code = $('#code').val()
+            var date = $('#date').val()
+            var open_date = $('#open_date').val()
+            var pe = $('#pe').val()
+
+            var body = {
+                code: code,
+                date: date,
+                title: $('#title').val(),
+                action: $('#action').val(),
+                market_eps_f: $('#market_eps_f').val(),
+                open_date: open_date,
+                pe: pe,
+                revenue: {},
+                gross: {},
+                fee: {},
+                outside: {},
+                other: {},
+                tax: {},
+                non: {},
+                profit: {},
+                profitB: {},
+                profitA: {},
+                main: {},
+                desc: window.editor_desc.getData(),
+                desc_total: window.editor_total.getData(),
+                desc_revenue: window.editor_revenue.getData(),
+                desc_gross: window.editor_gross.getData(),
+                desc_fee: window.editor_fee.getData(),
+                desc_outside: window.editor_outside.getData(),
+                desc_other: window.editor_other.getData(),
+                desc_tax: window.editor_tax.getData(),
+                desc_non: window.editor_non.getData(),
+            }
+
+            if (code === '' || name === '') {
+                toastr.error("沒有個股資料")
+                return
+            }
+
+            $('.form-group-r').find('input').each(function () {
+                v = parseInt($(this).val())
+                if (!isNaN(v)) {
+                    body['revenue'][$(this).attr('id')] = v
+                }
+            })
+
+            $('.form-group-q').find('input').each(function () {
+                v = parseInt($(this).val())
+                if (!isNaN(v)) {
+                    body[$(this).data('name')][$(this).attr('id')] = v
+                }
+            })
+
+            axios.post('{{ route("report.create") }}', body).then(function (response) {
+                if (response.data.result) {
+                    toastr.success('新增成功')
+                } else {
+                    toastr.error('新增失敗')
+                }
+            }).catch(function (error) {
+                toastr.error('新增失敗')
+            })
+        })
+
+        // 更新
+        $('#update-btn').click(function () {
+
+        })
+
+        // 刷新
+        $('#refresh-btn').click(function () {
+
+        })
+
+        // 重算
+        $('#reload-btn').click(function () {
+            reloadAll(1)
+            reloadAll(2)
+            reloadAll(3)
+            reloadAll(4)
+            readTotal()
+            reloadPriceF()
+        })
+
     </script>
 @stop
 
@@ -372,6 +248,18 @@
             </div>
         </div>
         <div class="card-body" style="display: block;">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">標題</span>
+                            </div>
+                            <input type="text" class="form-control" id="title">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-2">
                     <div class="form-group">
@@ -395,7 +283,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                             </div>
-                            <input type="text" class="form-control" placeholder="yyyy-mm-dd">
+                            <input type="text" class="form-control" id="date" placeholder="yyyy-mm-dd">
                         </div>
                     </div>
                     <div class="form-group">
@@ -413,7 +301,7 @@
                             </div>
                             <select class="custom-select" id="action">
                                 <option value="1">多</option>
-                                <option value="2">空</option>
+                                <option value="0">空</option>
                             </select>
                         </div>
                     </div>
@@ -440,7 +328,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">市場財測</span>
                             </div>
-                            <input type="text" class="form-control" id="epsf">
+                            <input type="text" class="form-control" id="market_eps_f">
                         </div>
                     </div>
                     <div class="form-group">
@@ -484,7 +372,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">預估股價(四季)</span>
                             </div>
-                            <input type="text" class="form-control" id="pricef4">
+                            <input type="text" class="form-control" id="price_f_4">
                         </div>
                     </div>
                     <div class="form-group">
@@ -492,12 +380,27 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">預估股價</span>
                             </div>
-                            <input type="text" class="form-control" id="pricef">
+                            <input type="text" class="form-control" id="price_f">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="create-btn">
+                                新增
+                            </button>
+                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="update-btn">
+                                更新
+                            </button>
+                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="refresh-btn">
+                                刷新
+                            </button>
+                            <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="reload-btn">
+                                重算
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -513,8 +416,7 @@
                     </div>
                     <div class="card-body" style="display: none;">
                         <div class="row">
-                            <div class="form-control" id="editor-base">
-                            </div>
+                            <div class="form-control" id="editor-desc"></div>
                         </div>
                     </div>
                 </div>
@@ -539,9 +441,9 @@
                             <div class="input-group">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">Q{{ $i }}營收</span>
-                                    <span class="input-group-text" id="rq{{ $i }}_s_t">0億</span>
+                                    <span class="input-group-text" id="r_q_{{ $i }}_s">0億</span>
                                 </div>
-                                <input type="text" class="form-control" id="q{{ $i }}rt" readonly>
+                                <input type="text" class="form-control" id="r_q_{{ $i }}" readonly>
                             </div>
                         </div>
                     @endfor
@@ -562,7 +464,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">Q{{ $i }} EPS</span>
                                 </div>
-                                <input type="text" class="form-control" id="epsq{{ $i }}rt" readonly>
+                                <input type="text" class="form-control" id="eps_q_{{ $i }}" readonly>
                             </div>
                         </div>
                     @endfor
@@ -590,10 +492,10 @@
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">費用</span>
-                                <span class="input-group-text" id="cost_t_s">0億</span>
-                                <span class="input-group-text" id="cost_t_b">0%</span>
+                                <span class="input-group-text" id="fee_t_s">0億</span>
+                                <span class="input-group-text" id="fee_t_b">0%</span>
                             </div>
-                            <input type="text" class="form-control" id="cost" readonly>
+                            <input type="text" class="form-control" id="fee" readonly>
                         </div>
                     </div>
                     <div class="form-group">
@@ -642,20 +544,20 @@
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">稅前</span>
-                                <span class="input-group-text" id="profitb_t_s">0億</span>
-                                <span class="input-group-text" id="profitb_t_b">0%</span>
+                                <span class="input-group-text" id="profitB_t_s">0億</span>
+                                <span class="input-group-text" id="profitB_t_b">0%</span>
                             </div>
-                            <input type="text" class="form-control" id="profitb" readonly>
+                            <input type="text" class="form-control" id="profitB" readonly>
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">稅後</span>
-                                <span class="input-group-text" id="profita_t_s">0億</span>
-                                <span class="input-group-text" id="profita_t_b">0%</span>
+                                <span class="input-group-text" id="profitA_t_s">0億</span>
+                                <span class="input-group-text" id="profitA_t_b">0%</span>
                             </div>
-                            <input type="text" class="form-control" id="profita" readonly>
+                            <input type="text" class="form-control" id="profitA" readonly>
                         </div>
                     </div>
                     <div class="form-group">
@@ -720,13 +622,13 @@
                                 <div class="input-group input-group-q-{{ ($a+3)/3 }}">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">{{ $i+$a }}月</span>
-                                        <span class="input-group-text" id="r{{ $i+$a }}_s">0</span>
+                                        <span class="input-group-text" id="revenue_{{ $i+$a }}_s">0</span>
                                     </div>
                                     <input type="number"
                                            class="form-control"
                                            data-m="{{ $i+$a }}"
                                            data-q="{{ ($a+3)/3 }}"
-                                           id="r{{ $i+$a }}"
+                                           id="revenue_{{ $i+$a }}"
                                     >
                                 </div>
                             </div>
@@ -734,13 +636,13 @@
                         <div class="form-group">
                             <div class="input-group input-group-q-r">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">{{ ($a+3)/3 }}Q</span>
-                                    <span class="input-group-text" id="qr{{ ($a+3)/3 }}_s">0億</span>
+                                    <span class="input-group-text">Q{{ ($a+3)/3 }}</span>
+                                    <span class="input-group-text" id="q_revenue_{{ ($a+3)/3 }}_s">0億</span>
                                 </div>
                                 <input type="number"
                                        class="form-control"
                                        data-q="{{ ($a+3)/3 }}"
-                                       id="qr{{ ($a+3)/3 }}"
+                                       id="q_revenue_{{ ($a+3)/3 }}"
                                        value="0"
                                 >
                             </div>
@@ -769,7 +671,8 @@
             </div>
         </div>
     </div>
-    @foreach($q as $v)
+
+    @foreach($qs as $v)
         <div class="row">
             @foreach($v as $a)
                 <div class="col-md-{{ 12/count($v) }}">
@@ -789,26 +692,27 @@
                                     @if(count($a) == 0 )
                                         @continue
                                     @endif
-                                    <div class="form-group form-group-q form-group-{{ $a['value'] }}">
+                                    <div class="form-group form-group-q form-group-{{ $a['id'] }}">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">{{ $i }}Q</span>
-                                                <span class="input-group-text" id="q{{ $a['id'] . $i }}_s">0</span>
-                                                <span class="input-group-text" id="q{{ $a['id'] . $i }}_b">0</span>
+                                                <span class="input-group-text">Q{{ $i }}</span>
+                                                <span class="input-group-text"
+                                                      id="q_{{ $a['id'] . '_' . $i }}_s">0</span>
+                                                <span class="input-group-text"
+                                                      id="q_{{ $a['id'] . '_' . $i }}_b">0</span>
                                             </div>
                                             <input type="text"
                                                    class="form-control"
-                                                   data-name="{{ $a['value'] }}"
-                                                   data-id="{{ $a['id'] }}"
+                                                   data-name="{{ $a['id'] }}"
                                                    data-q="{{ $i }}"
                                                    @if(isset($a['readonly']) && $a['readonly']) readonly @endif
-                                                   id="q{{ $a['id'] . $i }}"
+                                                   id="q_{{ $a['id'] . '_' . $i }}"
                                             >
                                         </div>
                                     </div>
                                 @endfor
                             </div>
-                            @if(isset($a['editor']))
+                            @if(isset($a['editor']) && $a['editor'])
                                 <div class="row">
                                     <div class="card card-default collapsed-card">
                                         <div class="card-header">
@@ -823,7 +727,7 @@
                                         </div>
                                         <div class="card-body" style="display: none;">
                                             <div class="row">
-                                                <div class="form-control" id="editor-{{ $a['editor'] }}">
+                                                <div class="form-control" id="editor-{{ $a['id'] }}">
                                                 </div>
                                             </div>
                                         </div>

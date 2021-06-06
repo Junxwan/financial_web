@@ -177,3 +177,242 @@ function roundText(a) {
     }
     return t + '億'
 }
+
+// 某季營收
+function getRevenueQ(q) {
+    return $('#q_revenue_' + q).val()
+}
+
+// 某季毛利
+function getGross(q) {
+    return $('#q_gross_' + q).val()
+}
+
+// 某季費用
+function getFee(q) {
+    return $('#q_fee_' + q).val()
+}
+
+// 某季業外
+function getOutside(q) {
+    return $('#q_outside_' + q).val()
+}
+
+// 某季其他收益
+function getOther(q) {
+    return $('#q_other_' + q).val()
+}
+
+// 某季所得稅
+function getTax(q) {
+    return $('#q_tax_' + q).val()
+}
+
+// 某季利益
+function getProfit(q) {
+    return $('#q_profit_' + q).val()
+}
+
+// 某季稅前
+function getProfitB(q) {
+    return $('#q_profitB_' + q).val()
+}
+
+// 某季稅後
+function getProfitA(q) {
+    return $('#q_profitA_' + q).val()
+}
+
+// 某季非控制權益
+function getNon(q) {
+    return $('#q_non_' + q).val()
+}
+
+// 某季母控制權益
+function getMain(q) {
+    return $('#q_main_' + q).val()
+}
+
+// 佔季營收比例
+function revenueQProportion(q, v) {
+    return Math.round((v / getRevenueQ(q)) * 10000) / 100
+}
+
+// 設置月營收text
+function setRevenueText(m, v) {
+    $('#revenue_' + m + '_s').html(roundText(v))
+}
+
+// 設置各項值與Text
+function reload(name, q, v) {
+    if (isNaN(v) || v === '' || v === 0) {
+        return
+    }
+
+    $(name).val(v)
+    $(name + '_s').html(roundText(v));
+    $(name + '_b').html(revenueQProportion(q, v) + '%');
+}
+
+// 重整季營收
+function reloadRevenueQ(q) {
+    var total = 0;
+    $('.input-group-q-' + q).find('input').each(function () {
+        v = parseInt($(this).val())
+        if (!isNaN(v)) {
+            total += v;
+        }
+    })
+
+    reload('#q_revenue_' + q, q, total)
+}
+
+// 重整毛利
+function reloadGross(q) {
+    reload('#q_gross_' + q, q, getGross(q))
+}
+
+// 重整費用
+function reloadFee(q) {
+    reload('#q_fee_' + q, q, getFee(q))
+}
+
+// 重整業外
+function reloadOutside(q) {
+    reload('#q_outside_' + q, q, getOutside(q))
+}
+
+// 重整其他收益
+function reloadOther(q) {
+    reload('#q_other_' + q, q, getOther(q))
+}
+
+// 設置利益
+function reloadProfit(q) {
+    reload('#q_profit_' + q, q, getGross(q) - getFee(q))
+}
+
+// 重整稅前
+function reloadProfitB(q) {
+    reload('#q_profitB_' + q, q, parseInt(getProfit(q)) + parseInt(getOutside(q)) + parseInt(getOther(q)))
+}
+
+// 重整稅後
+function reloadProfitA(q) {
+    reload('#q_profitA_' + q, q, getProfitB(q) - getTax(q))
+}
+
+// 重整季所得稅與Text
+function reloadTax(q) {
+    name = '#q_tax_' + q
+    v = getTax(q)
+
+    if (v === '' || v === 0) {
+        return
+    }
+
+    reload(name, q, v)
+    $(name + '_b').html((Math.round((v / getProfitB(q)) * 10000) / 100) + '%');
+}
+
+// 重整非控制權益
+function reloadNon(q) {
+    reload('#q_non_' + q, q, getNon(q))
+}
+
+// 重整母控制權益
+function reloadMain(q) {
+    reload('#q_main_' + q, q, getProfitA(q) - getNon(q))
+}
+
+// 重整預估價格
+function reloadPriceF() {
+    pe = $('#pe').val()
+    if (pe === '' || pe === 0 || isNaN(pe)) {
+        return
+    }
+
+    eps = $('#eps').val()
+    if (eps === '' || eps === 0 || isNaN(eps)) {
+        return
+    }
+
+    $('#price_f').val(Math.round((pe * eps) * 100) / 100)
+}
+
+// 整個重計算
+function reloadAll(q) {
+    reloadGross(q)
+    reloadFee(q)
+    reloadOutside(q)
+    reloadOther(q)
+    reloadProfit(q)
+    reloadProfitB(q)
+    reloadTax(q)
+    reloadProfitA(q)
+    reloadNon(q)
+    reloadMain(q)
+}
+
+// 整理總結
+function readTotal() {
+    var totalRevenue = 0
+    var totalEps = 0
+    var capital = $('#end_capital').val()
+
+    for (var i = 1; i <= 4; i++) {
+        // 營收
+        v = getRevenueQ(i)
+        $('#r_q_' + i).val(v)
+        $('#r_q_' + i + '_s').html(roundText(v));
+        totalRevenue += parseInt(v)
+
+        // eps
+        v = getMain(i)
+
+        if (capital === '' || capital === 0 || isNaN(capital) || v === '' || v === 0 || isNaN(v)) {
+            continue
+        }
+
+        eps = Math.round((v / capital) * 1000) / 100
+        $('#eps_q_' + i).val(eps)
+        totalEps += eps
+    }
+
+    $('#revenue').val(totalRevenue)
+    $('#revenue_s').html(roundText(totalRevenue))
+    $('#eps').val(totalEps)
+
+    var list = ['gross', 'fee', 'outside', 'other', 'tax', 'profit', 'profitB', 'profitA', 'non', 'main']
+
+    list.forEach(function (name) {
+        var total = 0
+
+        $('.form-group-' + name).find('input').each(function () {
+            v = parseInt($(this).val())
+            if (!isNaN(v)) {
+                total += v;
+            }
+        })
+
+        $('#' + name).val(total)
+        $('#' + name + '_t_s').html(roundText(total))
+        $('#' + name + '_t_b').html((Math.round((total / totalRevenue) * 10000) / 100) + '%')
+    })
+
+    // 修正所得稅率
+    $('#tax_t_b').html((Math.round(($('#tax').val() / $('#profitB').val()) * 10000) / 100) + '%')
+
+    // 預估股價
+    reloadPriceF()
+}
+
+function getValue(name, d) {
+    v = $(name).val()
+
+    if (isNaN(v) || v === '') {
+        return d
+    }
+
+    return v
+}
