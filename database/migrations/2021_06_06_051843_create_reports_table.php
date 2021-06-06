@@ -16,7 +16,7 @@ class CreateReportsTable extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('code_id')->comment('stock.id');
+            $table->unsignedBigInteger('stock_id')->comment('stock.id');
             $table->date('date')->comment('日期');
             $table->string('title')->comment('標題');
             $table->tinyInteger('action')->comment('1:多,0:空');
@@ -78,7 +78,7 @@ class CreateReportsTable extends Migration
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
-            $table->foreign('code_id')->references('id')->on('stocks');
+            $table->foreign('stock_id')->references('id')->on('stocks');
         });
     }
 

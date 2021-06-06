@@ -48,7 +48,7 @@ class ReportController
         $query = Report::query()->select(
             DB::raw('reports.id'),
             'date', 'title', 'code', 'name', 'price_f', 'action', 'eps_1', 'eps_2', 'eps_3', 'eps_4', 'pe'
-        )->join('stocks', 'reports.code_id', '=', 'stocks.id');
+        )->join('stocks', 'reports.stock_id', '=', 'stocks.id');
         $queryTotal = Report::query();
 
         if (isset($data['search'])) {
@@ -58,7 +58,7 @@ class ReportController
                     case 'code':
                         $query = $this->whereCode($query, $search['value']);
                         $queryTotal = $this->whereCode($queryTotal, $search['value'])
-                            ->join('stocks', 'reports.code_id', '=', 'stocks.id');
+                            ->join('stocks', 'reports.stock_id', '=', 'stocks.id');
                         break;
                     case 'title':
                         $query = $this->whereLikeTitle($query, $search['value']);
@@ -93,7 +93,7 @@ class ReportController
     {
         return view('page.report.create', array_merge($this->viewData(), [
             'data' => Report::query()
-                ->join('stocks', 'reports.code_id', '=', 'stocks.id')
+                ->join('stocks', 'reports.stock_id', '=', 'stocks.id')
                 ->where(DB::raw('`reports`.`id`'), $id)
                 ->first()
                 ->toArray(),
@@ -147,7 +147,7 @@ class ReportController
     {
         $data = $request->all();
         return array_merge([
-            'code_id' => Stock::query()->where('code', $data['code'])->first()->id,
+            'stock_id' => Stock::query()->where('code', $data['code'])->first()->id,
             'title' => $data['title'],
             'date' => $data['date'],
             'action' => $data['action'],
