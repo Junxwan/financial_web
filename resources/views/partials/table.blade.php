@@ -98,11 +98,11 @@
                                         <span class="input-group-text">{{ $v['name'] }}</span>
                                     </div>
                                     @if($v['type'] == 'text')
-                                        <input type="text" class="form-control"
+                                        <input type="text" class="form-control input-text"
                                                id="modal-{{ $value['id'] }}-{{ $v['id'] }}" {{ $t }}>
                                     @endif
                                     @if($v['type'] == 'number')
-                                        <input type="number" class="form-control"
+                                        <input type="number" class="form-control input-text"
                                                id="modal-{{ $value['id'] }}-{{ $v['id'] }}" {{ $t }}>
                                     @endif
                                 @endif

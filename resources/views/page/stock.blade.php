@@ -57,6 +57,7 @@
                     if (response.data.result) {
                         toastr.success('新增成功')
                         table.ajax.reload(null, false);
+                        $('.input-text').val('')
                         $('#modal-create').modal('toggle')
                     } else {
                         if (response.data.message != '') {
