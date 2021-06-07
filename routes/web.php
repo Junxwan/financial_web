@@ -25,7 +25,7 @@ Route::post('/news/clear', [\App\Http\Controllers\NewsController::class, 'clear'
 
 // 個股
 Route::get('/stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index');
-Route::get('/stock/{code}', [\App\Http\Controllers\StockController::class, 'search'])->name('stock.search');
+Route::get('/stock/{code}/info', [\App\Http\Controllers\StockController::class, 'search'])->name('stock.search');
 Route::get('/stock/list', [\App\Http\Controllers\StockController::class, 'list'])->name('stock.list');
 Route::post('/stock', [\App\Http\Controllers\StockController::class, 'create'])->name('stock.create');
 Route::delete('/stock/{id}', [\App\Http\Controllers\StockController::class, 'delete'])->name('stock.delete');
