@@ -15,7 +15,7 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 10)->comment('代碼');
+            $table->string('code', 10)->comment('代碼')->unique();
             $table->string('name', 10)->comment('名稱');
             $table->unsignedBigInteger('classification_id')->comment('分類id');
             $table->integer('capital')->default(0)->comment('股本');
