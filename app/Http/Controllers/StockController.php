@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classification;
+use App\Models\Profit;
 use App\Models\Stock;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class StockController
 {
@@ -110,16 +112,35 @@ class StockController
     /**
      * @param string $code
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
     public function search(string $code)
     {
-        return response()->json(
-            Stock::query()
-                ->select('id', 'name', 'capital')
-                ->where('code', $code)
-                ->first()
-        );
+        $data = Stock::query()
+            ->select(
+                DB::Raw('stocks.id AS id'),
+                'name',
+                'capital',
+                DB::Raw('equitys.start_stock AS start_capital')
+            )
+            ->leftJoin('equitys', 'equitys.stock_id', '=', 'stocks.id')
+            ->where('code', $code)
+            ->first();
+
+        if (is_null($data)) {
+            return response('', Response::HTTP_NOT_FOUND);
+        }
+
+        $data['eps_3'] = Profit::query()
+            ->select('eps')
+            ->where('stock_id', $data->id)
+            ->orderByDesc('year')
+            ->orderByDesc('season')
+            ->limit(3)
+            ->get()
+            ->sum('eps');
+
+        return response()->json($data);
     }
 
     /**

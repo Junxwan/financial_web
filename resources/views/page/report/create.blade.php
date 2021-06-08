@@ -22,6 +22,10 @@
             color: #0c0c0c;
         }
 
+        .dark-mode .span-selected {
+            color: #677483;
+        }
+
         .ck-editor__editable {
             min-width: 100%;
             min-height: 200px;
@@ -124,7 +128,11 @@
             var url = '{{ route("stock.search", ":code") }}';
             axios.get(url.replace(':code', $(this).val())).then(function (response) {
                 $('#name').val(response.data.name)
-                $('#end_capital').val(response.data.capital)
+                $('#s3q_eps').val(response.data.eps_3)
+                $('#end_capital').val(Math.round(response.data.capital / 1000))
+                $('#start_capital').val(Math.round(response.data.start_capital / 1000))
+                $('#end_capital_s').html(roundText(response.data.capital / 1000))
+                $('#start_capital_s').html(roundText(response.data.start_capital / 1000))
                 toastr.success('查訊成功')
             }).catch(function (error) {
                 toastr.error('查無資料')
@@ -188,6 +196,27 @@
             reloadPriceF()
         })
 
+        // 當前Q幾
+        $('.checkbox-q').click(function () {
+            $('.checkbox-q-group :checkbox').each(function () {
+                $(this).prop("checked", false);
+            })
+
+            $(this).prop("checked", true);
+            reloadSSpan($(this).data('q'))
+        })
+
+        // 當前月
+        $('.checkbox-m').click(function () {
+            $('.checkbox-m').each(function () {
+                $(this).prop("checked", false);
+            })
+
+            $(this).prop("checked", true);
+
+            reloadMSpan($(this).data('m'))
+        })
+
         @if(isset($data))
         var data = @json($data)
 
@@ -198,7 +227,6 @@
         $('#value').val(data.value)
         $('#action').val(data.action)
         $('#market_eps_f').val(data.market_eps_f)
-        $('#open_date').val(data.open_date)
         $('#end_capital').val(data.capital)
         $('#pe').val(data.pe)
         $('#id').val(data.id)
@@ -236,21 +264,39 @@
         $('#editor-non').html(data.desc_non)
 
         document.getElementById('reload-btn').click();
+
+        reloadMSpan(data.month)
+        reloadSSpan(data.season)
         @endif
 
         function getBody() {
             var code = $('#code').val()
             var date = $('#date').val()
-            var open_date = $('#open_date').val()
             var pe = $('#pe').val()
+            var season = 0
+            var month = 0
+
+
+            $('.checkbox-q').each(function () {
+                if ($(this).is(":checked")) {
+                    season = $(this).data('q')
+                }
+            })
+
+            $('.checkbox-m').each(function () {
+                if ($(this).is(":checked")) {
+                    month = $(this).data('m')
+                }
+            })
 
             var body = {
                 code: code,
                 date: date,
+                season: season,
+                month: month,
                 title: $('#title').val(),
                 action: $('#action').val(),
                 market_eps_f: $('#market_eps_f').val(),
-                open_date: open_date,
                 pe: pe,
                 value: $('#value').val(),
                 revenue: {},
@@ -298,6 +344,26 @@
             return body
         }
 
+        function reloadMSpan(m) {
+            $('.span-m').each(function () {
+                if (m >= $(this).data('m')) {
+                    $(this).addClass('span-selected')
+                } else {
+                    $(this).removeClass('span-selected')
+                }
+            })
+        }
+
+        function reloadSSpan(q) {
+            $('.span-q').each(function () {
+                if (q >= $(this).data('q')) {
+                    $(this).addClass('span-selected')
+                } else {
+                    $(this).removeClass('span-selected')
+                }
+            })
+        }
+
     </script>
 @stop
 
@@ -324,6 +390,14 @@
                             <input type="text" class="form-control" id="title">
                         </div>
                     </div>
+                </div>
+                <div class="col-md-3 checkbox-q-group">
+                    @for($i = 1; $i <= 4; $i++)
+                        <label>Q{{ $i }}</label>
+                        <input type="checkbox" class="checkbox-q"
+                               @if(isset($data) && $data['season'] == $i) checked @endif
+                               data-q="{{ $i }}">
+                    @endfor
                 </div>
             </div>
             <div class="row">
@@ -400,9 +474,9 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">財報公佈</span>
+                                <span class="input-group-text">預估股價(四季)</span>
                             </div>
-                            <input type="text" class="form-control" id="open_date">
+                            <input type="text" class="form-control" id="price_f_4">
                         </div>
                     </div>
                     <div class="form-group">
@@ -436,14 +510,6 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">預估股價(四季)</span>
-                            </div>
-                            <input type="text" class="form-control" id="price_f_4">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
                                 <span class="input-group-text">預估股價</span>
                             </div>
                             <input type="text" class="form-control" id="price_f">
@@ -471,6 +537,16 @@
                             </button>
                         </div>
                     </div>
+                </div>
+                <div class="col-md-2">
+                    @for($i = 1; $i <= 12; $i++)
+                        <input type="checkbox" class="checkbox-m" data-m="{{ $i }}"
+                               @if(isset($data) && $data['month'] == $i) checked @endif>
+                        <label>{{ $i }}月</label>
+                        @if($i%2 == 0)
+                        </br>
+                        @endif
+                    @endfor
                 </div>
             </div>
             <div class="row">
@@ -510,7 +586,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Q{{ $i }}營收</span>
+                                    <span class="input-group-text span-q" data-q="{{ $i }}">Q{{ $i }}營收</span>
                                     <span class="input-group-text" id="r_q_{{ $i }}_s">0億</span>
                                 </div>
                                 <input type="text" class="form-control" id="r_q_{{ $i }}" readonly>
@@ -532,7 +608,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Q{{ $i }} EPS</span>
+                                    <span class="input-group-text span-q" data-q="{{ $i }}">Q{{ $i }} EPS</span>
                                 </div>
                                 <input type="text" class="form-control" id="eps_q_{{ $i }}" readonly>
                             </div>
@@ -693,7 +769,8 @@
                             <div class="form-group form-group-r">
                                 <div class="input-group input-group-q-{{ ($a+3)/3 }}">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text">{{ $i+$a }}月</span>
+                                        <span class="input-group-text span-m" data-m={{ $i+$a }}
+                                            data-q="{{ ($a+3)/3 }}">{{ $i+$a }}月</span>
                                         <span class="input-group-text" id="revenue_{{ $i+$a }}_s">0</span>
                                     </div>
                                     <input type="number"
@@ -708,7 +785,7 @@
                         <div class="form-group">
                             <div class="input-group input-group-q-r">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Q{{ ($a+3)/3 }}</span>
+                                    <span class="input-group-text span-q" data-q="{{ ($a+3)/3 }}">Q{{ ($a+3)/3 }}</span>
                                     <span class="input-group-text" id="q_revenue_{{ ($a+3)/3 }}_s">0億</span>
                                 </div>
                                 <input type="number"
@@ -767,7 +844,7 @@
                                     <div class="form-group form-group-q form-group-{{ $a['id'] }}">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text">Q{{ $i }}</span>
+                                                <span class="input-group-text span-q" data-q="{{ $i }}">Q{{ $i }}</span>
                                                 <span class="input-group-text"
                                                       id="q_{{ $a['id'] . '_' . $i }}_s">0</span>
                                                 <span class="input-group-text"
