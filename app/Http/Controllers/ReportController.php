@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Equity;
+use App\Models\Profit;
 use App\Models\Report;
 use App\Models\Stock;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class ReportController
 {
@@ -91,12 +94,42 @@ class ReportController
      */
     public function edit(int $id)
     {
+        $data = Report::query()
+            ->join('stocks', 'reports.stock_id', '=', 'stocks.id')
+            ->where(DB::raw('`reports`.`id`'), $id)
+            ->first();
+
+        if (is_null($data)) {
+            return response('', Response::HTTP_NOT_FOUND);
+        }
+
+        $profit = Profit::query()
+            ->select('eps')
+            ->where('stock_id', $data->id)
+            ->orderByDesc('year')
+            ->orderByDesc('season')
+            ->limit(4)
+            ->get();
+
+        $data['eps_4'] = round($profit->sum('eps'), 2);
+
+        if ($profit->count() != 4) {
+            $data['eps_3'] = $data['eps_4'];
+        } else {
+            $data['eps_3'] = round($profit->slice(0, 3)->sum('eps'), 2);
+        }
+
+        $equity = Equity::query()
+            ->where('stock_id', $data->stock_id)
+            ->orderByDesc('year')
+            ->orderByDesc('season')
+            ->first();
+
+        $data['capital'] = round($data['capital'] / 1000);
+        $data['start_stock'] = round($equity->start_stock / 1000);
+
         return view('page.report.create', array_merge($this->viewData(), [
-            'data' => Report::query()
-                ->join('stocks', 'reports.stock_id', '=', 'stocks.id')
-                ->where(DB::raw('`reports`.`id`'), $id)
-                ->first()
-                ->toArray(),
+            'data' => $data,
             'id' => $id,
         ]));
     }
@@ -150,11 +183,14 @@ class ReportController
             'stock_id' => Stock::query()->where('code', $data['code'])->first()->id,
             'title' => $data['title'],
             'date' => $data['date'],
+            'price_f' => $data['price_f'],
             'season' => $data['season'],
             'month' => $data['month'],
             'action' => $data['action'],
+            'value' => $data['value'],
             'market_eps_f' => $data['market_eps_f'],
             'pe' => $data['pe'],
+            'evaluate' => $data['evaluate'],
             'desc' => $data['desc'],
             'desc_total' => $data['desc_total'],
             'desc_revenue' => $data['desc_revenue'],

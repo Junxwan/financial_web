@@ -24,9 +24,9 @@ class CreateReportsTable extends Migration
             $table->tinyInteger('season')->comment('季度');
             $table->tinyInteger('month')->comment('月份');
             $table->tinyInteger('pe')->default(0)->comment('pe');
+            $table->tinyInteger('evaluate')->default(0)->comment('1:預期,2:預估');
             $table->float('value')->default(0)->comment('淨值');
             $table->float('price_f')->default(0)->comment('預估股價');
-            $table->float('price_f_4')->default(0)->comment('預估股價(四季)');
             $table->float('eps_1')->default(0)->comment('Q1 eps');
             $table->float('eps_2')->default(0)->comment('Q2 eps');
             $table->float('eps_3')->default(0)->comment('Q3 eps');

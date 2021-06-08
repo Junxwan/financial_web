@@ -5,12 +5,12 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEquitysTable extends Migration
+class CreateEquitiesTable extends Migration
 {
     /**
      * @var string
      */
-    private $table = 'equitys';
+    private $table = 'equities';
 
     /**
      * Run the migrations.

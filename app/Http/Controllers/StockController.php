@@ -121,24 +121,35 @@ class StockController
                 DB::Raw('stocks.id AS id'),
                 'name',
                 'capital',
-                DB::Raw('equitys.start_stock AS start_capital')
+                DB::Raw('equities.start_stock AS start_capital'),
+                'year',
+                'season'
             )
-            ->leftJoin('equitys', 'equitys.stock_id', '=', 'stocks.id')
+            ->leftJoin('equities', 'equities.stock_id', '=', 'stocks.id')
             ->where('code', $code)
+            ->orderByDesc('year')
+            ->orderByDesc('season')
             ->first();
 
         if (is_null($data)) {
             return response('', Response::HTTP_NOT_FOUND);
         }
 
-        $data['eps_3'] = Profit::query()
+        $profit = Profit::query()
             ->select('eps')
             ->where('stock_id', $data->id)
             ->orderByDesc('year')
             ->orderByDesc('season')
-            ->limit(3)
-            ->get()
-            ->sum('eps');
+            ->limit(4)
+            ->get();
+
+        $data['eps_4'] = round($profit->sum('eps'), 2);
+
+        if ($profit->count() != 4) {
+            $data['eps_3'] = $data['eps_4'];
+        } else {
+            $data['eps_3'] = round($profit->slice(0, 3)->sum('eps'), 2);
+        }
 
         return response()->json($data);
     }

@@ -120,15 +120,13 @@
             readTotal()
         })
 
-        // 本益比
-        $('#pe').on('change', reloadPriceF)
-
         // 代碼
         $('#code').on('change', function () {
             var url = '{{ route("stock.search", ":code") }}';
             axios.get(url.replace(':code', $(this).val())).then(function (response) {
                 $('#name').val(response.data.name)
                 $('#s3q_eps').val(response.data.eps_3)
+                $('#s4q_eps').val(response.data.eps_4)
                 $('#end_capital').val(Math.round(response.data.capital / 1000))
                 $('#start_capital').val(Math.round(response.data.start_capital / 1000))
                 $('#end_capital_s').html(roundText(response.data.capital / 1000))
@@ -171,12 +169,12 @@
             var url = '{{ route("report.update", ":id") }}';
             axios.put(url.replace(':id', " {{ $id }}"), body).then(function (response) {
                 if (response.data.result) {
-                    toastr.success('新增成功')
+                    toastr.success('更新成功')
                 } else {
-                    toastr.error('新增失敗')
+                    toastr.error('更新失敗')
                 }
             }).catch(function (error) {
-                toastr.error('新增失敗')
+                toastr.error('更新失敗')
             })
         })
         @endif
@@ -193,7 +191,6 @@
             reloadAll(3)
             reloadAll(4)
             readTotal()
-            reloadPriceF()
         })
 
         // 當前Q幾
@@ -228,15 +225,26 @@
         $('#action').val(data.action)
         $('#market_eps_f').val(data.market_eps_f)
         $('#end_capital').val(data.capital)
+        $('#end_capital_s').html(roundText(data.capital))
+        $('#start_capital').val(data.start_stock)
+        $('#start_capital_s').html(roundText(data.start_stock))
         $('#pe').val(data.pe)
         $('#id').val(data.id)
-        $('#price_f').val(Math.round(((data.eps_1 + data.eps_2 + data.eps_3 + data.eps_4) * data.pe) * 100) / 100)
+        $('#s3q_eps').val(data.eps_3)
+        $('#s4q_eps').val(data.eps_4)
+        $('#price_f').val(data.price_f)
+        $('#evaluate').val(data.evaluate)
+
+        console.log(data)
 
         // 月營收
         for (var i = 1; i <= 12; i++) {
             v = data['revenue_' + i]
             setRevenueText(i, v)
-            $('#revenue_' + i).val(v)
+
+            if (v > 0) {
+                $('#revenue_' + i).val(v)
+            }
 
             if ((i % 3) == 0) {
                 reloadRevenueQ(i / 3)
@@ -244,13 +252,15 @@
         }
 
         for (var i = 1; i <= 4; i++) {
-            $('#q_gross_' + i).val(data['gross_' + i])
-            $('#q_fee_' + i).val(data['fee_' + i])
-            $('#q_outside_' + i).val(data['outside_' + i])
-            $('#q_other_' + i).val(data['other_' + i])
-            $('#q_tax_' + i).val(data['tax_' + i])
-            $('#q_non_' + i).val(data['non_' + i])
-            $('#eps_q_' + i).val(data['eps_' + i])
+            let name = ['gross', 'fee', 'outside', 'tax', 'non', 'eps']
+
+            name.forEach(function (n) {
+                v = data[n + '_' + i]
+
+                if (v > 0) {
+                    $('#q_' + n + '_' + i).val(data[n + '_' + i])
+                }
+            })
         }
 
         $('#editor-desc').html(data.desc)
@@ -297,7 +307,9 @@
                 title: $('#title').val(),
                 action: $('#action').val(),
                 market_eps_f: $('#market_eps_f').val(),
+                price_f: $('#price_f').val(),
                 pe: pe,
+                evaluate: $('#evaluate').val(),
                 value: $('#value').val(),
                 revenue: {},
                 gross: {},
@@ -474,17 +486,20 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">預估股價(四季)</span>
+                                <span class="input-group-text">PE</span>
                             </div>
-                            <input type="text" class="form-control" id="price_f_4">
+                            <input type="text" class="form-control" id="pe">
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">PE</span>
+                                <span class="input-group-text">評估</span>
                             </div>
-                            <input type="text" class="form-control" id="pe">
+                            <select class="custom-select" id="evaluate">
+                                <option value="1">預期</option>
+                                <option value="2">預估</option>
+                            </select>
                         </div>
                     </div>
                 </div>

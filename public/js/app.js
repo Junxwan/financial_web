@@ -235,7 +235,12 @@ function getMain(q) {
 
 // 佔季營收比例
 function revenueQProportion(q, v) {
-    return Math.round((v / getRevenueQ(q)) * 10000) / 100
+    r = getRevenueQ(q)
+    if (r === '' || r <= 0) {
+        return 0
+    }
+
+    return Math.round((v / r) * 10000) / 100
 }
 
 // 設置月營收text
@@ -246,6 +251,7 @@ function setRevenueText(m, v) {
 // 設置各項值與Text
 function reload(name, q, v) {
     if (isNaN(v) || v === '' || v === 0) {
+        $(name + '_b').html('0%');
         return
     }
 
@@ -307,11 +313,13 @@ function reloadTax(q) {
     name = '#q_tax_' + q
     v = getTax(q)
     if (v === '' || v === 0) {
-        return
+        $(name + '_b').html('0%');
+        return;
     }
 
     v1 = getProfitB(q)
     if (v1 === '' || v1 === 0) {
+        $(name + '_b').html('0%');
         return
     }
 
@@ -327,21 +335,6 @@ function reloadNon(q) {
 // 重整母控制權益
 function reloadMain(q) {
     reload('#q_main_' + q, q, getProfitA(q) - getNon(q))
-}
-
-// 重整預估價格
-function reloadPriceF() {
-    pe = $('#pe').val()
-    if (pe === '' || pe === 0 || isNaN(pe)) {
-        return
-    }
-
-    eps = $('#eps').val()
-    if (eps === '' || eps === 0 || isNaN(eps)) {
-        return
-    }
-
-    $('#price_f').val(Math.round((pe * eps) * 100) / 100)
 }
 
 // 整個重計算
@@ -385,7 +378,7 @@ function readTotal() {
 
     $('#revenue').val(totalRevenue)
     $('#revenue_s').html(roundText(totalRevenue))
-    $('#eps').val(Math.round(totalEps*100)/100)
+    $('#eps').val(Math.round(totalEps * 100) / 100)
 
     var list = ['gross', 'fee', 'outside', 'other', 'tax', 'profit', 'profitB', 'profitA', 'non', 'main']
 
@@ -406,9 +399,6 @@ function readTotal() {
 
     // 修正所得稅率
     $('#tax_t_b').html((Math.round(($('#tax').val() / $('#profitB').val()) * 10000) / 100) + '%')
-
-    // 預估股價
-    reloadPriceF()
 }
 
 function getValue(name, d) {
