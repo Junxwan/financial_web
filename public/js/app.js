@@ -244,7 +244,8 @@ function revenueQProportion(q, v) {
 }
 
 // 設置月營收text
-function setRevenueText(m, v) {
+function setRevenue(m, v) {
+    $('#revenue_' + m).val(v)
     $('#revenue_' + m + '_s').html(roundText(v))
 }
 
@@ -273,45 +274,60 @@ function reloadRevenueQ(q) {
     reload('#q_revenue_' + q, q, total)
 }
 
+function reloadRevenue(q, v) {
+    v = (typeof v !== 'undefined') ? v : getRevenueQ(q);
+    reload('#q_revenue_' + q, q, v)
+}
+
 // 重整毛利
-function reloadGross(q) {
-    reload('#q_gross_' + q, q, getGross(q))
+function reloadGross(q, v) {
+    v = (typeof v !== 'undefined') ? v : getGross(q);
+    reload('#q_gross_' + q, q, v)
 }
 
 // 重整費用
-function reloadFee(q) {
-    reload('#q_fee_' + q, q, getFee(q))
+function reloadFee(q, v) {
+    v = (typeof v !== 'undefined') ? v : getFee(q);
+    reload('#q_fee_' + q, q, v)
 }
 
 // 重整業外
-function reloadOutside(q) {
-    reload('#q_outside_' + q, q, getOutside(q))
+function reloadOutside(q, v) {
+    v = (typeof v !== 'undefined') ? v : getOutside(q);
+    reload('#q_outside_' + q, q, v)
 }
 
 // 重整其他收益
-function reloadOther(q) {
-    reload('#q_other_' + q, q, getOther(q))
+function reloadOther(q, v) {
+    v = (typeof v !== 'undefined') ? v : getOther(q);
+    reload('#q_other_' + q, q, v)
 }
 
 // 設置利益
-function reloadProfit(q) {
-    reload('#q_profit_' + q, q, getGross(q) - getFee(q))
+function reloadProfit(q, v) {
+    v = (typeof v !== 'undefined') ? v : getGross(q) - getFee(q);
+    reload('#q_profit_' + q, q, v)
 }
 
 // 重整稅前
-function reloadProfitB(q) {
-    reload('#q_profitB_' + q, q, parseInt(getProfit(q)) + parseInt(getOutside(q)) + parseInt(getOther(q)))
+function reloadProfitB(q, v) {
+    o = parseInt(getOther(q))
+    oo = parseInt(getOutside(q))
+    v = (typeof v !== 'undefined') ? v : parseInt(getProfit(q)) + (isNaN(oo) ? 0 : oo) + (isNaN(o) ? 0 : o);
+    reload('#q_profitB_' + q, q, v)
 }
 
 // 重整稅後
-function reloadProfitA(q) {
-    reload('#q_profitA_' + q, q, getProfitB(q) - getTax(q))
+function reloadProfitA(q, v) {
+    v = (typeof v !== 'undefined') ? v : getProfitB(q) - getTax(q);
+    reload('#q_profitA_' + q, q, v)
 }
 
 // 重整季所得稅與Text
-function reloadTax(q) {
+function reloadTax(q, v) {
     name = '#q_tax_' + q
-    v = getTax(q)
+    v = (typeof v !== 'undefined') ? v : getTax(q);
+
     if (v === '' || v === 0) {
         $(name + '_b').html('0%');
         return;
@@ -328,13 +344,15 @@ function reloadTax(q) {
 }
 
 // 重整非控制權益
-function reloadNon(q) {
-    reload('#q_non_' + q, q, getNon(q))
+function reloadNon(q, v) {
+    v = (typeof v !== 'undefined') ? v : getNon(q);
+    reload('#q_non_' + q, q, v)
 }
 
 // 重整母控制權益
-function reloadMain(q) {
-    reload('#q_main_' + q, q, getProfitA(q) - getNon(q))
+function reloadMain(q, v) {
+    v = (typeof v !== 'undefined') ? v : getProfitA(q) - getNon(q);
+    reload('#q_main_' + q, q, v)
 }
 
 // 整個重計算
@@ -355,7 +373,8 @@ function reloadAll(q) {
 function readTotal() {
     var totalRevenue = 0
     var totalEps = 0
-    var capital = $('#end_capital').val()
+    var capital = $('#start_capital').val()
+    var season = getSeason()
 
     for (var i = 1; i <= 4; i++) {
         // 營收
@@ -365,14 +384,20 @@ function readTotal() {
         totalRevenue += parseInt(v)
 
         // eps
-        v = getMain(i)
+        if (season < i) {
+            v = getMain(i)
 
-        if (capital === '' || capital === 0 || isNaN(capital) || v === '' || v === 0 || isNaN(v)) {
-            continue
+            if (capital === '' || capital === 0 || isNaN(capital) || v === '' || v === 0 || isNaN(v)) {
+                continue
+            }
+
+            eps = Math.round((v / capital) * 1000) / 100
+
+            $('#eps_q_' + i).val(eps)
+        } else {
+            eps = $('#eps_q_' + i).val()
         }
 
-        eps = Math.round((v / capital) * 1000) / 100
-        $('#eps_q_' + i).val(eps)
         totalEps += eps
     }
 
@@ -401,6 +426,30 @@ function readTotal() {
     $('#tax_t_b').html((Math.round(($('#tax').val() / $('#profitB').val()) * 10000) / 100) + '%')
 }
 
+// 當前選擇的季度
+function getSeason() {
+    var season = 0
+    $('.checkbox-q').each(function () {
+        if ($(this).is(":checked")) {
+            season = $(this).data('q')
+        }
+    })
+
+    return season
+}
+
+// 當前選擇的月
+function getMonth() {
+    var month = 0
+    $('.checkbox-m').each(function () {
+        if ($(this).is(":checked")) {
+            month = $(this).data('m')
+        }
+    })
+
+    return month
+}
+
 function getValue(name, d) {
     v = $(name).val()
 
@@ -409,4 +458,40 @@ function getValue(name, d) {
     }
 
     return v
+}
+
+function lockMonth(m) {
+    $('.span-m').each(function () {
+        if (m >= $(this).data('m')) {
+            $(this).addClass('span-selected')
+        } else {
+            $(this).removeClass('span-selected')
+        }
+    })
+
+    $('.form-group-r input').each(function () {
+        if (m >= $(this).data('m')) {
+            $(this).attr('readonly', 'readonly')
+        } else {
+            $(this).removeAttr('readonly')
+        }
+    })
+}
+
+function lockSeason(q) {
+    $('.span-q').each(function () {
+        if (q >= $(this).data('q')) {
+            $(this).addClass('span-selected')
+        } else {
+            $(this).removeClass('span-selected')
+        }
+    })
+
+    $('.form-group-q input, .input-group-q-r input').each(function () {
+        if (q >= $(this).data('q')) {
+            $(this).attr('readonly', 'readonly')
+        } else {
+            $(this).removeAttr('readonly')
+        }
+    })
 }

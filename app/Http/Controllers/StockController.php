@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Classification;
 use App\Models\Profit;
 use App\Models\Stock;
+use App\Services\Profit as Service;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -110,11 +111,12 @@ class StockController
     }
 
     /**
+     * @param Service $profit
      * @param string $code
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\JsonResponse|\Illuminate\Http\Response
      */
-    public function search(string $code)
+    public function search(Service $profit, string $code)
     {
         $data = Stock::query()
             ->select(
@@ -135,21 +137,9 @@ class StockController
             return response('', Response::HTTP_NOT_FOUND);
         }
 
-        $profit = Profit::query()
-            ->select('eps')
-            ->where('stock_id', $data->id)
-            ->orderByDesc('year')
-            ->orderByDesc('season')
-            ->limit(4)
-            ->get();
-
-        $data['eps_4'] = round($profit->sum('eps'), 2);
-
-        if ($profit->count() != 4) {
-            $data['eps_3'] = $data['eps_4'];
-        } else {
-            $data['eps_3'] = round($profit->slice(0, 3)->sum('eps'), 2);
-        }
+        [$eps4, $eps3] = $profit->epsSum($data->id);
+        $data['eps_4'] = $eps4;
+        $data['eps_3'] = $eps3;
 
         return response()->json($data);
     }

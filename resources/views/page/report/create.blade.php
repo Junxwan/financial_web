@@ -93,8 +93,21 @@
             var m = $(this).data('m')
             var q = $(this).data('q')
 
-            setRevenueText(m, $(this).val())
-            reloadRevenueQ(q)
+            setRevenue(m, $(this).val())
+
+            if (m > getMonth()) {
+                reloadRevenueQ(q)
+            }
+
+            reloadAll(q)
+            readTotal()
+        })
+
+        // 季營收
+        $('.input-group-q-r').on('change', 'input', function () {
+            var q = $(this).data('q')
+
+            reloadRevenue(q)
             reloadAll(q)
             readTotal()
         })
@@ -186,11 +199,58 @@
 
         // 重算
         $('#reload-btn').click(function () {
-            reloadAll(1)
-            reloadAll(2)
-            reloadAll(3)
-            reloadAll(4)
+            for (var i = 1; i <= 4; i++) {
+                reloadAll(i)
+            }
+
             readTotal()
+        })
+
+        // 拉財報
+        $('#get-btn').click(function () {
+            url = '{{ route("revenue.year", ['code' => ':code', 'year' => ':year']) }}'
+            url = url.replace(':code', $('#code').val()).replace(':year', $('#date').val().slice(0, 4))
+
+            axios.get(url).then(function (response) {
+                response.data.forEach(function (v) {
+                    setRevenue(v.month, Math.round(v.value / 1000))
+                })
+
+                $('#checkbox_m_' + response.data[0].month).prop("checked", true);
+                lockMonth(response.data[0].month)
+
+                toastr.success('拉取月營收成功')
+            }).catch(function (error) {
+                toastr.error('拉取月營收失敗')
+            })
+
+            url = '{{ route("profit.year", ['code' => ':code', 'year' => ':year']) }}'
+            url = url.replace(':code', $('#code').val()).replace(':year', $('#date').val().slice(0, 4))
+
+            axios.get(url).then(function (response) {
+                response.data.forEach(function (v) {
+                    reloadRevenue(v.season, Math.round(v.revenue / 1000))
+                    reloadGross(v.season, Math.round(v.gross / 1000))
+                    reloadFee(v.season, Math.round(v.fee / 1000))
+                    reloadOutside(v.season, Math.round(v.outside / 1000))
+                    reloadOther(v.season, Math.round(v.other / 1000))
+                    reloadProfit(v.season, Math.round(v.profit / 1000))
+                    reloadProfitB(v.season, Math.round(v.profit_pre / 1000))
+                    reloadProfitA(v.season, Math.round(v.profit_after / 1000))
+                    reloadTax(v.season, Math.round(v.tax / 1000))
+                    reloadNon(v.season, Math.round(v.profit_non / 1000))
+                    reloadMain(v.season, Math.round(v.profit_main / 1000))
+                    $('#eps_q_' + v.season).val(v.eps)
+
+                    $('#checkbox_q_' + response.data[0].season).prop("checked", true);
+                    lockSeason(response.data[0].season)
+                })
+
+                toastr.success('拉取綜合損益表成功')
+                $('#reload-btn').click()
+            }).catch(function (error) {
+                toastr.error('拉取綜合損益表失敗')
+            })
         })
 
         // 當前Q幾
@@ -200,7 +260,7 @@
             })
 
             $(this).prop("checked", true);
-            reloadSSpan($(this).data('q'))
+            lockSeason($(this).data('q'))
         })
 
         // 當前月
@@ -211,7 +271,7 @@
 
             $(this).prop("checked", true);
 
-            reloadMSpan($(this).data('m'))
+            lockMonth($(this).data('m'))
         })
 
         @if(isset($data))
@@ -235,19 +295,13 @@
         $('#price_f').val(data.price_f)
         $('#evaluate').val(data.evaluate)
 
-        console.log(data)
-
         // 月營收
         for (var i = 1; i <= 12; i++) {
             v = data['revenue_' + i]
-            setRevenueText(i, v)
+            setRevenue(i, v)
 
             if (v > 0) {
                 $('#revenue_' + i).val(v)
-            }
-
-            if ((i % 3) == 0) {
-                reloadRevenueQ(i / 3)
             }
         }
 
@@ -275,35 +329,19 @@
 
         document.getElementById('reload-btn').click();
 
-        reloadMSpan(data.month)
-        reloadSSpan(data.season)
+        lockMonth(data.month)
+        lockSeason(data.season)
         @endif
 
         function getBody() {
             var code = $('#code').val()
             var date = $('#date').val()
             var pe = $('#pe').val()
-            var season = 0
-            var month = 0
-
-
-            $('.checkbox-q').each(function () {
-                if ($(this).is(":checked")) {
-                    season = $(this).data('q')
-                }
-            })
-
-            $('.checkbox-m').each(function () {
-                if ($(this).is(":checked")) {
-                    month = $(this).data('m')
-                }
-            })
-
             var body = {
                 code: code,
                 date: date,
-                season: season,
-                month: month,
+                season: getSeason(),
+                month: getMonth(),
                 title: $('#title').val(),
                 action: $('#action').val(),
                 market_eps_f: $('#market_eps_f').val(),
@@ -356,25 +394,6 @@
             return body
         }
 
-        function reloadMSpan(m) {
-            $('.span-m').each(function () {
-                if (m >= $(this).data('m')) {
-                    $(this).addClass('span-selected')
-                } else {
-                    $(this).removeClass('span-selected')
-                }
-            })
-        }
-
-        function reloadSSpan(q) {
-            $('.span-q').each(function () {
-                if (q >= $(this).data('q')) {
-                    $(this).addClass('span-selected')
-                } else {
-                    $(this).removeClass('span-selected')
-                }
-            })
-        }
 
     </script>
 @stop
@@ -406,7 +425,7 @@
                 <div class="col-md-3 checkbox-q-group">
                     @for($i = 1; $i <= 4; $i++)
                         <label>Q{{ $i }}</label>
-                        <input type="checkbox" class="checkbox-q"
+                        <input type="checkbox" class="checkbox-q" id="checkbox_q_{{ $i }}"
                                @if(isset($data) && $data['season'] == $i) checked @endif
                                data-q="{{ $i }}">
                     @endfor
@@ -550,12 +569,17 @@
                             <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="reload-btn">
                                 重算
                             </button>
+                            @if(!isset($id))
+                                <button type="button" class="btn btn-block bg-gradient-secondary btn-lg" id="get-btn">
+                                    拉財報
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="col-md-2">
                     @for($i = 1; $i <= 12; $i++)
-                        <input type="checkbox" class="checkbox-m" data-m="{{ $i }}"
+                        <input type="checkbox" class="checkbox-m" id="checkbox_m_{{ $i }}" data-m="{{ $i }}"
                                @if(isset($data) && $data['month'] == $i) checked @endif>
                         <label>{{ $i }}月</label>
                         @if($i%2 == 0)
@@ -621,11 +645,11 @@
                 <div class="col-md-3">
                     @for($i = 1; $i <= 4; $i++)
                         <div class="form-group">
-                            <div class="input-group">
+                            <div class="input-group form-group-q">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text span-q" data-q="{{ $i }}">Q{{ $i }} EPS</span>
                                 </div>
-                                <input type="text" class="form-control" id="eps_q_{{ $i }}" readonly>
+                                <input type="text" class="form-control" data-q="{{ $i }}" id="eps_q_{{ $i }}">
                             </div>
                         </div>
                     @endfor
@@ -634,7 +658,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">EPS</span>
                             </div>
-                            <input type="text" class="form-control" id="eps">
+                            <input type="text" class="form-control" id="eps" readonly>
                         </div>
                     </div>
                 </div>

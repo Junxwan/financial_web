@@ -39,3 +39,13 @@ Route::get('/report/list', [\App\Http\Controllers\ReportController::class, 'list
 Route::post('/report', [\App\Http\Controllers\ReportController::class, 'create'])->name('report.create');
 Route::put('/report/{id}', [\App\Http\Controllers\ReportController::class, 'update'])->name('report.update');
 Route::delete('/report/{id}', [\App\Http\Controllers\ReportController::class, 'delete'])->name('report.delete');
+
+// 綜合損益表
+Route::get('/profit/{code}/code/{year}/year/{season}/season',
+    [\App\Http\Controllers\ProfitController::class, 'get'])->name('profit.get');
+Route::get('/profit/{code}/code/{year}/year',
+    [\App\Http\Controllers\ProfitController::class, 'year'])->name('profit.year');
+
+// 月營收
+Route::get('/revenue/{code}/code/{year}/year',
+    [\App\Http\Controllers\RevenueController::class, 'year'])->name('revenue.year');
