@@ -23,7 +23,7 @@ class CreateCashsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('stock_id')->comment('stocks.id');
             $table->year('year')->comment('年');
-            $table->tinyInteger('season')->comment('季度');
+            $table->tinyInteger('quarterly')->comment('季度');
             $table->bigInteger('profit_pre')->comment('本期稅前淨利（淨損）');
             $table->bigInteger('depreciation')->comment('折舊費用');
             $table->bigInteger('business_activity')->comment('營業活動之淨現金流入（流出）');

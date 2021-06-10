@@ -23,7 +23,7 @@ class CreateEquitiesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('stock_id')->comment('stocks.id');
             $table->year('year')->comment('年');
-            $table->tinyInteger('season')->comment('季度');
+            $table->tinyInteger('quarterly')->comment('季度');
             $table->bigInteger('start_stock')->comment('股本合計-期初餘額');
             $table->bigInteger('end_stock')->comment('股本合計-期末餘額');
             $table->bigInteger('start_capital_reserve')->comment('資本公積-期初餘額');

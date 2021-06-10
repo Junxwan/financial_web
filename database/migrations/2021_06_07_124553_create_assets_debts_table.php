@@ -23,7 +23,7 @@ class CreateAssetsDebtsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('stock_id')->comment('stocks.id');
             $table->year('year')->comment('年');
-            $table->tinyInteger('season')->comment('季度');
+            $table->tinyInteger('quarterly')->comment('季度');
             $table->bigInteger('cash')->comment('現金及約當現金');
             $table->bigInteger('stock')->comment('存貨');
             $table->bigInteger('bill_receivable')->comment('應收票據淨額');

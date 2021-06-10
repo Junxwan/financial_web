@@ -23,7 +23,7 @@ class CreateProfitsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('stock_id')->comment('stocks.id');
             $table->year('year')->comment('年');
-            $table->tinyInteger('season')->comment('季度');
+            $table->tinyInteger('quarterly')->comment('季度');
             $table->bigInteger('revenue')->comment('營業收入合計');
             $table->bigInteger('cost')->comment('營業成本合計');
             $table->bigInteger('gross')->comment('營業毛利（毛損）');
