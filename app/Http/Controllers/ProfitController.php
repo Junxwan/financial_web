@@ -2,30 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Profit;
-use App\Models\Revenue;
-use Illuminate\Support\Facades\DB;
+use App\Services\Profit;
 
 class ProfitController
 {
+    private Profit $profit;
+
+    /**
+     * ProfitController constructor.
+     *
+     * @param Profit $profit
+     */
+    public function __construct(Profit $profit)
+    {
+        $this->profit = $profit;
+    }
+
     /**
      * @param string $code
      * @param int $year
-     * @param int $season
+     * @param int $quarterly
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function get(string $code, int $year, int $season)
+    public function get(string $code, int $year, int $quarterly)
     {
-        return response()->json(Profit::query()
-            ->select(
-                DB::RAW('profits.*')
-            )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
-            ->where('stocks.code', $code)
-            ->where('profits.year', $year)
-            ->where('profits.season', $season)
-            ->first(),
-        );
+        //        return response()->json(Profit::query()
+        //            ->select(
+        //                DB::RAW('profits.*')
+        //            )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+        //            ->where('stocks.code', $code)
+        //            ->where('profits.year', $year)
+        //            ->where('profits.season', $season)
+        //            ->first(),
+        //        );
     }
 
     /**
@@ -37,13 +47,7 @@ class ProfitController
     public function year(string $code, int $year)
     {
         return response()->json(
-            Profit::query()
-                ->select(
-                    DB::RAW('profits.*')
-                )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
-                ->where('stocks.code', $code)
-                ->where('profits.year', $year)
-                ->get()
+            $this->profit->year($code, $year)
         );
     }
 }

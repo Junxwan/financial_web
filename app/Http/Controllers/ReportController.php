@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Equity;
-use App\Models\Profit;
 use App\Models\Report;
 use App\Models\Stock;
+use App\Services\Profit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -92,7 +92,7 @@ class ReportController
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(int $id)
+    public function edit(Profit $profit, int $id)
     {
         $data = Report::query()
             ->join('stocks', 'reports.stock_id', '=', 'stocks.id')
@@ -103,26 +103,14 @@ class ReportController
             return response('', Response::HTTP_NOT_FOUND);
         }
 
-        $profit = Profit::query()
-            ->select('eps')
-            ->where('stock_id', $data->id)
-            ->orderByDesc('year')
-            ->orderByDesc('season')
-            ->limit(4)
-            ->get();
-
-        $data['eps_4'] = round($profit->sum('eps'), 2);
-
-        if ($profit->count() != 4) {
-            $data['eps_3'] = $data['eps_4'];
-        } else {
-            $data['eps_3'] = round($profit->slice(0, 3)->sum('eps'), 2);
-        }
+        [$eps4, $eps3] = $profit->epsSum($id);
+        $data['eps3_sum'] = $eps3;
+        $data['eps4_sum'] = $eps4;
 
         $equity = Equity::query()
             ->where('stock_id', $data->stock_id)
             ->orderByDesc('year')
-            ->orderByDesc('season')
+            ->orderByDesc('quarterly')
             ->first();
 
         $data['capital'] = round($data['capital'] / 1000);
@@ -184,7 +172,7 @@ class ReportController
             'title' => $data['title'],
             'date' => $data['date'],
             'price_f' => $data['price_f'],
-            'season' => $data['season'],
+            'quarterly' => $data['quarterly'],
             'month' => $data['month'],
             'action' => $data['action'],
             'value' => $data['value'],
@@ -201,14 +189,19 @@ class ReportController
             'desc_tax' => $data['desc_tax'],
             'desc_non' => $data['desc_non'],
         ],
-            $data['eps'],
             $data['revenue'],
-            $this->ar($data['gross']),
-            $this->ar($data['fee']),
-            $this->ar($data['outside']),
-            $this->ar($data['other']),
-            $this->ar($data['tax']),
-            $this->ar($data['non']),
+            $data['revenue_month'],
+            $data['eps'],
+            $data['gross'],
+            $data['fee'],
+            $data['outside'],
+            $data['other'],
+            $data['tax'],
+            $data['profit'],
+            $data['profit_pre'],
+            $data['profit_after'],
+            $data['profit_non'],
+            $data['profit_main'],
         );
     }
 
@@ -304,7 +297,7 @@ class ReportController
                         'editor' => true,
                     ],
                     [
-                        'id' => 'non',
+                        'id' => 'profit_non',
                         'name' => '非控制權益(百萬)',
                         'editor' => true,
                     ],
@@ -316,19 +309,19 @@ class ReportController
                         'readonly' => true,
                     ],
                     [
-                        'id' => 'profitB',
+                        'id' => 'profit_pre',
                         'name' => '稅前(百萬)',
                         'readonly' => true,
                     ],
                     [
-                        'id' => 'profitA',
+                        'id' => 'profit_after',
                         'name' => '稅後(百萬)',
                         'readonly' => true,
                     ],
                 ],
                 [
                     [
-                        'id' => 'main',
+                        'id' => 'profit_main',
                         'name' => '母權益(百萬)',
                         'readonly' => true,
                     ],

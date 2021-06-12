@@ -7,16 +7,24 @@ if (! function_exists('q4r')) {
      * @param Collection $data
      * @param $key
      *
-     * @return Collection|\Illuminate\Support\Collection
+     * @return Illuminate\Database\Eloquent\Collection
      */
     function q4r(Collection $data, $key)
     {
         $update = [];
         foreach ($data->groupBy('year') as $year => $value) {
             if ($value->count() == 4) {
-                $q123 = $data->where('year', $year)->where('season', '<=', 3)->sum($key);
-                $q4 = $data->where('year', $year)->where('season', '=', 4)->first()->{$key};
-                $update[$year] = $q4 - $q123;
+                if (! is_array($key)) {
+                    $key = [$key];
+                }
+
+                $q123 = $data->where('year', $year)->where('quarterly', '<=', 3);
+                $q4 = $data->where('year', $year)->where('quarterly', '=', 4)->first();
+                $update[$year] = [];
+
+                foreach ($key as $k) {
+                    $update[$year][$k] = $q4->{$k} - $q123->sum($k);
+                }
             }
         }
 
@@ -24,9 +32,12 @@ if (! function_exists('q4r')) {
             return $data;
         }
 
-        return $data->map(function ($v) use ($update, $key) {
-            if ($v->season == 4 && isset($update[$v->year])) {
-                $v->{$key} = $update[$v->year];
+        return $data->map(function ($v) use ($update) {
+            if ($v->quarterly == 4 && isset($update[$v->year]) && count($update[$v->year]) > 0) {
+                foreach ($update[$v->year] as $key => $value) {
+                    $v->{$key} = $update[$v->year][$key];
+                }
+
                 return $v;
             }
 

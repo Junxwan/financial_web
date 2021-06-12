@@ -125,12 +125,12 @@ class StockController
                 'capital',
                 DB::Raw('equities.start_stock AS start_capital'),
                 'year',
-                'season'
+                'quarterly'
             )
             ->leftJoin('equities', 'equities.stock_id', '=', 'stocks.id')
             ->where('code', $code)
             ->orderByDesc('year')
-            ->orderByDesc('season')
+            ->orderByDesc('quarterly')
             ->first();
 
         if (is_null($data)) {
@@ -138,8 +138,8 @@ class StockController
         }
 
         [$eps4, $eps3] = $profit->epsSum($data->id);
-        $data['eps_4'] = $eps4;
-        $data['eps_3'] = $eps3;
+        $data['eps4_sum'] = $eps4;
+        $data['eps3_sum'] = $eps3;
 
         return response()->json($data);
     }
