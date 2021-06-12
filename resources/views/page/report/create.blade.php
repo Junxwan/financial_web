@@ -107,11 +107,25 @@
 
         // 當前Q幾
         $('.checkbox-quarterly').click(function () {
+            q = $(this).data('q')
+            $('.checkbox-quarterly').each(function () {
+                if ($(this).data('q') !== q) {
+                    $(this).prop("checked", false)
+                }
+            })
+
             lockQuarterly()
         })
 
         // 當前月
         $('.checkbox-month').click(function () {
+            m = $(this).data('m')
+            $('.checkbox-month').each(function () {
+                if ($(this).data('m') !== m) {
+                    $(this).prop("checked", false)
+                }
+            })
+
             lockMonth()
         })
 
