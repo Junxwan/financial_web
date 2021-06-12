@@ -2,11 +2,6 @@
 
 @section('css')
     <style>
-        .container-fluid .card-header {
-            background-color: #888f95;
-            color: #0c0c0c;
-        }
-
         .input-group input, select {
             text-align: center;
             text-align-last: center;

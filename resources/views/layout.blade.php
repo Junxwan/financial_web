@@ -10,7 +10,15 @@
     <link rel="stylesheet" href="{{ asset('css/OverlayScrollbars.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/toastr.min.css') }}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+    <style>
+        .container-fluid .card-header {
+            background-color: #888f95;
+            color: #0c0c0c;
+        }
+    </style>
 
     @yield('css')
 </head>

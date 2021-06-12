@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use \App\Models\Profit as Model;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class Profit
@@ -65,5 +66,71 @@ class Profit
         }
 
         return [$eps4Sum, $eps3Sum];
+    }
+
+    /**
+     * @return array
+     */
+    public function quarterlys()
+    {
+        $now = Carbon::now();
+        $data = [];
+
+        for ($i = 0; $i < ($now->year - 2012); $i++) {
+            $year = ($now->year - $i);
+            $l = 4;
+
+            if ($i == 0) {
+                if ($now->month >= 11) {
+                    $l = 3;
+                } elseif ($now->month >= 8) {
+                    $l = 2;
+                } elseif ($now->month >= 5) {
+                    $l = 1;
+                }
+            }
+
+            $data[$year] = $l;
+        }
+
+        $s = [];
+
+        foreach ($data as $k => $v) {
+            for ($i = $v; $i >= 1; $i--) {
+                $s[] = "{$k}-Q{$i}";
+            }
+        }
+
+        return $s;
+    }
+
+    /**
+     * @return array
+     */
+    public function yearMonths()
+    {
+        $now = Carbon::now();
+        $data = [];
+
+        for ($i = 0; $i < ($now->year - 2012); $i++) {
+            $year = ($now->year - $i);
+            $l = 12;
+
+            if ($i == 0) {
+                $l = $now->month - 1;
+            }
+
+            $data[$year] = $l;
+        }
+
+        $s = [];
+
+        foreach ($data as $k => $v) {
+            for ($i = $v; $i >= 1; $i--) {
+                $s[] = "{$k}-" . sprintf("%02d", $i);
+            }
+        }
+
+        return $s;
     }
 }

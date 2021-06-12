@@ -21,4 +21,9 @@ return [
         'icon' => 'fas fa-chart-bar',
         'name' => '投資報告',
     ],
+    [
+        'route' => 'profit.index',
+        'icon' => 'fas fa-signal',
+        'name' => '綜合損益表',
+    ],
 ];

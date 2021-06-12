@@ -6,6 +6,9 @@ use App\Services\Profit;
 
 class ProfitController
 {
+    /**
+     * @var Profit
+     */
     private Profit $profit;
 
     /**
@@ -16,6 +19,17 @@ class ProfitController
     public function __construct(Profit $profit)
     {
         $this->profit = $profit;
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function index()
+    {
+        return view('page.profit', [
+            'quarterlys' => $this->profit->quarterlys(),
+            'yearMonths' => $this->profit->yearMonths(),
+        ]);
     }
 
     /**
