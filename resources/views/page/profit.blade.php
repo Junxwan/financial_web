@@ -6,6 +6,9 @@
             color: #8d8585;
             font-weight: bold;
             background: #343a40;
+        }
+
+        .dark-mode .input-group-width {
             min-width: 100%;
         }
 
@@ -18,7 +21,7 @@
         }
 
         .dark-mode .input-width-1 {
-            color: #8d8585!important;
+            color: #8d8585 !important;
             min-width: 50px;
         }
 
@@ -40,22 +43,21 @@
     <script>
         $('#code, #quarterly, #year_month').change(function () {
             var url = '{{ route("stock.search", ":code") }}';
-            axios.get(url.replace(':code', $(this).val())).then(function (response) {
+            code = $('#code').val()
+
+            axios.get(url.replace(':code', code)).then(function (response) {
                 $('#name').val(response.data.name)
                 $('#capital').val(Math.round(response.data.capital / 1000))
                 $('#capital_text').html(roundText(response.data.capital / 1000))
                 toastr.success('查訊成功')
 
-                code = $('#code').val()
-
                 if (revenueMonth(code, $('#year_month').val().slice(0, 4), $('#year_month').val().slice(5, 7))) {
                     profit(code, $('#quarterly').val().slice(0, 4), $('#quarterly').val().slice(6, 7))
-                    eps(code)
+                    getEps(code)
                 }
 
-                hint()
-
             }).catch(function (error) {
+                console.log(error)
                 toastr.error('查無資料')
             })
         })
@@ -98,6 +100,7 @@
                 toastr.success('月營收成功')
                 return true
             }).catch(function (error) {
+                console.log(error)
                 toastr.error('查無月營收')
                 return false
             })
@@ -205,13 +208,14 @@
                 toastr.success('查綜合損益表成功')
                 return true
             }).catch(function (error) {
+                console.log(error)
                 toastr.error('查綜合損益表無資料')
                 return false
             })
         }
 
         // 年eps
-        function eps(code) {
+        function getEps(code) {
             var url = '{{ route("profit.eps", ['code' => ':code']) }}'
             return axios.get(url.replace(':code', code)).then(function (response) {
                 $('.form-group-eps').each(function (index) {
@@ -234,6 +238,7 @@
                 dividend(code, response.data)
 
                 toastr.success('查EPS成功')
+                hint()
                 return true
             }).catch(function (error) {
                 toastr.error('查EPS無資料')
@@ -267,7 +272,7 @@
                 dividends.reverse()
 
                 chartBar('quarterly-dividend-bar', '股利', dates, dividends)
-                chartBar('quarterly-dividend-send-bar', 'EPS現金配發率', dates, rates, 0, 100)
+                chartBar('quarterly-dividend-send-bar', 'EPS現金配發率', dates, rates, 100)
 
                 toastr.success('查股利成功')
                 return true
@@ -279,16 +284,16 @@
 
         // yoy提示
         function hint() {
-            $('.input-rate').each(function () {
+            $('.form-group-month-revenue .input-rate, .form-group-quarterly-revenue .input-rate').each(function () {
+                $(this).removeClass('span-decline')
+                $(this).removeClass('span-growing')
+
                 v = parseFloat($(this).html().replace('%', ''))
 
                 if (v < 0) {
                     $(this).addClass('span-decline')
                 } else if (v >= 20) {
                     $(this).addClass('span-growing')
-                } else {
-                    $(this).removeClass('span-decline')
-                    $(this).removeClass('span-growing')
                 }
             })
         }
@@ -303,14 +308,10 @@
         function chartBar(id, title, labels, data, yMin, yMax) {
             var ctx = document.getElementById(id).getContext('2d');
             var ticks = {
+                min: 0,
                 callback: function (value, index, values) {
                     return new Intl.NumberFormat('en-IN', {maximumSignificantDigits: 3}).format(value);
                 }
-            }
-
-            if (typeof yMin !== 'undefined') {
-                ticks.min = yMin
-                ticks.stepSize = 20
             }
 
             if (typeof yMax !== 'undefined') {
@@ -559,7 +560,7 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" class="input-group-text" value="近12季EPS" disabled>
+                            <input type="text" class="input-group-text input-group-width" value="近12季EPS" disabled>
                         </div>
                     </div>
                     @for ($i = 1; $i <= 12; $i++)
@@ -576,7 +577,7 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" class="input-group-text" value="近8年EPS" disabled>
+                            <input type="text" class="input-group-text input-group-width" value="近8年EPS" disabled>
                         </div>
                     </div>
                     @for ($i = 1; $i <= 8; $i++)
@@ -593,7 +594,7 @@
                 <div class="col-md-2">
                     <div class="form-group">
                         <div class="input-group">
-                            <input type="text" class="input-group-text" value="近8年股利" disabled>
+                            <input type="text" class="input-group-text input-group-width" value="近8年股利" disabled>
                         </div>
                     </div>
                     @for ($i = 1; $i <= 8; $i++)
@@ -693,7 +694,8 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="input-group-text" value="{{ $v['title'] }}" disabled>
+                                    <input type="text" class="input-group-text input-group-width"
+                                           value="{{ $v['title'] }}" disabled>
                                 </div>
                             </div>
                             @for ($i = 1; $i <= 12; $i++)

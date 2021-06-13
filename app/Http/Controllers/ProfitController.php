@@ -159,7 +159,7 @@ class ProfitController
                 }
 
                 return $v;
-            })
+            })->values()
         );
     }
 
