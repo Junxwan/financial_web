@@ -20,9 +20,7 @@
             </div>
         </div>
 
-        @hasSection('footer')
-            @include('footer')
-        @endif
+        @include('footer')
     </div>
 @stop
 

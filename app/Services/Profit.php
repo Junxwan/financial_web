@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use \App\Models\Profit as Model;
+use App\Models\Dividend;
+use App\Models\Profit as Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -132,5 +133,103 @@ class Profit
         }
 
         return $s;
+    }
+
+    /**
+     * @param string $code
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
+    public function recent(string $code, int $year, int $quarterly)
+    {
+        $profit = Model::query()->select(
+            DB::RAW('profits.year'),
+            DB::RAW('profits.quarterly'),
+            DB::RAW('profits.revenue'),
+            DB::RAW('profits.cost'),
+            DB::RAW('profits.gross'),
+            DB::RAW('profits.fee'),
+            DB::RAW('profits.outside'),
+            DB::RAW('profits.other'),
+            DB::RAW('profits.profit'),
+            DB::RAW('profits.tax'),
+            DB::RAW('profits.profit_pre'),
+            DB::RAW('profits.profit_after'),
+            DB::RAW('profits.profit_main'),
+            DB::RAW('profits.profit_non'),
+            DB::RAW('profits.research'),
+            DB::RAW('profits.eps'),
+        )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+            ->where('stocks.code', $code)
+            ->where('profits.year', '<=', $year)
+            ->orderByDesc('profits.year')
+            ->orderByDesc('profits.quarterly')
+            ->limit(24)
+            ->get()->filter(function ($v) use ($year, $quarterly) {
+                return ($year == $v->year) ? $v->quarterly <= $quarterly : true;
+            });
+
+        $profit = q4r($profit, [
+            'revenue',
+            'cost',
+            'gross',
+            'fee',
+            'outside',
+            'other',
+            'profit',
+            'tax',
+            'profit_pre',
+            'profit_after',
+            'profit_main',
+            'profit_non',
+            'research',
+        ]);
+
+        return $profit->map(function ($v) use ($profit) {
+            $ye = $profit->where('year', $v->year - 1)
+                ->where('quarterly', $v->quarterly)
+                ->first();
+
+            $v->revenue_yoy = is_null($ye) ? 0 : round((($v->revenue / $ye->revenue) - 1) * 100, 2);
+
+            return $v;
+        });
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function eps(string $code)
+    {
+        return Model::query()->select(
+            DB::RAW('profits.year'),
+            DB::RAW('profits.eps'),
+        )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+            ->where('stocks.code', $code)
+            ->where('profits.quarterly', 4)
+            ->orderByDesc('profits.year')
+            ->limit(8)
+            ->get();
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function dividend(string $code)
+    {
+        return Dividend::query()->select(
+            DB::RAW('dividends.year'),
+            DB::RAW('dividends.cash'),
+        )->join('stocks', 'stocks.id', '=', 'dividends.stock_id')
+            ->where('stocks.code', $code)
+            ->orderByDesc('dividends.year')
+            ->limit(8)
+            ->get();
     }
 }

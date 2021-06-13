@@ -48,9 +48,7 @@ class RevenueController
             ->limit(48)
             ->get()->filter(function ($v) use ($year, $month) {
                 return ($year == $v->year) ? $v->month <= $month : true;
-            })
-            ->slice(0, 36)
-            ->values();
+            })->slice(0, 36)->values();
 
         $data = $revenue->values()->map(function ($v) use ($revenue) {
             $ye = $revenue->where('year', $v->year - 1)

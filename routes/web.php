@@ -46,6 +46,16 @@ Route::get('/profit/{code}/code/{year}/year/{season}/season',
     [\App\Http\Controllers\ProfitController::class, 'get'])->name('profit.get');
 Route::get('/profit/{code}/code/{year}/year',
     [\App\Http\Controllers\ProfitController::class, 'year'])->name('profit.year');
+Route::get('/profit/recent/{code}/code/{year}/year/{quarterly}/quarterly',
+    [\App\Http\Controllers\ProfitController::class, 'recent'])->name('profit.recent');
+Route::get('/profit/eps/{code}/code',
+    [\App\Http\Controllers\ProfitController::class, 'eps'])->name('profit.eps');
+Route::get('/profit/dividend/{code}/code',
+    [\App\Http\Controllers\ProfitController::class, 'dividend'])->name('profit.dividend');
+
+// 現金流量表
+Route::get('/cash/recent/{code}/code/{year}/year/{quarterly}/quarterly',
+    [\App\Http\Controllers\CashController::class, 'recent'])->name('cash.recent');
 
 // 月營收
 Route::get('/revenue/{code}/code/{year}/year',

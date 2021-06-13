@@ -23,7 +23,7 @@
     @yield('css')
 </head>
 
-<body class="dark-mode sidebar-mini" style="height: auto;">
+<body class="dark-mode sidebar-mini layout-navbar-fixed" style="height: auto;">
 @yield('body')
 
 <script src="{{ asset('js/jquery.min.js') }}"></script>

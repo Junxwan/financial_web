@@ -24,6 +24,6 @@ return [
     [
         'route' => 'profit.index',
         'icon' => 'fas fa-signal',
-        'name' => '綜合損益表',
+        'name' => '財報',
     ],
 ];
