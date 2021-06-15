@@ -12,10 +12,6 @@
             min-width: 100%;
         }
 
-        .dark-mode input {
-            text-align: center;
-        }
-
         .dark-mode .input-width {
             min-width: 70px;
         }

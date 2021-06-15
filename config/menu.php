@@ -26,4 +26,9 @@ return [
         'icon' => 'fas fa-signal',
         'name' => '財報',
     ],
+    [
+        'route' => 'fund.index',
+        'icon' => 'fas fa-list',
+        'name' => '投信持股',
+    ],
 ];

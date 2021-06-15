@@ -18,6 +18,10 @@
             background-color: #888f95;
             color: #0c0c0c;
         }
+
+        .dark-mode input {
+            text-align: center;
+        }
     </style>
 
     @yield('css')

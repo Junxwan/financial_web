@@ -62,3 +62,8 @@ Route::get('/revenue/{code}/code/{year}/year',
     [\App\Http\Controllers\RevenueController::class, 'year'])->name('revenue.year');
 Route::get('/revenue/recent/{code}/code/{year}/year/{month}/monyh',
     [\App\Http\Controllers\RevenueController::class, 'recent'])->name('revenue.recent');
+
+// 投信持股
+Route::get('/fund', [\App\Http\Controllers\FundController::class, 'index'])->name('fund.index');
+Route::get('/fund/list/{id}', [\App\Http\Controllers\FundController::class, 'funds'])->name('fund.list');
+Route::get('/fund/stocks/{year}/year/{fundId}/fund', [\App\Http\Controllers\FundController::class, 'stocks'])->name('fund.stocks');
