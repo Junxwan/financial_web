@@ -167,7 +167,7 @@
                         <div class="form-group">
                             <div class="input-group form-group-ym">
                                 @for($i = 1; $i <= 6; $i++)
-                                    <input type="text" class="form-control" data-index="{{ $i }}" readonly>
+                                    <input type="text" class="form-control" data-index="{{ $i + ($c * 6) }}" readonly>
                                 @endfor
                             </div>
 
