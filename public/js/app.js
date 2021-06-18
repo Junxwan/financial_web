@@ -121,6 +121,7 @@ function NewTable(config) {
                         'start_date': $('#start-date').val(),
                         'end_date': $('#end-date').val(),
                     },
+                    'order': $('#search-order').val(),
                 }
             }
         },

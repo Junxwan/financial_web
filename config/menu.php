@@ -31,4 +31,9 @@ return [
         'icon' => 'fas fa-list',
         'name' => '投信持股',
     ],
+    [
+        'route' => 'industry.index',
+        'icon' => 'fas fa-list',
+        'name' => '類股',
+    ],
 ];
