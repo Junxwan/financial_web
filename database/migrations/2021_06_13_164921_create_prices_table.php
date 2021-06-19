@@ -38,7 +38,7 @@ class CreatePricesTable extends Migration
             $table->unique(['stock_id', 'date']);
         });
 
-        DB::statement("ALTER TABLE `{$this->table}` COMMENT = '指數'");
+        DB::statement("ALTER TABLE `{$this->table}` COMMENT = '股價'");
     }
 
     /**
