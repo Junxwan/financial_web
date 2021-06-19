@@ -50,8 +50,6 @@
         $('#select-btn').click(function () {
             var url = "{{ route('fund.stocks', ['year' => ':year', 'fundId' => ':fundId']) }}"
             axios.get(url.replace(':year', $('#year').val()).replace(':fundId', $('#fund').val())).then(function (response) {
-                console.log(response.data)
-
                 $('.form-group-ym input').each(function () {
                     index = $(this).data('index') - 1
                     if (response.data[index] !== undefined) {
@@ -77,6 +75,8 @@
                         }
                     }
                 })
+
+                $('.form-group-ym input, .form-group-list input').val('')
 
                 toastr.success('查持股明細成功')
             }).catch(function (error) {
