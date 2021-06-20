@@ -36,4 +36,11 @@ return [
         'icon' => 'fas fa-list',
         'name' => '類股',
     ],
+    [
+        'route' => 'price.index',
+        'icon' => 'fas fa-chart-bar',
+        'name' => '股價',
+    ],
 ];
+
+

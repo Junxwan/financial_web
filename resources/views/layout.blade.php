@@ -22,6 +22,14 @@
         .dark-mode input {
             text-align: center;
         }
+
+        th {
+            text-align: center;
+        }
+
+        td {
+            text-align: center;
+        }
     </style>
 
     @yield('css')

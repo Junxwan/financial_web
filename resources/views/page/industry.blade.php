@@ -1,8 +1,5 @@
 @extends('partials.table')
 
-@section('table_css')
-@stop
-
 @section('table_js')
     <script>
         $(document).ready(function () {

@@ -73,3 +73,8 @@ Route::get('/fund/stocks/{year}/year/{fundId}/fund',
 Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index'])->name('industry.index');
 Route::get('/industry/list',
     [\App\Http\Controllers\IndustryController::class, 'list'])->name('industry.list');
+
+// 股價
+Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');
+Route::get('/price/list',
+    [\App\Http\Controllers\PriceController::class, 'list'])->name('price.list');
