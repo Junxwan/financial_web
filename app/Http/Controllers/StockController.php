@@ -19,12 +19,22 @@ class StockController
     public function index()
     {
         $ct = Classification::query()->select(DB::raw('id as value'), 'name')->get();
+        $o = new \stdClass();
+        $o->name = '上櫃';
+        $o->value = 2;
+
+        $t = new \stdClass();
+        $t->name = '上市';
+        $t->value = 1;
+
+        $market = [$t, $o];
 
         return view('page.stock', [
             'header' => [
                 '代碼',
                 '名稱',
                 '產業',
+                '市場',
                 '編輯',
                 '刪除',
             ],
@@ -50,6 +60,12 @@ class StockController
                             'name' => '產業',
                             'value' => $ct,
                         ],
+                        [
+                            'id' => 'market',
+                            'type' => 'select',
+                            'name' => '市場',
+                            'value' => $market,
+                        ],
                     ],
                 ],
                 [
@@ -73,6 +89,12 @@ class StockController
                             'name' => '產業',
                             'value' => $ct,
                         ],
+                        [
+                            'id' => 'market',
+                            'type' => 'select',
+                            'name' => '市場',
+                            'value' => $market,
+                        ],
                     ],
                 ],
             ],
@@ -87,8 +109,9 @@ class StockController
      */
     public function list(Request $request)
     {
-        $query = Stock::query()->select('id', 'code', 'name', 'classification_id');
-        $queryTotal = Stock::query()->getQuery();
+        $query = Stock::query()->select('id', 'code', 'name', 'classification_id', 'market')
+            ->whereIn('market', [1, 2]);
+        $queryTotal = Stock::query()->whereIn('market', [1, 2])->getQuery();
 
         if (! is_null($search = $request->get('search'))) {
             if (isset($search['value']) && ! empty($search['value'])) {
@@ -156,6 +179,7 @@ class StockController
                 'code' => $request->get('code'),
                 'name' => $request->get('name'),
                 'classification_id' => $request->get('classification_id'),
+                'market' => $request->get('market'),
             ]),
         ]);
     }
@@ -185,6 +209,7 @@ class StockController
                 'code' => $request->get('code'),
                 'name' => $request->get('name'),
                 'classification_id' => $request->get('classification_id'),
+                'market' => $request->get('market'),
             ]),
         ]);
     }

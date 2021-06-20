@@ -6,6 +6,7 @@
             var edit = function (data) {
                 $('#modal-edit-code').val(data.code)
                 $('#modal-edit-name').val(data.name)
+                $('#modal-edit-market').val(data.market)
                 $('#modal-edit-classification_id').val(data.classification_id)
                 $('#modal-id').val(data.id)
             }
@@ -32,6 +33,7 @@
             var create = function () {
                 var code = $('#modal-create-code').val()
                 var name = $('#modal-create-name').val()
+                var market = $('#modal-create-market').val()
                 var classification_id = $('#modal-create-classification_id').val()
 
                 if (code === '') {
@@ -53,6 +55,7 @@
                     code: code,
                     name: name,
                     classification_id: classification_id,
+                    market: market,
                 }).then(function (response) {
                     if (response.data.result) {
                         toastr.success('新增成功')
@@ -74,6 +77,7 @@
             var update = function () {
                 var code = $('#modal-edit-code').val()
                 var name = $('#modal-edit-name').val()
+                var market = $('#modal-edit-market').val()
                 var classification = $('#modal-edit-classification_id').val()
 
                 if (code === '') {
@@ -96,6 +100,7 @@
                     code: code,
                     name: name,
                     classification_id: classification,
+                    market: market,
                 }).then(function (response) {
                     if (response.data.result) {
                         table.row($('#modal-id').val()).remove().draw(false)
@@ -128,6 +133,21 @@
                         render: function (data, t, row, meta) {
                             if (data in classification) {
                                 return classification[data]
+                            }
+
+                            return ''
+                        },
+                    },
+                    {
+                        data: "market",
+                        width: '10%',
+                        render: function (data, t, row, meta) {
+                            if (data === 1) {
+                                return "上市"
+                            }
+
+                            if (data === 1) {
+                                return "上櫃"
                             }
 
                             return ''
