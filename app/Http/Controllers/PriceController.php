@@ -35,6 +35,9 @@ class PriceController
                 '成交金額',
                 '市場',
                 '類股',
+                '週%',
+                '月%',
+                '季%',
             ],
             'modal' => [],
         ]);
@@ -51,7 +54,8 @@ class PriceController
         $query = Price::query()->select(
             'stocks.code', 'stocks.name', 'prices.open', 'prices.close', 'prices.high', 'prices.low',
             DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market',
-            DB::RAW('classifications.name AS cName')
+            DB::RAW('classifications.name AS cName'), DB::RAW('ROUND(prices.increase_5,2) AS increase_5'),
+            DB::RAW('ROUND(prices.increase_23,2) AS increase_23'),DB::RAW('ROUND(prices.increase_63,2) AS increase_63'),
         )->join('stocks', 'stocks.id', '=', 'prices.stock_id')
             ->join('classifications', 'classifications.id', '=', 'stocks.classification_id',)
             ->whereIn('stocks.market', [1, 2]);

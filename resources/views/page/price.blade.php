@@ -42,6 +42,9 @@
                         },
                     },
                     {data: "cName", width: '10%'},
+                    {data: "increase_5", width: '5%'},
+                    {data: "increase_23", width: '5%'},
+                    {data: "increase_63", width: '5%'},
                 ],
                 buttons: [reloadBtn, selectBtn],
                 pageLength: 20,
@@ -58,6 +61,9 @@
                 '<option value="increase">漲幅</option>' +
                 '<option value="volume">成交量</option>' +
                 '<option value="value">成交金額</option>' +
+                '<option value="increase_5">週%</option>' +
+                '<option value="increase_23">月%</option>' +
+                '<option value="increase_63">季%</option>' +
                 '</select>' +
                 '<input type="date" id="start-date" value="">' +
                 '</div>'
