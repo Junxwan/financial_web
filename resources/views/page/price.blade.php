@@ -41,6 +41,7 @@
                             }
                         },
                     },
+                    {data: "cName", width: '10%'},
                 ],
                 buttons: [reloadBtn, selectBtn],
                 pageLength: 20,
@@ -48,6 +49,11 @@
 
             $('.right').html(
                 '<div id="example_filter" class="dataTables_filter">' +
+                '<select id="search-select">' +
+                '<option value=""></option>' +
+                '<option value="TSE">上市</option>' +
+                '<option value="OTC">上櫃</option>' +
+                '</select>' +
                 '<select id="search-order">' +
                 '<option value="increase">漲幅</option>' +
                 '<option value="volume">成交量</option>' +

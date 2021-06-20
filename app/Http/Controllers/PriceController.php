@@ -10,6 +10,14 @@ use Illuminate\Support\Facades\DB;
 class PriceController
 {
     /**
+     * @var int[]
+     */
+    private $market = [
+        'TSE' => 1,
+        'OTC' => 2,
+    ];
+
+    /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
@@ -26,6 +34,7 @@ class PriceController
                 '成交量',
                 '成交金額',
                 '市場',
+                '類股',
             ],
             'modal' => [],
         ]);
@@ -38,11 +47,13 @@ class PriceController
      */
     public function list(Request $request)
     {
-        $queryTotal = Price::query();
+        $queryTotal = Price::query()->join('stocks', 'stocks.id', '=', 'prices.stock_id');
         $query = Price::query()->select(
             'stocks.code', 'stocks.name', 'prices.open', 'prices.close', 'prices.high', 'prices.low',
-            DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market'
+            DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market',
+            DB::RAW('classifications.name AS cName')
         )->join('stocks', 'stocks.id', '=', 'prices.stock_id')
+            ->join('classifications', 'classifications.id', '=', 'stocks.classification_id',)
             ->whereIn('stocks.market', [1, 2]);
 
         if ($request->has('search.start_date') && ! is_null($date = $request->get('search')['start_date'])) {
@@ -51,6 +62,11 @@ class PriceController
         } else {
             $query = $this->latestDate($query);
             $queryTotal = $this->latestDate($queryTotal);
+        }
+
+        if ($request->has('search.name') && ! is_null($name = $request->get('search')['name'])) {
+            $query = $query->where('stocks.market', $this->market[$name]);
+            $queryTotal = $queryTotal->where('stocks.market', $this->market[$name]);
         }
 
         $total = $queryTotal->count();
