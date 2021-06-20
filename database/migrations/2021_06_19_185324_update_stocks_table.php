@@ -19,7 +19,7 @@ class UpdateStocksTable extends Migration
     public function up()
     {
         Schema::table($this->table, function (Blueprint $table) {
-            $table->tinyInteger('market')->default(0)->comment('1:上市,2:上櫃');
+            $table->tinyInteger('market')->default(0)->comment('1:上市,2:上櫃,3:興櫃,4:指數');
         });
     }
 

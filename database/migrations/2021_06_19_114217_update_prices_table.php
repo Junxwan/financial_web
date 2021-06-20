@@ -36,6 +36,14 @@ class UpdatePricesTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::table($this->table, function (Blueprint $table) {
+            $table->dropColumn('value');
+            $table->dropColumn('main');
+            $table->dropColumn('fund');
+            $table->dropColumn('foreign');
+            $table->dropColumn('volume_5');
+            $table->dropColumn('volume_10');
+            $table->dropColumn('volume_20');
+        });
     }
 }
