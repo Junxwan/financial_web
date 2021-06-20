@@ -46,7 +46,30 @@
                     {data: "increase_23", width: '5%'},
                     {data: "increase_63", width: '5%'},
                 ],
-                buttons: [reloadBtn, selectBtn],
+                buttons: [
+                    reloadBtn,
+                    selectBtn,
+                    {
+                        text: '匯出(XQ)',
+                        className: "bg-gradient-primary",
+                        action: function (e, dt, node, config) {
+                            let csv = ''
+                            $('#list tr').each(function () {
+                                v = jQuery($(this).find('td')[0]).text()
+                                if (v !== '') {
+                                    csv += v + '.TW'
+                                    csv += "\n";
+                                }
+                            })
+
+                            var hiddenElement = document.createElement('a');
+                            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+                            hiddenElement.target = '_blank';
+                            hiddenElement.download = 'xq.csv';
+                            hiddenElement.click();
+                        }
+                    }
+                ],
                 pageLength: 20,
             })
 
