@@ -78,3 +78,9 @@ Route::get('/industry/list',
 Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');
 Route::get('/price/list',
     [\App\Http\Controllers\PriceController::class, 'list'])->name('price.list');
+
+# 個股股價
+Route::get('/stock/price', [\App\Http\Controllers\StockPriceController::class, 'index'])->name('stock.price.index');
+Route::get('/stock/price/{code}/code',
+    [\App\Http\Controllers\StockPriceController::class, 'list'])->name('stock.price.list');
+
