@@ -27,6 +27,20 @@
                         },
                     },
                     {
+                        data: "fund_value",
+                        width: '10%',
+                        render: function (data, t, row, meta) {
+                            return (Math.round(data / 1000000) / 100) + '億'
+                        },
+                    },
+                    {
+                        data: "foreign_value",
+                        width: '10%',
+                        render: function (data, t, row, meta) {
+                            return (Math.round(data / 1000000) / 100) + '億'
+                        },
+                    },
+                    {
                         data: "market",
                         width: '5%',
                         render: function (data, t, row, meta) {
@@ -85,6 +99,8 @@
                 '<option value="increase_5">週%</option>' +
                 '<option value="increase_23">月%</option>' +
                 '<option value="increase_63">季%</option>' +
+                '<option value="fund_value">投信金額</option>' +
+                '<option value="foreign_value">外資金額</option>' +
                 '</select>' +
                 '<input type="date" id="start-date" value="">' +
                 '</div>'
