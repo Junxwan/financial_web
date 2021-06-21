@@ -5,7 +5,7 @@
         $(document).ready(function () {
             NewTable({
                 name: '#list',
-                url: "{{ route('price.list') }}",
+                url: "{{ route('stock.price.list') }}",
                 columns: [
                     {data: "code", width: '7%'},
                     {data: "name", width: '10%'},
