@@ -27,29 +27,9 @@
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <script src="{{ asset('js/app.js?_=' . $time) }}"></script>
     <script>
-        $('#company').change(function () {
-            var url = "{{ route('fund.list', ':id') }}"
-            axios.get(url.replace(':id', $(this).val())).then(function (response) {
-                var html = ''
-                response.data.forEach(function (v) {
-                    html += '<option value="' + v.id + '">' + v.name + '</option>'
-                })
-
-                $('#fund')
-                    .find('option')
-                    .remove()
-                    .end()
-                    .append(html)
-
-                toastr.success('查投信成功')
-            }).catch(function (error) {
-                toastr.error('查投信無資料')
-            })
-        })
-
         $('#select-btn').click(function () {
-            var url = "{{ route('fund.stocks', ['year' => ':year', 'fundId' => ':fundId']) }}"
-            axios.get(url.replace(':year', $('#year').val()).replace(':fundId', $('#fund').val())).then(function (response) {
+            var url = "{{ route('stock.fund.list', ['year' => ':year', 'code' => ':code']) }}"
+            axios.get(url.replace(':year', $('#year').val()).replace(':code', $('#code').val())).then(function (response) {
                 $('.form-group-ym input').each(function () {
                     index = $(this).data('index') - 1
                     if (response.data[index] !== undefined) {
@@ -78,9 +58,9 @@
 
                 $('.form-group-ym input, .form-group-list input').val('')
 
-                toastr.success('查持股明細成功')
+                toastr.success('查詢成功')
             }).catch(function (error) {
-                toastr.error('查持股明細無資料')
+                toastr.error('無資料')
             })
         })
     </script>
@@ -89,7 +69,7 @@
 @section('content')
     <div class="card card-default" id="base-title">
         <div class="card-header">
-            <h3 class="card-title">基金</h3>
+            <h3 class="card-title">個股基金</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
                         class="fas fa-minus"></i></button>
@@ -113,31 +93,23 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">投信</span>
+                                <span class="input-group-text">代號</span>
                             </div>
-                            <select class="custom-select" id="company">
-                                @foreach($company as $v)
-                                    <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" class="form-control" id="code">
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-2">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">基金</span>
+                                <span class="input-group-text">名稱</span>
                             </div>
-                            <select class="custom-select" id="fund">
-                                @foreach($fund as $v)
-                                    <option value="{{ $v->id }}">{{ $v->name }}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" class="form-control" id="name">
                         </div>
                     </div>
                 </div>
@@ -152,7 +124,7 @@
     </div>
     <div class="card card-default">
         <div class="card-header">
-            <h3 class="card-title">持股明細</h3>
+            <h3 class="card-title">個股基金持股</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
                         class="fas fa-minus"></i></button>
@@ -161,27 +133,28 @@
             </div>
         </div>
         <div class="card-body" style="display: block;">
-            @for($c = 0; $c < 2; $c++)
+            @for($c = 0; $c < 4; $c++)
                 <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group form-group-ym">
-                                @for($i = 1; $i <= 6; $i++)
-                                    <input type="text" class="form-control" data-index="{{ $i + ($c * 6) }}" readonly>
-                                @endfor
-                            </div>
-
-                            @for($i = 1; $i <= 10; $i++)
-                                <div class="input-group form-group-list">
-                                    @for($a = 1; $a <= 12; $a++)
-                                        <input type="text" class="form-control" data-index="{{ ceil($a/2) + ($c * 6) }}"
-                                               data-order="{{ $i }}" data-name="{{ ($a)%2 == 1 ? 'name': 'ratio' }}"
-                                               readonly>
+                    @for($i = 1; $i <= 3; $i++)
+                        <div class="col-md-4">
+                            <table data-m="{{ $i + ($c * 3) }}"
+                                   class="table table-bordered table-striped dataTable dtr-inline"
+                                   width="100%"
+                                   cellspacing="0">
+                                <thead>
+                                <tr>
+                                    @for($a = 0; $a < count($header); $a++)
+                                        @if($a == 0)
+                                            <th>{{ $i + ($c * 3) . '月' . $header[$a] }}</th>
+                                        @else
+                                            <th>{{ $header[$a] }}</th>
+                                        @endif
                                     @endfor
-                                </div>
-                            @endfor
+                                </tr>
+                                </thead>
+                            </table>
                         </div>
-                    </div>
+                    @endfor
                 </div>
             @endfor
         </div>

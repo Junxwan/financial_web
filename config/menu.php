@@ -32,6 +32,11 @@ return [
         'name' => '投信持股',
     ],
     [
+        'route' => 'stock.fund.index',
+        'icon' => 'fas fa-list',
+        'name' => '投信個股持股',
+    ],
+    [
         'route' => 'industry.index',
         'icon' => 'fas fa-list',
         'name' => '類股',
@@ -40,6 +45,11 @@ return [
         'route' => 'price.index',
         'icon' => 'fas fa-chart-bar',
         'name' => '股價',
+    ],
+    [
+        'route' => 'stock.price.index',
+        'icon' => 'fas fa-chart-bar',
+        'name' => '個股股價',
     ],
 ];
 

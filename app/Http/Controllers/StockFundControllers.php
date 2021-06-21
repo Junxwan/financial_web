@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Fund as Model;
-use App\Models\Company;
 use App\Models\FundStock;
 use App\Services\Fund;
 use Illuminate\Support\Facades\DB;
 
-class FundController
+class StockFundControllers
 {
-    /**
-     * @var Fund
-     */
-    private Fund $fund;
-
     /**
      * FundController constructor.
      *
@@ -30,39 +23,23 @@ class FundController
      */
     public function index()
     {
-        $company = Company::query()->select('id', 'name')->get();
-        $fund = [];
-
-        if (count($company) > 0) {
-            $fund= Model::query()->select('id', 'name')->where('company_id', $company[0]->id)->get();
-        }
-
-        return view('page.fund', [
+        return view('page.stock_fund', [
             'year' => $this->fund->years(),
-            'company' => $company,
-            'fund' => $fund,
+            'header' => [
+                '基金',
+                '個股',
+                '比例',
+            ],
         ]);
     }
 
     /**
-     * @param int $id
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function funds(int $id)
-    {
-        return response()->json(
-            Model::query()->select('id', 'name')->where('company_id', $id)->get()
-        );
-    }
-
-    /**
+     * @param string $code
      * @param int $year
-     * @param int $fundId
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function stocks(int $year, int $fundId)
+    public function list(string $code, int $year)
     {
         return response()->json(
             FundStock::query()->select(
@@ -70,12 +47,15 @@ class FundController
                 'stocks.name', 'fund_stocks.amount', DB::RAW('ROUND(fund_stocks.ratio, 2) AS ratio')
             )->join('stocks', 'stocks.id', '=', 'fund_stocks.stock_id')
                 ->join('funds', 'fund_stocks.fund_id', '=', 'funds.id')
-                ->where('fund_id', $fundId)
                 ->where('year', $year)
+                ->where('stocks.code', $code)
                 ->orderByDesc('fund_stocks.year')
                 ->orderByDesc('fund_stocks.month')
                 ->orderByDesc('fund_stocks.ratio')
-                ->get()->groupBy('month')->values()
+                ->get()
+                ->groupBy('month')
+                ->groupBy('ratio')
+                ->values()
         );
     }
 }

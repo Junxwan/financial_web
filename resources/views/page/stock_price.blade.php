@@ -5,10 +5,11 @@
         $(document).ready(function () {
             NewTable({
                 name: '#list',
-                url: "{{ route('price.list') }}",
+                url: "{{ route('stock.price.list') }}",
                 columns: [
                     {data: "code", width: '7%'},
                     {data: "name", width: '10%'},
+                    {data: "date", width: '10%'},
                     {data: "open", width: '10%'},
                     {data: "close", width: '10%'},
                     {data: "increase", width: '5%'},
@@ -73,10 +74,6 @@
 
             $('.right').html(
                 '<div id="example_filter" class="dataTables_filter">' +
-                '<select id="search-select">' +
-                '<option value=""></option>' +
-                '<option value="TSE">上市</option>' +
-                '<option value="OTC">上櫃</option>' +
                 '</select>' +
                 '<select id="search-order">' +
                 '<option value="increase">漲幅</option>' +
@@ -87,6 +84,7 @@
                 '<option value="increase_63">季%</option>' +
                 '</select>' +
                 '<input type="date" id="start-date" value="">' +
+                '<input type="search" id="search-input">' +
                 '</div>'
             )
         });
