@@ -71,7 +71,8 @@ Route::get('/fund/stocks/{year}/year/{fundId}/fund',
 
 // 投信持股(for 個股)
 Route::get('/stock/fund', [\App\Http\Controllers\StockFundControllers::class, 'index'])->name('stock.fund.index');
-Route::get('/stock/fund/{code}/code/{year}/year', [\App\Http\Controllers\StockFundControllers::class, 'list'])->name('stock.fund.list');
+Route::get('/stock/fund/{code}/code/{year}/year',
+    [\App\Http\Controllers\StockFundControllers::class, 'list'])->name('stock.fund.list');
 
 // 產業
 Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index'])->name('industry.index');
@@ -85,6 +86,6 @@ Route::get('/price/list',
 
 # 個股股價
 Route::get('/stock/price', [\App\Http\Controllers\StockPriceController::class, 'index'])->name('stock.price.index');
-Route::get('/stock/price/{code}/code',
+Route::get('/stock/price/list',
     [\App\Http\Controllers\StockPriceController::class, 'list'])->name('stock.price.list');
 
