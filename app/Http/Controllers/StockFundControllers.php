@@ -43,19 +43,18 @@ class StockFundControllers
     {
         return response()->json(
             FundStock::query()->select(
-                'fund_stocks.id', 'fund_stocks.year', 'fund_stocks.month', 'funds.name', 'stocks.code',
-                'stocks.name', 'fund_stocks.amount', DB::RAW('ROUND(fund_stocks.ratio, 2) AS ratio')
+                'fund_stocks.month', DB::RAW('funds.name AS fName'),
+                'stocks.name', DB::RAW('ROUND(fund_stocks.ratio, 2) AS ratio')
             )->join('stocks', 'stocks.id', '=', 'fund_stocks.stock_id')
                 ->join('funds', 'fund_stocks.fund_id', '=', 'funds.id')
                 ->where('year', $year)
                 ->where('stocks.code', $code)
-                ->orderByDesc('fund_stocks.year')
-                ->orderByDesc('fund_stocks.month')
+                ->orderBy('fund_stocks.month')
                 ->orderByDesc('fund_stocks.ratio')
                 ->get()
                 ->groupBy('month')
                 ->groupBy('ratio')
-                ->values()
+                ->values()[0]
         );
     }
 }
