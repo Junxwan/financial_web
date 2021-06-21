@@ -37,7 +37,7 @@
                         $('#name').val(response.data[index][0].name)
 
                         response.data[index].forEach(function (v) {
-                            $('#list_' + (index + 1) + ' tbody').append('<tr><td>' + v.fName + '</td><td>' + v.name + '</td><td>' + v.ratio + '</td></tr>')
+                            $('#list_' + (index + 1) + ' tbody').append('<tr><td>' + v.fName + '</td><td>' + v.ratio + '</td></tr>')
                         })
                     }
                 })

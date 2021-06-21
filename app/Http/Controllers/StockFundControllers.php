@@ -27,7 +27,6 @@ class StockFundControllers
             'year' => $this->fund->years(),
             'header' => [
                 '基金',
-                '個股',
                 '比例',
             ],
         ]);
