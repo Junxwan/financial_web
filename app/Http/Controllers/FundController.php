@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class FundController
 {
+    /**
+     * @var Fund
+     */
     private Fund $fund;
 
     /**
@@ -28,11 +31,16 @@ class FundController
     public function index()
     {
         $company = Company::query()->select('id', 'name')->get();
+        $fund = [];
+
+        if (count($company) > 0) {
+            $fund= Model::query()->select('id', 'name')->where('company_id', $company[0]->id)->get();
+        }
 
         return view('page.fund', [
-            'ym' => $this->fund->years(),
+            'year' => $this->fund->years(),
             'company' => $company,
-            'fund' => Model::query()->select('id', 'name')->where('company_id', $company[0]->id)->get(),
+            'fund' => $fund,
         ]);
     }
 

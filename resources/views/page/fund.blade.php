@@ -106,7 +106,7 @@
                                 <span class="input-group-text">年</span>
                             </div>
                             <select class="custom-select" id="year">
-                                @foreach($ym as $v)
+                                @foreach($year as $v)
                                     <option value="{{ $v }}">{{ $v }}</option>
                                 @endforeach
                             </select>
