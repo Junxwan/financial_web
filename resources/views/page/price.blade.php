@@ -11,8 +11,6 @@
                     {data: "name", width: '10%'},
                     {data: "open", width: '10%'},
                     {data: "close", width: '10%'},
-                    {data: "high", width: '10%'},
-                    {data: "low", width: '10%'},
                     {data: "increase", width: '5%'},
                     {
                         data: "volume",
