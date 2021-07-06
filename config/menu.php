@@ -17,6 +17,11 @@ return [
         'name' => '個股',
     ],
     [
+        'route' => 'tag.index',
+        'icon' => 'fas fa-tag',
+        'name' => '標籤',
+    ],
+    [
         'route' => 'report.index',
         'icon' => 'fas fa-chart-bar',
         'name' => '投資報告',

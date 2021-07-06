@@ -167,6 +167,22 @@ function NewTable(config) {
     return table
 }
 
+function NewDualListBox(selector) {
+    return $(selector).bootstrapDualListbox({
+        nonSelectedListLabel: '標籤',
+        selectedListLabel: '已選標籤',
+        filterTextClear: '顯示所有',
+        filterPlaceHolder: '搜尋',
+        moveSelectedLabel: "新增",
+        moveAllLabel: '全部新增',
+        removeSelectedLabel: "移除",
+        removeAllLabel: '全部移除',
+        infoText: false,
+        infoTextFiltered: '搜尋到{0}個 ,共{1}個',
+        infoTextEmpty: '列表為空',
+    })
+}
+
 // get ================================================================================
 
 // 某季營收

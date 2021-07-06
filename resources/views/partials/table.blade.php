@@ -89,6 +89,12 @@
                                         </div>
                                     </div>
                                     <input type="text" class="form-control" value="{{ $v['name'] }}" {{ $t }}>
+                                @elseif($v['type'] == 'duallistbox')
+                                    <select multiple="multiple" size="10" id="modal-{{ $value['id'] }}-{{ $v['id'] }}">
+                                        @foreach($v['value'] as $a)
+                                            <option value="{{ $a->id }}">{{ $a->name }}</option>
+                                        @endforeach
+                                    </select>
                                 @elseif($v['type'] == 'edit')
                                     <div class="form-control modal-textarea"
                                          id="modal-{{ $value['id'] }}-{{ $v['id'] }}">

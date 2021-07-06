@@ -24,12 +24,19 @@ Route::delete('/news/{id}', [\App\Http\Controllers\NewsController::class, 'delet
 Route::post('/news/clear', [\App\Http\Controllers\NewsController::class, 'clear'])->name('news.clear');
 
 // 個股
-Route::get('/stock', [\App\Http\Controllers\StockController::class, 'index'])->name('stock.index');
-Route::get('/stock/{code}/info', [\App\Http\Controllers\StockController::class, 'search'])->name('stock.search');
-Route::get('/stock/list', [\App\Http\Controllers\StockController::class, 'list'])->name('stock.list');
-Route::post('/stock', [\App\Http\Controllers\StockController::class, 'create'])->name('stock.create');
-Route::delete('/stock/{id}', [\App\Http\Controllers\StockController::class, 'delete'])->name('stock.delete');
-Route::put('/stock/{id}', [\App\Http\Controllers\StockController::class, 'update'])->name('stock.update');
+Route::get('/stock', [\App\Http\Controllers\Stock\IndexController::class, 'index'])->name('stock.index');
+Route::get('/stock/{code}/info', [\App\Http\Controllers\Stock\IndexController::class, 'search'])->name('stock.search');
+Route::get('/stock/list', [\App\Http\Controllers\Stock\IndexController::class, 'list'])->name('stock.list');
+Route::post('/stock', [\App\Http\Controllers\Stock\IndexController::class, 'create'])->name('stock.create');
+Route::delete('/stock/{id}', [\App\Http\Controllers\Stock\IndexController::class, 'delete'])->name('stock.delete');
+Route::put('/stock/{id}', [\App\Http\Controllers\Stock\IndexController::class, 'update'])->name('stock.update');
+
+# 標籤
+Route::get('/tag', [\App\Http\Controllers\TagController::class, 'index'])->name('tag.index');
+Route::get('/tag/list', [\App\Http\Controllers\TagController::class, 'list'])->name('tag.list');
+Route::post('/tag', [\App\Http\Controllers\TagController::class, 'create'])->name('tag.create');
+Route::delete('/tag/{id}', [\App\Http\Controllers\TagController::class, 'delete'])->name('tag.delete');
+Route::put('/tag/{id}', [\App\Http\Controllers\TagController::class, 'update'])->name('tag.update');
 
 // 投資報告
 Route::get('/report', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
@@ -70,9 +77,9 @@ Route::get('/fund/stocks/{year}/year/{fundId}/fund',
     [\App\Http\Controllers\FundController::class, 'stocks'])->name('fund.stocks');
 
 // 投信持股(for 個股)
-Route::get('/stock/fund', [\App\Http\Controllers\StockFundControllers::class, 'index'])->name('stock.fund.index');
+Route::get('/stock/fund', [\App\Http\Controllers\Stock\FundControllers::class, 'index'])->name('stock.fund.index');
 Route::get('/stock/fund/{code}/code/{year}/year',
-    [\App\Http\Controllers\StockFundControllers::class, 'list'])->name('stock.fund.list');
+    [\App\Http\Controllers\Stock\FundControllers::class, 'list'])->name('stock.fund.list');
 
 // 產業
 Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index'])->name('industry.index');
@@ -85,7 +92,7 @@ Route::get('/price/list',
     [\App\Http\Controllers\PriceController::class, 'list'])->name('price.list');
 
 # 個股股價
-Route::get('/stock/price', [\App\Http\Controllers\StockPriceController::class, 'index'])->name('stock.price.index');
+Route::get('/stock/price', [\App\Http\Controllers\Stock\PriceController::class, 'index'])->name('stock.price.index');
 Route::get('/stock/price/list',
-    [\App\Http\Controllers\StockPriceController::class, 'list'])->name('stock.price.list');
+    [\App\Http\Controllers\Stock\PriceController::class, 'list'])->name('stock.price.list');
 
