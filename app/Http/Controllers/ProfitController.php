@@ -10,8 +10,12 @@ class ProfitController
     /**
      * @var Profit
      */
-    private Profit $profit;
-    private Cash $cash;
+    private $profit;
+
+    /**
+     * @var Cash
+     */
+    private $cash;
 
     /**
      * ProfitController constructor.

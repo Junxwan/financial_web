@@ -205,15 +205,43 @@ class Profit
      */
     public function eps(string $code)
     {
-        return Model::query()->select(
+        $data = Model::query()->select(
             DB::RAW('profits.year'),
             DB::RAW('profits.eps'),
+            DB::RAW('profits.quarterly')
         )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
             ->where('stocks.code', $code)
-            ->where('profits.quarterly', 4)
+            ->where('profits.year', '>=', Carbon::now()->year - 8)
             ->orderByDesc('profits.year')
-            ->limit(8)
-            ->get();
+            ->get()->groupBy('year');
+
+        $eps = [];
+        foreach ($data as $year => $value) {
+            $q4 = $value->where('quarterly', 4)->first();
+
+            $t = [
+                'year' => $year,
+                'eps' => is_null($q4) ? "" : $q4->eps,
+            ];
+
+            if (! is_null($q4)) {
+                foreach (q4r($value, 'eps') as $v) {
+                    $t["q{$v->quarterly}"] = round($v->eps, 2);
+                }
+            } else {
+                for ($i = 1; $i <= 4; $i++) {
+                    if (! is_null($v = $value->where('quarterly', $i)->first())) {
+                        $t["q{$i}"] = round($v->eps, 2);
+                    } else {
+                        $t["q{$i}"] = "";
+                    }
+                }
+            }
+
+            $eps[] = $t;
+        }
+
+        return $eps;
     }
 
     /**

@@ -216,15 +216,26 @@
             return axios.get(url.replace(':code', code)).then(function (response) {
                 $('.form-group-eps').each(function (index) {
                     v = response.data[index]
-                    $(this).find('.input-date').html(v.year)
-                    $(this).find('.input-value').val(Math.round(v.eps * 100) / 100)
+
+                    if (v.eps !== '') {
+                        $(this).find('.input-date').html(v.year)
+                        $(this).find('.input-value').val(Math.round(v.eps * 100) / 100)
+                    }
                 })
 
                 dates = []
                 eps = []
                 response.data.forEach(function (v) {
-                    dates.push(v.year)
-                    eps.push(v.eps)
+                    $("#eps-year>thead>tr").append("<th>" + v.year + "</th>")
+                    $("#eps-year>tbody>tr:nth-child(1)").append("<td>" + v.q1 + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(2)").append("<td>" + v.q2 + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(3)").append("<td>" + v.q3 + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(4)").append("<td>" + v.q4 + "</td>")
+
+                    if (v.eps !== '') {
+                        dates.push(v.year)
+                        eps.push(v.eps)
+                    }
                 })
 
                 dates.reverse()
@@ -252,7 +263,7 @@
 
                 $('.form-group-dividend').each(function (index) {
                     v = response.data[index]
-                    rate = Math.round((v.cash / eps[index].eps) * 100)
+                    rate = Math.round((v.cash / eps[index + 1].eps) * 100)
 
                     dividends.push(v.cash)
                     dates.push(v.year)
@@ -608,6 +619,44 @@
                     <canvas id="quarterly-eps-bar"></canvas>
                     <canvas id="quarterly-dividend-send-bar"></canvas>
                     <canvas id="quarterly-dividend-bar"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card card-default" id="eps-history">
+        <div class="card-header">
+            <h3 class="card-title">歷史EPS</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                        class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                        class="fas fa-remove"></i></button>
+            </div>
+        </div>
+        <div class="card-body" style="display: block;">
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="eps-year" class="table table-dark">
+                        <thead>
+                        <tr>
+                            <th scope="col">季別/年度</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">Q1</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">Q2</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">Q3</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">Q4</th>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
