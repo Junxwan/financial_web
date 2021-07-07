@@ -183,7 +183,7 @@
                     },
                     {
                         data: "tags",
-                        width: '20%',
+                        width: '35%',
                         render: function (data, t, row, meta) {
                             var html = ''
 
@@ -207,6 +207,7 @@
             $('.right').html(
                 '<div id="example_filter" class="dataTables_filter">' +
                 '<select id="search-select">' +
+                '<option value=""></option>' +
                 @foreach($tags as $v)
                     '<option value="{{ $v->id }}">{{ $v->name }}</option>' +
                 @endforeach
