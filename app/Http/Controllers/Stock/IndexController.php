@@ -38,7 +38,7 @@ class IndexController extends Controller
      */
     public function __construct(StockRepository $repo)
     {
-        $this->repo = $repo;
+        $this->service = $repo;
     }
 
     /**
@@ -112,7 +112,7 @@ class IndexController extends Controller
      */
     public function search(Service $profit, string $code)
     {
-        if (is_null($data = $this->repo->search($code))) {
+        if (is_null($data = $this->service->search($code))) {
             return response('', Response::HTTP_NOT_FOUND);
         }
 

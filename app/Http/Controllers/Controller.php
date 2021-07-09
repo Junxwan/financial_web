@@ -19,7 +19,7 @@ class Controller
     /**
      * @var mixed
      */
-    protected $repo;
+    protected $service;
 
     /**
      * @param Request $request
@@ -84,7 +84,7 @@ class Controller
      */
     public function list(Request $request)
     {
-        $data = $this->repo->list($request->all());
+        $data = $this->service->list($request->all());
         return response()->json([
             'data' => $data['data'],
             'draw' => $request->get('draw'),
@@ -101,7 +101,7 @@ class Controller
     public function create(Request $request)
     {
         return response()->json([
-            'result' => $this->repo->create($request->all()),
+            'result' => $this->service->create($request->all()),
         ]);
     }
 
@@ -114,7 +114,7 @@ class Controller
     public function update(Request $request, int $id)
     {
         return response()->json([
-            'result' => $this->repo->update($id, $request->all()),
+            'result' => $this->service->update($id, $request->all()),
         ]);
     }
 
@@ -126,7 +126,7 @@ class Controller
     public function delete(int $id)
     {
         return response()->json([
-            'result' => $this->repo->delete($id),
+            'result' => $this->service->delete($id),
         ]);
     }
 }

@@ -30,6 +30,7 @@ class TagController
         return view('page.tag', [
             'header' => [
                 '名稱',
+                '指數',
                 '編輯',
                 '刪除',
             ],
@@ -44,6 +45,11 @@ class TagController
                             'type' => 'text',
                             'name' => '名稱',
                         ],
+                        [
+                            'id' => 'show_price',
+                            'type' => 'checkbox',
+                            'name' => '指數',
+                        ],
                     ],
                 ],
                 [
@@ -55,6 +61,11 @@ class TagController
                             'id' => 'name',
                             'type' => 'text',
                             'name' => '名稱',
+                        ],
+                        [
+                            'id' => 'show_price',
+                            'type' => 'checkbox',
+                            'name' => '指數',
                         ],
                     ],
                 ],
@@ -86,7 +97,7 @@ class TagController
     public function create(Request $request)
     {
         return response()->json([
-            'result' => $this->tag->insert($request->get('name')),
+            'result' => $this->tag->insert($request->all()),
         ]);
     }
 
@@ -99,7 +110,7 @@ class TagController
     public function update(Request $request, int $id)
     {
         return response()->json([
-            'result' => $this->tag->update($id, $request->get('name')),
+            'result' => $this->tag->update($id, $request->all()),
         ]);
     }
 

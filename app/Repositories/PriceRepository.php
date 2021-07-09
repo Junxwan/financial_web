@@ -62,6 +62,34 @@ class PriceRepository extends Repository
     }
 
     /**
+     * @param array $tags
+     * @param null $date
+     *
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getByTag(array $tags, $date = null)
+    {
+        $query = Price::query()->select(
+            'prices.stock_id', 'open', 'close', 'increase', 'volume', 'value',
+            DB::RAW('GROUP_CONCAT(stock_tags.tag_id) as tag_id'))
+            ->join('stock_tags', 'stock_tags.stock_id', '=', 'prices.stock_id')
+            ->whereIn('stock_tags.tag_id', $tags);
+
+        if (is_null($date)) {
+            $query = $query->where('date', function ($query) {
+                $query->select('date')->from('prices')->orderByDesc('id')->limit(1);
+            });
+        } else {
+            $query = $query->where('date', $date);
+        }
+
+        return $query->groupBy(['stock_id'])->get()->map(function ($value) {
+            $value->tag_id = explode(',', $value->tag_id);
+            return $value;
+        });
+    }
+
+    /**
      * @param Builder $query
      *
      * @return Builder

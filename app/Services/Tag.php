@@ -40,24 +40,24 @@ class Tag
     }
 
     /**
-     * @param string $name
+     * @param array $data
      *
      * @return bool
      */
-    public function insert(string $name)
+    public function insert(array $data)
     {
-        return $this->repo->insert($name);
+        return $this->repo->insert($data);
     }
 
     /**
      * @param int $id
-     * @param string $name
+     * @param array $data
      *
      * @return bool
      */
-    public function update(int $id, string $name)
+    public function update(int $id, array $data)
     {
-        return $this->repo->update($id, $name);
+        return $this->repo->update($id, $data);
     }
 
     /**

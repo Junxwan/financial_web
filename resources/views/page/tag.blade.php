@@ -5,8 +5,9 @@
         $(document).ready(function () {
             var edit = function (data) {
                 $('#modal-edit-name').val(data.name)
+                $('#modal-edit-show_price').prop("checked", data.show_price === 1)
                 $('#modal-id').val(data.id)
-            }
+            };
 
             var del = function (data) {
                 var url = '{{ route("tag.delete", ":id") }}';
@@ -37,6 +38,7 @@
 
                 axios.post('{{ route("tag.create") }}', {
                     name: name,
+                    show_price: $('#modal-create-show_price').is(':checked'),
                 }).then(function (response) {
                     if (response.data.result) {
                         toastr.success('新增成功')
@@ -57,7 +59,6 @@
 
             var update = function () {
                 var name = $('#modal-edit-name').val()
-
                 if (name === '') {
                     toastr.error('名稱 欄位必填')
                     return
@@ -66,6 +67,7 @@
                 var url = '{{ route("tag.update", ":id") }}';
                 axios.put(url.replace(':id', $('#modal-id').val()), {
                     name: name,
+                    show_price: $('#modal-edit-show_price').is(':checked'),
                 }).then(function (response) {
                     if (response.data.result) {
                         table.row($('#modal-id').val()).remove().draw(false)
@@ -89,6 +91,13 @@
                 url: "{{ route('tag.list') }}",
                 columns: [
                     {data: 'name', width: '90%'},
+                    {
+                        data: 'show_price',
+                        width: '90%',
+                        render: function (data, t, row, meta) {
+                            return data === 1 ? '是' : '否'
+                        },
+                    },
                     editorEditBtn, editorDelete
                 ],
                 buttons: [reloadBtn, createBtn, selectBtn],

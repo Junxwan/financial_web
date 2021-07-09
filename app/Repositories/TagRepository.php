@@ -12,7 +12,15 @@ class TagRepository extends Repository
      */
     public function all()
     {
-        return Tag::query()->select('id', 'name')->get();
+        return Tag::query()->get();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function allByShowPrice()
+    {
+        return Tag::query()->where('show_price', true)->get();
     }
 
     /**
@@ -22,7 +30,7 @@ class TagRepository extends Repository
      */
     public function list(array $data)
     {
-        $query = Tag::query()->select('id', 'name');
+        $query = Tag::query();
         $queryTotal = Tag::query();
 
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
@@ -41,28 +49,24 @@ class TagRepository extends Repository
     }
 
     /**
-     * @param string $name
+     * @param array $data
      *
      * @return bool
      */
-    public function insert(string $name)
+    public function insert(array $data)
     {
-        return Tag::query()->insert([
-            'name' => $name,
-        ]);
+        return Tag::query()->insert($data);
     }
 
     /**
      * @param int $id
-     * @param string $name
+     * @param array $data
      *
      * @return bool
      */
-    public function update(int $id, string $name)
+    public function update(int $id, array $data)
     {
-        return (bool)Tag::query()->where('id', $id)->update([
-            'name' => $name,
-        ]);
+        return (bool)Tag::query()->where('id', $id)->update($data);
     }
 
     /**

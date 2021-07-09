@@ -42,9 +42,14 @@ return [
         'name' => '投信個股持股',
     ],
     [
-        'route' => 'industry.index',
+        'route' => 'category.index',
         'icon' => 'fas fa-list',
         'name' => '類股',
+    ],
+    [
+        'route' => 'industry.index',
+        'icon' => 'fas fa-list',
+        'name' => '產業',
     ],
     [
         'route' => 'price.index',

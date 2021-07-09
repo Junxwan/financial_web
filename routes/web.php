@@ -81,6 +81,11 @@ Route::get('/stock/fund', [\App\Http\Controllers\Stock\FundControllers::class, '
 Route::get('/stock/fund/{code}/code/{year}/year',
     [\App\Http\Controllers\Stock\FundControllers::class, 'list'])->name('stock.fund.list');
 
+// 類股
+Route::get('/category', [\App\Http\Controllers\CategoryController::class, 'index'])->name('category.index');
+Route::get('/category/list',
+    [\App\Http\Controllers\CategoryController::class, 'list'])->name('category.list');
+
 // 產業
 Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index'])->name('industry.index');
 Route::get('/industry/list',
