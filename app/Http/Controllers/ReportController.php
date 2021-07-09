@@ -2,17 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Equity;
-use App\Models\Report;
-use App\Models\Stock;
+use App\Services\Equity;
 use App\Services\Profit;
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\Report;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class ReportController
 {
+    /**
+     * @var Report
+     */
+    private Report $report;
+
+    /**
+     * ReportController constructor.
+     *
+     * @param Report $report
+     */
+    public function __construct(Report $report)
+    {
+        $this->report = $report;
+    }
+
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -47,43 +59,12 @@ class ReportController
      */
     public function list(Request $request)
     {
-        $data = $request->all();
-        $query = Report::query()->select(
-            DB::raw('reports.id'),
-            'date', 'title', 'code', 'name', 'price_f', 'action', 'eps_1', 'eps_2', 'eps_3', 'eps_4', 'pe'
-        )->join('stocks', 'reports.stock_id', '=', 'stocks.id');
-        $queryTotal = Report::query();
-
-        if (isset($data['search'])) {
-            $search = $data['search'];
-            if (isset($search['value']) && ! empty($search['value'])) {
-                switch ($search['name']) {
-                    case 'code':
-                        $query = $this->whereCode($query, $search['value']);
-                        $queryTotal = $this->whereCode($queryTotal, $search['value'])
-                            ->join('stocks', 'reports.stock_id', '=', 'stocks.id');
-                        break;
-                    case 'title':
-                        $query = $this->whereLikeTitle($query, $search['value']);
-                        $queryTotal = $this->whereLikeTitle($queryTotal, $search['value']);
-                        break;
-                }
-            }
-
-            $query = $this->whereDate($query, $search);
-            $queryTotal = $this->whereDate($queryTotal, $search);
-        }
-
-        $total = $queryTotal->count();
-
+        $data = $this->report->list($request->all());
         return response()->json([
             'draw' => $request->get('draw'),
-            'recordsTotal' => $total,
-            'recordsFiltered' => $total,
-            'data' => $query->offset($request->get('start'))
-                ->limit($request->get('limit'))
-                ->orderByDesc('date')
-                ->get(),
+            'recordsTotal' => $data['total'],
+            'recordsFiltered' => $data['total'],
+            'data' => $data['data'],
         ]);
     }
 
@@ -92,12 +73,9 @@ class ReportController
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(Profit $profit, int $id)
+    public function edit(Profit $profit, Equity $equity, int $id)
     {
-        $data = Report::query()
-            ->join('stocks', 'reports.stock_id', '=', 'stocks.id')
-            ->where(DB::raw('`reports`.`id`'), $id)
-            ->first();
+        $data = $this->report->get($id);
 
         if (is_null($data)) {
             return response('', Response::HTTP_NOT_FOUND);
@@ -107,11 +85,7 @@ class ReportController
         $data['eps3_sum'] = $eps3;
         $data['eps4_sum'] = $eps4;
 
-        $equity = Equity::query()
-            ->where('stock_id', $data->stock_id)
-            ->orderByDesc('year')
-            ->orderByDesc('quarterly')
-            ->first();
+        $equity = $equity->get($data->stock_id);
 
         $data['capital'] = round($data['capital'] / 1000);
         $data['start_stock'] = round($equity->start_stock / 1000);
@@ -130,7 +104,7 @@ class ReportController
     public function create(Request $request)
     {
         return response()->json([
-            'result' => Report::query()->insert($this->getData($request)),
+            'result' => $this->report->insert($request),
         ]);
     }
 
@@ -143,7 +117,7 @@ class ReportController
     public function update(Request $request, int $id)
     {
         return response()->json([
-            'result' => Report::query()->where('id', $id)->update($this->getData($request)),
+            'result' => $this->report->update($id, $request),
         ]);
     }
 
@@ -155,110 +129,8 @@ class ReportController
     public function delete(int $id)
     {
         return response()->json([
-            'result' => Report::query()->where('id', $id)->delete(),
+            'result' => $this->report->delete($id),
         ]);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return mixed
-     */
-    private function getData(Request $request)
-    {
-        $data = $request->all();
-        return array_merge([
-            'stock_id' => Stock::query()->where('code', $data['code'])->first()->id,
-            'title' => $data['title'],
-            'date' => $data['date'],
-            'price_f' => $data['price_f'],
-            'quarterly' => $data['quarterly'],
-            'month' => $data['month'],
-            'action' => $data['action'],
-            'value' => $data['value'],
-            'market_eps_f' => $data['market_eps_f'],
-            'pe' => $data['pe'],
-            'evaluate' => $data['evaluate'],
-            'desc' => $data['desc'],
-            'desc_total' => $data['desc_total'],
-            'desc_revenue' => $data['desc_revenue'],
-            'desc_gross' => $data['desc_gross'],
-            'desc_fee' => $data['desc_fee'],
-            'desc_outside' => $data['desc_outside'],
-            'desc_other' => $data['desc_other'],
-            'desc_tax' => $data['desc_tax'],
-            'desc_non' => $data['desc_non'],
-        ],
-            $data['revenue'],
-            $data['revenue_month'],
-            $data['eps'],
-            $data['gross'],
-            $data['fee'],
-            $data['outside'],
-            $data['other'],
-            $data['tax'],
-            $data['profit'],
-            $data['profit_pre'],
-            $data['profit_after'],
-            $data['profit_non'],
-            $data['profit_main'],
-        );
-    }
-
-    /**
-     * @param Builder $query
-     * @param $value
-     *
-     * @return Builder
-     */
-    private function whereLikeTitle(Builder $query, $value)
-    {
-        return $query->where('title', 'like', "%{$value}%");
-    }
-
-    /**
-     * @param Builder $query
-     * @param $value
-     *
-     * @return Builder
-     */
-    private function whereCode(Builder $query, $value)
-    {
-        return $query->where(DB::raw('`stocks`.`code`'), $value);
-    }
-
-    /**
-     * @param Builder $query
-     * @param array $data
-     *
-     * @return Builder
-     */
-    private function whereDate(Builder $query, array $data)
-    {
-        if (! is_null($data['start_date']) && ! is_null($data['end_date'])) {
-            return $query->whereBetween('date', [$data['start_date'], $data['end_date']]);
-        } elseif (! is_null($data['start_date'])) {
-            return $query->where('date', '<=', "{$data['start_date']} 23:59:59");
-        } elseif (! is_null($data['end_date'])) {
-            return $query->where('date', '>=', "{$data['end_date']} 00:00:00");
-        }
-
-        return $query;
-    }
-
-    /**
-     * @param array $data
-     *
-     * @return array
-     */
-    private function ar(array $data)
-    {
-        $d = [];
-        foreach ($data as $k => $v) {
-            $d[substr($k, 2)] = $v;
-        }
-
-        return $d;
     }
 
     /**

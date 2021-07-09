@@ -2,12 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
-use Illuminate\Database\Query\Builder;
+use App\Services\Tag;
 use Illuminate\Http\Request;
 
 class TagController
 {
+    /**
+     * @var Tag
+     */
+    private Tag $tag;
+
+    /**
+     * TagController constructor.
+     *
+     * @param Tag $tag
+     */
+    public function __construct(Tag $tag)
+    {
+        $this->tag = $tag;
+    }
+
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -55,25 +69,12 @@ class TagController
      */
     public function list(Request $request)
     {
-        $query = Tag::query()->select('id', 'name');
-        $queryTotal = Tag::query();
-
-        if (! is_null($search = $request->get('search'))) {
-            if (isset($search['value']) && ! empty($search['value'])) {
-                $query = $this->whereLike($query->getQuery(), $search);
-                $queryTotal = $this->whereLike($queryTotal->getQuery(), $search);
-            }
-        }
-
-        $total = $queryTotal->count();
-
+        $data = $this->tag->list($request->all());
         return response()->json([
             'draw' => $request->get('draw'),
-            'recordsTotal' => $total,
-            'recordsFiltered' => $total,
-            'data' => $query->offset($request->get('start'))
-                ->limit($request->get('limit'))
-                ->get(),
+            'recordsTotal' => $data['total'],
+            'recordsFiltered' => $data['total'],
+            'data' => $data['data'],
         ]);
     }
 
@@ -85,9 +86,7 @@ class TagController
     public function create(Request $request)
     {
         return response()->json([
-            'result' => Tag::query()->insert([
-                'name' => $request->get('name'),
-            ]),
+            'result' => $this->tag->insert($request->get('name')),
         ]);
     }
 
@@ -100,9 +99,7 @@ class TagController
     public function update(Request $request, int $id)
     {
         return response()->json([
-            'result' => (bool)Tag::query()->where('id', $id)->update([
-                'name' => $request->get('name'),
-            ]),
+            'result' => $this->tag->update($id, $request->get('name')),
         ]);
     }
 
@@ -114,18 +111,7 @@ class TagController
     public function delete(int $id)
     {
         return response()->json([
-            'result' => (bool)Tag::query()->where('id', $id)->delete(),
+            'result' => $this->tag->delete($id),
         ]);
-    }
-
-    /**
-     * @param Builder $query
-     * @param array $data
-     *
-     * @return Builder
-     */
-    private function whereLike(Builder $query, array $data)
-    {
-        return $query->where('name', 'like', "%{$data['value']}%");
     }
 }

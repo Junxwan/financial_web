@@ -2,20 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Price;
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\Price;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PriceController
 {
     /**
-     * @var int[]
+     * @var Price
      */
-    private $market = [
-        'TSE' => 1,
-        'OTC' => 2,
-    ];
+    private Price $price;
+
+    /**
+     * PriceController constructor.
+     *
+     * @param Price $price
+     */
+    public function __construct(Price $price)
+    {
+        $this->price = $price;
+    }
 
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -50,52 +55,12 @@ class PriceController
      */
     public function list(Request $request)
     {
-        $queryTotal = Price::query()->join('stocks', 'stocks.id', '=', 'prices.stock_id');
-        $query = Price::query()->select(
-            'stocks.code', 'stocks.name', 'prices.open', 'prices.close', 'prices.fund_value', 'prices.foreign_value',
-            DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market',
-            DB::RAW('classifications.name AS cName'), DB::RAW('ROUND(prices.increase_5,2) AS increase_5'),
-            DB::RAW('ROUND(prices.increase_23,2) AS increase_23'), DB::RAW('ROUND(prices.increase_63,2) AS increase_63')
-        )->join('stocks', 'stocks.id', '=', 'prices.stock_id')
-            ->join('classifications', 'classifications.id', '=', 'stocks.classification_id')
-            ->whereIn('stocks.market', [1, 2]);
-
-        if ($request->has('search.start_date') && ! is_null($date = $request->get('search')['start_date'])) {
-            $query = $query->where('date', $date);
-            $queryTotal = $queryTotal->where('date', $date);
-        } else {
-            $query = $this->latestDate($query);
-            $queryTotal = $this->latestDate($queryTotal);
-        }
-
-        if ($request->has('search.name') && ! is_null($name = $request->get('search')['name'])) {
-            $query = $query->where('stocks.market', $this->market[$name]);
-            $queryTotal = $queryTotal->where('stocks.market', $this->market[$name]);
-        }
-
-        $total = $queryTotal->count();
-
+        $data = $this->price->list($request->all());
         return response()->json([
             'draw' => $request->get('draw'),
-            'recordsTotal' => $total,
-            'recordsFiltered' => $total,
-            'data' => $query
-                ->offset($request->get('start'))
-                ->limit($request->get('limit'))
-                ->orderByDesc($request->get('order', 'increase'))
-                ->get(),
+            'recordsTotal' => $data['total'],
+            'recordsFiltered' => $data['total'],
+            'data' => $data['data'],
         ]);
-    }
-
-    /**
-     * @param Builder $query
-     *
-     * @return Builder
-     */
-    private function latestDate(Builder $query)
-    {
-        return $query->where('date', function ($query) {
-            $query->select('date')->from('prices')->orderByDesc('id')->limit(1);
-        });
     }
 }

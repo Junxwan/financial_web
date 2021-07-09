@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Price;
 use App\Models\Stock;
 use App\Models\StockTag;
 use Illuminate\Database\Query\Builder;
@@ -56,6 +57,54 @@ class StockRepository extends Repository
                 return $value;
             }),
             'total' => $queryTotal->count(),
+        ];
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return array
+     */
+    public function priceList(array $data)
+    {
+        if (! is_null($search = $data['search']) && isset($search['value']) && ! empty($search['value'])) {
+            $queryTotal = Price::query()->join('stocks', 'stocks.id', '=', 'prices.stock_id');
+            $query = Price::query()->select(
+                'stocks.code', 'stocks.name', 'prices.date', 'prices.close', 'prices.fund_value',
+                'prices.foreign_value',
+                DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market',
+                DB::RAW('classifications.name AS cName'), DB::RAW('ROUND(prices.increase_5,2) AS increase_5'),
+                DB::RAW('ROUND(prices.increase_23,2) AS increase_23'),
+                DB::RAW('ROUND(prices.increase_63,2) AS increase_63')
+            )->join('stocks', 'stocks.id', '=', 'prices.stock_id')
+                ->join('classifications', 'classifications.id', '=', 'stocks.classification_id');
+
+            if (isset($search['start_date']) && ! is_null($search['start_date'])) {
+                $query = $query->where('date', '<=', $search['start_date']);
+                $queryTotal = $queryTotal->where('date', '<=', $search['start_date']);
+            } else {
+                $query = $this->latestDateByPriceList($query->getQuery());
+                $queryTotal = $this->latestDateByPriceList($queryTotal->getQuery());
+            }
+
+            $query = $this->whereLike($query, $search);
+            $queryTotal = $this->whereLike($queryTotal, $search);
+
+            $total = $queryTotal->count();
+
+            $data = $query
+                ->offset($data['start'])
+                ->limit($data['limit'])
+                ->orderByDesc(isset($data['order']) ? $data['order'] : 'prices.date')
+                ->get();
+        } else {
+            $total = 0;
+            $data = [];
+        }
+
+        return [
+            'data' => $data,
+            'total' => $total,
         ];
     }
 
@@ -164,5 +213,17 @@ class StockRepository extends Repository
     {
         return $query->where('code', 'like', "{$data['value']}%")
             ->orWhere('name', 'like', "%{$data['value']}%");
+    }
+
+    /**
+     * @param Builder $query
+     *
+     * @return Builder
+     */
+    private function latestDateByPriceList(Builder $query)
+    {
+        return $query->where('prices.date', '<=', function ($query) {
+            $query->select('date')->from('prices')->orderByDesc('id')->limit(1);
+        });
     }
 }
