@@ -97,16 +97,27 @@ class TagRepository extends Repository
                 return $tagId > 0;
             }
 
-            $id = str_pad(TagExponent::query()->count(), 3, "0", STR_PAD_LEFT);
-            return TagExponent::query()->insert([
-                'stock_id' => Stock::query()->insertGetId([
-                    'code' => "TE{$id}",
-                    'name' => $data['name'],
-                    'classification_id' => Classification::query()->where('name', '產業指數')->first()->id,
-                ]),
-                'tag_id' => $tagId,
-            ]);
+            return $this->insertTagExponent($tagId, $data['name']);
         });
+    }
+
+    /**
+     * @param int $tagId
+     * @param string $name
+     *
+     * @return bool
+     */
+    private function insertTagExponent(int $tagId, string $name)
+    {
+        $id = str_pad(TagExponent::query()->count(), 3, "0", STR_PAD_LEFT);
+        return TagExponent::query()->insert([
+            'stock_id' => Stock::query()->insertGetId([
+                'code' => "TE{$id}",
+                'name' => $name,
+                'classification_id' => Classification::query()->where('name', '產業指數')->first()->id,
+            ]),
+            'tag_id' => $tagId,
+        ]);
     }
 
     /**
@@ -118,15 +129,27 @@ class TagRepository extends Repository
     public function update(int $id, array $data)
     {
         return $this->transaction(function () use ($id, $data) {
-            if (! Tag::query()->where('id', $id)->update([
-                'name' => $data['name'],
-            ])) {
+            $model = Tag::query()->where('id', $id)->first();
+
+            if (is_null($model)) {
                 return false;
             }
 
-            return TagExponent::query()->where('tag_id', $id)->update([
-                'name' => $data['name'],
-            ]);
+            $model->name = $data['name'];
+
+            if (! $model->save()) {
+                return false;
+            }
+
+            if ($data['isExponent']) {
+                $model = TagExponent::query()->where('tag_id', $id)->first();
+
+                if (is_null($model)) {
+                    return $this->insertTagExponent($id, $data['name']);
+                }
+            }
+
+            return true;
         });
     }
 
