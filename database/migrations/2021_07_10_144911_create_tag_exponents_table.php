@@ -22,7 +22,7 @@ class CreateTagExponentsTable extends Migration
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('stock_id')->comment('stocks.id');
-            $table->unsignedBigInteger('tag_is')->comment('tags.id');
+            $table->unsignedBigInteger('tag_id')->comment('tags.id');
 
             $table->foreign('stock_id')->references('id')->on('stocks');
             $table->foreign('tag_id')->references('id')->on('tags');
