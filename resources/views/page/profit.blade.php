@@ -225,6 +225,11 @@
 
                 dates = []
                 eps = []
+
+                $("#eps-year>thead>tr>th").remove()
+                $("#eps-year>tbody>tr>td").remove()
+                $("#eps-year>thead>tr").append('<th scope="col">季別/年度</th>')
+
                 response.data.forEach(function (v) {
                     $("#eps-year>thead>tr").append("<th>" + v.year + "</th>")
                     $("#eps-year>tbody>tr:nth-child(1)").append("<td>" + v.q1 + "</td>")

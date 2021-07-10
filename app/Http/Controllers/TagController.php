@@ -46,7 +46,7 @@ class TagController
                             'name' => '名稱',
                         ],
                         [
-                            'id' => 'show_price',
+                            'id' => 'isExponent',
                             'type' => 'checkbox',
                             'name' => '指數',
                         ],
@@ -63,7 +63,7 @@ class TagController
                             'name' => '名稱',
                         ],
                         [
-                            'id' => 'show_price',
+                            'id' => 'isExponent',
                             'type' => 'checkbox',
                             'name' => '指數',
                         ],

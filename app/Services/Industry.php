@@ -38,7 +38,7 @@ class Industry
     public function list(array $select)
     {
         $date = null;
-        $tag = $this->tag->allByShowPrice();
+        $tag = $this->tag->exponents();
 
         if (isset($select['search'])) {
             $search = $select['search'];
@@ -74,5 +74,16 @@ class Industry
             'data' => $data,
             'total' => $data->count(),
         ];
+    }
+
+    /**
+     * @param int $tagId
+     *
+     * @return array
+     */
+    public function exponent(int $tagId)
+    {
+        $price = $this->price->getByTag([$tagId]);
+        return [];
     }
 }

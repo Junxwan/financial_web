@@ -5,7 +5,7 @@
         $(document).ready(function () {
             var edit = function (data) {
                 $('#modal-edit-name').val(data.name)
-                $('#modal-edit-show_price').prop("checked", data.show_price === 1)
+                $('#modal-edit-isExponent').prop("checked", data.stock_id !== null)
                 $('#modal-id').val(data.id)
             };
 
@@ -38,7 +38,7 @@
 
                 axios.post('{{ route("tag.create") }}', {
                     name: name,
-                    show_price: $('#modal-create-show_price').is(':checked'),
+                    isExponent: $('#modal-create-isExponent').is(':checked'),
                 }).then(function (response) {
                     if (response.data.result) {
                         toastr.success('新增成功')
@@ -67,7 +67,7 @@
                 var url = '{{ route("tag.update", ":id") }}';
                 axios.put(url.replace(':id', $('#modal-id').val()), {
                     name: name,
-                    show_price: $('#modal-edit-show_price').is(':checked'),
+                    isExponent: $('#modal-edit-isExponent').is(':checked'),
                 }).then(function (response) {
                     if (response.data.result) {
                         table.row($('#modal-id').val()).remove().draw(false)
@@ -92,10 +92,10 @@
                 columns: [
                     {data: 'name', width: '90%'},
                     {
-                        data: 'show_price',
+                        data: 'stock_id',
                         width: '90%',
                         render: function (data, t, row, meta) {
-                            return data === 1 ? '是' : '否'
+                            return data !== null ? '是' : '否'
                         },
                     },
                     editorEditBtn, editorDelete

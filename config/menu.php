@@ -52,6 +52,11 @@ return [
         'name' => '產業',
     ],
     [
+        'route' => 'exponent.index',
+        'icon' => 'fas fa-list',
+        'name' => '產業指數',
+    ],
+    [
         'route' => 'price.index',
         'icon' => 'fas fa-chart-bar',
         'name' => '股價',

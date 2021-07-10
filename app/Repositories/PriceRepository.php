@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Price;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -70,7 +71,7 @@ class PriceRepository extends Repository
     public function getByTag(array $tags, $date = null)
     {
         $query = Price::query()->select(
-            'prices.stock_id', 'open', 'close', 'increase', 'volume', 'value',
+            'prices.stock_id', 'increase', 'value',
             DB::RAW('GROUP_CONCAT(stock_tags.tag_id) as tag_id'))
             ->join('stock_tags', 'stock_tags.stock_id', '=', 'prices.stock_id')
             ->whereIn('stock_tags.tag_id', $tags);
@@ -87,6 +88,50 @@ class PriceRepository extends Repository
             $value->tag_id = explode(',', $value->tag_id);
             return $value;
         });
+    }
+
+    /**
+     * @param int $tag
+     * @param int $year
+     *
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function exponentByTag(int $tag, int $year)
+    {
+        $year -= 1;
+        $m = date('m');
+        $d = date('m');
+        return Price::query()->select(
+            'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high', 'low'
+        )->join('tag_exponents', 'tag_exponents.stock_id', '=', 'prices.stock_id')
+            ->where('tag_exponents.tag_id', $tag)
+            ->where('prices.date', '>=', "{$year}-{$m}-{$d}")
+            ->orderBy('prices.date')
+            ->get();
+    }
+
+    /**
+     * @param array $codes
+     * @param int $year
+     *
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function codes(array $codes, int $year)
+    {
+        //        $now = Carbon::now();
+        //        $year -= 1;
+        //        return Price::query()->select(
+        //            'stock_id', 'open', 'close', 'increase', 'value', 'date'
+        //        )->whereIn('stock_id', $codes)->whereBetween('date',
+        //            ["{$year}-12-31", $now->format('Y-m-d')]
+        //        )->orderByDesc('date')->orderByDesc('stock_id')->get();
+
+        return Price::query()->select(
+            'stock_id', 'open', 'close', 'increase', 'value', 'date'
+        )->whereIn('stock_id', $codes)
+            ->orderBy('date')
+            ->orderByDesc('stock_id')
+            ->get();
     }
 
     /**

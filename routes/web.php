@@ -91,6 +91,11 @@ Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index
 Route::get('/industry/list',
     [\App\Http\Controllers\IndustryController::class, 'list'])->name('industry.list');
 
+// 產業指數
+Route::get('/exponent', [\App\Http\Controllers\ExponentController::class, 'index'])->name('exponent.index');
+Route::get('/exponent/tag/{id}/year/{year}',
+    [\App\Http\Controllers\ExponentController::class, 'tag'])->name('exponent.tag');
+
 // 股價
 Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');
 Route::get('/price/list',
