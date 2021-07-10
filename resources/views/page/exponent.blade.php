@@ -321,11 +321,11 @@
         </div>
         <div class="card-body" style="display: block;">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">指數</span>
+                                <span class="input-group-text">指數名</span>
                             </div>
                             <select class="custom-select" id="tag">
                                 @foreach($tags as $v)
