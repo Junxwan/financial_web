@@ -12,6 +12,11 @@
             Highcharts.getJSON(url.replace(':id', $('#tag').val()).replace(':year', $('#year').val()), function (data) {
                 toastr.success('成功')
 
+                $("#stock_list>tbody>tr").remove()
+                data.stock.forEach(function (v) {
+                    $("#stock_list>tbody").append("<tr><td>" + v.code + "</td><td>" + v.name + "</td></tr>")
+                })
+
                 groupingUnits = [[
                     'day',
                     [1]
@@ -365,7 +370,20 @@
         </div>
         <div class="card-body" style="display: block;">
             <div id="stock" class="row">
-
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="stock_list" class="table table-dark">
+                        <thead>
+                        <tr>
+                            <th scope="col">代碼</th>
+                            <th scope="col">名稱</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
