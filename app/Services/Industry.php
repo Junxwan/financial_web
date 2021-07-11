@@ -75,15 +75,4 @@ class Industry
             'total' => $data->count(),
         ];
     }
-
-    /**
-     * @param int $tagId
-     *
-     * @return array
-     */
-    public function exponent(int $tagId)
-    {
-        $price = $this->price->getByTag([$tagId]);
-        return [];
-    }
 }

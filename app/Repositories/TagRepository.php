@@ -35,8 +35,9 @@ class TagRepository extends Repository
     public function exponents()
     {
         return TagExponent::query()
-            ->select('tags.id', 'tags.name')
+            ->select('tags.id', 'tags.name', 'stocks.code')
             ->join('tags', 'tags.id', '=', 'tag_exponents.tag_id')
+            ->join('stocks', 'stocks.id', '=', 'tag_exponents.stock_id')
             ->get();
     }
 
