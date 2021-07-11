@@ -661,8 +661,6 @@ function newK(select, url) {
                 formatter: function () {
                     let html = '日期: ' + '<span style="color:#7dbbd2">' + Highcharts.dateFormat('%Y-%m-%d', this.x) + '</span>'
 
-                    console.log(this.points)
-
                     $.each(this.points, function () {
                         switch (this.series.name) {
                             case 'prices':
@@ -750,12 +748,14 @@ function newK(select, url) {
                 upLineColor: 'red',
                 color: 'white',
                 lineColor: 'white',
+                turboThreshold: 2000,
             }, {
                 type: 'column',
                 data: data.volume,
                 yAxis: 1,
                 id: 'volume',
                 name: 'volume',
+                turboThreshold: 2000,
             }, {
                 type: 'sma',
                 id: '5Ma',
