@@ -25,6 +25,7 @@ class ProfitRepository extends Repository
             DB::RAW('profits.revenue'),
             DB::RAW('profits.gross'),
             DB::RAW('profits.profit'),
+            DB::RAW('profits.profit_pre'),
             DB::RAW('profits.profit_after'),
             DB::RAW('profits.outside'),
             DB::RAW('profits.profit_main'),
@@ -45,6 +46,7 @@ class ProfitRepository extends Repository
                     'revenue',
                     'gross',
                     'profit',
+                    'profit_pre',
                     'profit_after',
                     'profit_main',
                     'outside',
@@ -55,8 +57,9 @@ class ProfitRepository extends Repository
                 $ye = $profit->where('year', $year - 1)->where('quarterly', $quarterly)->first();
                 $value->revenue_yoy = is_null($ye) ? 0 : round((($value->revenue / $ye->revenue) - 1) * 100, 2);
                 $value->gross_yoy = round(($value->gross / $value->revenue) * 100, 2);
-                $value->profit_yoy = round(($value->profit / $value->revenue) * 100, 2);
-                $value->profit_after_yoy = round(($value->profit_after / $value->revenue) * 100, 2);
+                $value->profit_r = round(($value->profit / $value->revenue) * 100, 2);
+                $value->profit_after_r = round(($value->profit_after / $value->revenue) * 100, 2);
+                $value->profit_pre_r = round(($value->profit_pre / $value->revenue) * 100, 2);
                 $value->eps = round($value->eps, 2);
                 $value->non_eps = round(($value->outside / $value->profit_main) * $value->eps, 2);
                 return $value;

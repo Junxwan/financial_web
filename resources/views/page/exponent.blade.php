@@ -24,8 +24,9 @@
                         "<td>" + v.name + "</td>" +
                         tdAmountText(v.revenue, v.revenue_yoy) +
                         tdAmountText(v.gross, v.gross_yoy) +
-                        tdAmountText(v.profit, v.profit_yoy) +
-                        tdAmountText(v.profit_after, v.profit_after_yoy) +
+                        tdAmountText(v.profit, v.profit_r) +
+                        tdAmountText(v.profit_pre, v.profit_pre_r) +
+                        tdAmountText(v.profit_after, v.profit_r) +
                         tdAmountText(v.outside) +
                         "<td>" + v.eps + "</td>" +
                         "<td>" + v.non_eps + "</td>" +
@@ -179,6 +180,7 @@
                             <th scope="col">季營收(yoy)</th>
                             <th scope="col">毛利</th>
                             <th scope="col">利益</th>
+                            <th scope="col">稅前</th>
                             <th scope="col">稅後</th>
                             <th scope="col">業外</th>
                             <th scope="col">EPS</th>
