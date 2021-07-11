@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\PriceRepository;
+use App\Repositories\ProfitRepository;
 use App\Repositories\TagRepository;
 
 class Exponent
@@ -18,15 +19,22 @@ class Exponent
     private PriceRepository $price;
 
     /**
+     * @var ProfitRepository
+     */
+    private ProfitRepository $profit;
+
+    /**
      * Exponent constructor.
      *
+     * @param ProfitRepository $profit
      * @param PriceRepository $price
      * @param TagRepository $tag
      */
-    public function __construct(PriceRepository $price, TagRepository $tag)
+    public function __construct(ProfitRepository $profit, PriceRepository $price, TagRepository $tag)
     {
         $this->tag = $tag;
         $this->price = $price;
+        $this->profit = $profit;
     }
 
     /**
@@ -65,5 +73,10 @@ class Exponent
         $data['name'] = $this->tag->get($id)->name;
         $data['stock'] = $this->tag->stockByTag($id);
         return $data;
+    }
+
+    public function tagProfit(int $tag, int $year, int $quarterly)
+    {
+        return $this->profit->codeByTag($tag, $year, $quarterly);
     }
 }

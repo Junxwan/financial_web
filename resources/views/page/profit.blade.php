@@ -163,7 +163,11 @@
                                 value = Math.round((v.outside / v.profit_main) * v.eps * 100) / 100
                                 break
                             case 'this':
-                                value = Math.round(100 - (Math.round((v.outside / v.profit_main) * v.eps * 100) / 100) / v.eps * 100);
+                                if (v.eps > 0) {
+                                    value = Math.round(100 - (Math.round((v.outside / v.profit_main) * v.eps * 100) / 100) / v.eps * 100);
+                                } else {
+                                    value = 0
+                                }
                                 break;
                             default:
                                 value = roundText(Math.round(v[$(this).data('name')] / 1000))

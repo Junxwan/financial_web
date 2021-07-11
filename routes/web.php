@@ -95,6 +95,8 @@ Route::get('/industry/list',
 Route::get('/exponent', [\App\Http\Controllers\ExponentController::class, 'index'])->name('exponent.index');
 Route::get('/exponent/tag/{id}/year/{year}',
     [\App\Http\Controllers\ExponentController::class, 'tag'])->name('exponent.tag');
+Route::get('/exponent/profit/tag/{id}/year/{year}/quarterly/{quarterly}',
+    [\App\Http\Controllers\ExponentController::class, 'tagProfit'])->name('exponent.tag.profit');
 
 // 股價
 Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');

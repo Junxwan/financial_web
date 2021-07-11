@@ -50,4 +50,16 @@ class ExponentController extends Controller
     {
         return response($this->exponent->tag($tagId, $year));
     }
+
+    /**
+     * @param int $tag
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function tagProfit(int $tag, int $year, int $quarterly)
+    {
+        return response($this->exponent->tagProfit($tag, $year, $quarterly));
+    }
 }

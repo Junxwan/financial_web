@@ -517,6 +517,17 @@ function roundText(a) {
     return t + '億'
 }
 
+function amountText(value) {
+    i = value >= 0 ? 1 : -1
+    value = Math.abs(value)
+    if (value > Math.pow(10, 8)) {
+        return i * (Math.round(value / Math.pow(10, 8) * 100) / 100) + '億'
+    }
+
+    return i * (Math.round(value / 10000 * 100) / 100) + '萬'
+}
+
+
 // 佔季營收比例
 function revenueQProportion(q, v) {
     r = getRevenueQ(q)
