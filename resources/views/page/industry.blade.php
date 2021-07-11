@@ -7,6 +7,7 @@
                 name: '#list',
                 url: "{{ route('industry.list') }}",
                 columns: [
+                    {data: "code", width: '10%'},
                     {data: "name", width: '10%'},
                     {
                         data: "increase",
