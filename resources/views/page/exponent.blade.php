@@ -24,6 +24,7 @@
                         "<td>" + v.name + "</td>" +
                         tdAmountText(v.revenue, v.revenue_yoy) +
                         tdAmountText(v.gross, v.gross_yoy) +
+                        tdAmountText(v.fee, v.fee_r) +
                         tdAmountText(v.profit, v.profit_r) +
                         tdAmountText(v.profit_pre, v.profit_pre_r) +
                         tdAmountText(v.profit_after, v.profit_r) +
@@ -179,6 +180,7 @@
                             <th scope="col">名稱</th>
                             <th scope="col">季營收(yoy)</th>
                             <th scope="col">毛利</th>
+                            <th scope="col">費用</th>
                             <th scope="col">利益</th>
                             <th scope="col">稅前</th>
                             <th scope="col">稅後</th>
