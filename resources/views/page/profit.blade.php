@@ -33,7 +33,8 @@
 @stop
 
 @section('js')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4"></script>
+    <script src="{{ asset('js/highcharts.js') }}"></script>
+    <script src="{{ asset('js/highstock/themes/dark-unica.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
     <script src="{{ asset('js/app.js?_=' . $time) }}"></script>
     <script>
@@ -44,7 +45,7 @@
             axios.get(url.replace(':code', code)).then(function (response) {
                 $('#name').val(response.data.name)
                 $('#capital').val(Math.round(response.data.capital / 1000))
-                $('#capital_text').html(roundText(response.data.capital / 1000))
+                $('#capital_text').html(amountText(response.data.capital))
                 toastr.success('查訊成功')
 
                 if (revenueMonth(code, $('#year_month').val().slice(0, 4), $('#year_month').val().slice(5, 7))) {
@@ -64,78 +65,207 @@
             url = url.replace(':code', code).replace(':year', year).replace(':month', month)
 
             return axios.get(url).then(function (response) {
-                $('.form-group-month-revenue').each(function (index) {
-                    v = response.data[index]
-                    setInput($(this), v.year + "-" + (new String(v.month)).padStart(2, '0'), v.yoy, v.value / 1000)
-                })
-
                 $('#year_month').val(
                     response.data[0].year + '-' + (new String(response.data[0].month)).padStart(2, '0')
                 )
 
-                dates = []
+                $("#month-revenue>tbody>tr").remove()
+
                 revenues = []
                 yoys = []
-                response.data.forEach(function (v) {
-                    if (v.yoy == 0) {
-                        return
+                qoqs = []
+                response.data.forEach(function (v, index) {
+                    if (index <= 12) {
+                        let html =
+                            "<tr>" +
+                            "<td>" + v.year + "-" + v.month + "</td>" +
+                            "<td>" + amountText(v.value) + "</td>" +
+                            "<td>" + spanColor(v.yoy) + "</td>" +
+                            "<td>" + spanColor(v.qoq) + "</td>" +
+                            "<td>" + v.value + "</td>" +
+                            "</tr>"
+
+                        $("#month-revenue>tbody").append(html)
                     }
 
-                    dates.push(v.year + "-" + (new String(v.month)).padStart(2, '0'))
-                    revenues.push(Math.round(v.value / 1000))
-                    yoys.push(v.yoy)
+                    let t = (new Date(v.year, v.month, 1)).getTime()
+                    revenues.push([t, v.value])
+                    yoys.push([t, v.yoy])
+                    qoqs.push([t, v.qoq])
                 })
 
-                dates.reverse()
                 revenues.reverse()
                 yoys.reverse()
+                qoqs.reverse()
 
-                chartBar('month-revenue-bar', '月營收(百萬)', dates, revenues)
-                chartLine('month-revenue-yoy-bar', '月營收yoy', dates, yoys)
+                Highcharts.chart('month-revenue-bar', {
+                    colors: ['#45617d'],
+                    chart: {
+                        type: 'column',
+                    },
+                    plotOptions: {
+                        column: {
+                            borderColor: '#45617d'
+                        }
+                    },
+                    title: {
+                        text: '月營收'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        labels: {
+                            formatter: function () {
+                                return Highcharts.dateFormat('%Y-%m', this.value);
+                            }
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        xDateFormat: '%Y-%m',
+                        formatter: function () {
+                            return Highcharts.dateFormat('%Y-%m', this.x) + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
+                        }
+                    },
+                    series: [{
+                        data: revenues,
+                    }]
+                });
+
+                Highcharts.chart('month-revenue-yoy-bar', {
+                    title: {
+                        text: '成長'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        labels: {
+                            formatter: function () {
+                                return Highcharts.dateFormat('%Y-%m', this.value);
+                            }
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+                    exporting: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                        xDateFormat: '%Y-%m',
+                    },
+                    series: [{
+                        name: 'yoy',
+                        data: yoys
+                    }, {
+                        name: 'qoq',
+                        data: qoqs
+                    }]
+                });
 
                 toastr.success('月營收成功')
                 return true
             }).catch(function (error) {
-                console.log(error)
                 toastr.error('查無月營收')
                 return false
             })
         }
 
+        function spanColor(value) {
+            if (value > 0) {
+                color = '#f33f7a'
+            } else {
+                color = '#2a9309'
+            }
+
+            return ' <span style="color:' + color + '">' + value + '</span>'
+        }
+
         // 綜合損益表
         function profit(code, year, quarterly) {
             var url = '{{ route("profit.recent", ['code' => ':code', 'year' => ':year', 'quarterly' => ':quarterly']) }}'
-            url = url.replace(':code', code).replace(':year', year).replace(':quarterly', quarterly)
-
-            return axios.get(url).then(function (response) {
-                $('.form-group-quarterly-revenue').each(function (index) {
-                    v = response.data[index]
-                    setInput($(this), v.year + "-Q" + v.quarterly, v.revenue_yoy, v.revenue / 1000)
-                })
-
+            return axios.get(url.replace(':code', code).replace(':year', year).replace(':quarterly', quarterly)).then(function (response) {
                 $('#quarterly').val(
                     response.data[0].year + '-Q' + response.data[0].quarterly
                 )
 
-                dates = []
                 revenues = []
-                yoys = []
-                response.data.forEach(function (v) {
-                    if (v.revenue_yoy == 0) {
-                        return
+                gross = []
+                profits = []
+                profit_after = []
+                datas = []
+                response.data.forEach(function (v, index) {
+                    date = v.year + "-Q" + v.quarterly
+                    if (index <= 12) {
+                        let html =
+                            "<tr>" +
+                            "<td>" + date + "</td>" +
+                            "<td>" + amountText(v.revenue) + "</td>" +
+                            "<td>" + spanColor(v.revenue_yoy) + "</td>" +
+                            "<td>" + v.revenue + "</td>" +
+                            "</tr>"
+
+                        $("#quarterly-month-revenue>tbody").append(html)
                     }
 
-                    dates.push(v.year + "-Q" + v.quarterly)
-                    revenues.push(Math.round(v.revenue / 1000))
-                    yoys.push(v.revenue_yoy)
+                    datas.push(date)
+                    revenues.push([date, v.revenue])
+                    gross.push([date, Math.round((v.gross / v.revenue) * 10000) / 100])
+                    profits.push([date, Math.round((v.profit / v.revenue) * 10000) / 100])
+                    profit_after.push([date, Math.round((v.profit_after / v.revenue) * 10000) / 100])
                 })
 
-                dates.reverse()
                 revenues.reverse()
-                yoys.reverse()
+                gross.reverse()
+                profits.reverse()
+                profit_after.reverse()
 
-                chartBar('quarterly-revenue-bar', '季營收(百萬)', dates, revenues)
-                chartLine('quarterly-revenue-yoy-bar', '季營收yoy', dates, yoys)
+                Highcharts.chart('quarterly-month-revenue-bar', {
+                    colors: ['#45617d'],
+                    plotOptions: {
+                        column: {
+                            borderColor: '#45617d'
+                        }
+                    },
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '季營收'
+                    },
+                    xAxis: {
+                        type: "category",
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.key + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
+                        }
+                    },
+                    series: [{
+                        data: revenues
+                    }]
+                });
 
                 // eps
                 $('.form-group-quarterly-eps').each(function (index) {
@@ -170,16 +300,50 @@
                                 }
                                 break;
                             default:
-                                value = roundText(Math.round(v[$(this).data('name')] / 1000))
+                                value = amountText(Math.round(v[$(this).data('name')]))
                         }
 
                         $(this).val(value)
                     })
                 })
 
-                datas = {
-                    gross: []
-                }
+                Highcharts.chart('profit-bar', {
+                    title: {
+                        text: '經營'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+                    exporting: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        id: 'gross',
+                        name: '毛利',
+                        data: gross
+                    }, {
+                        id: 'profit',
+                        name: '利益',
+                        data: profits
+                    }, {
+                        id: 'profit_after',
+                        name: '稅後',
+                        data: profit_after,
+                    }]
+                });
 
                 $('.form-group-quarterly').each(function () {
                     v = response.data[$(this).data('index')]
@@ -196,14 +360,10 @@
                             $(this),
                             v.year + "Q" + v.quarterly,
                             rate,
-                            Math.round(value / 1000)
+                            value
                         )
                     }
                 })
-
-                dates = dates.reverse().slice(0, 12)
-
-                chartLine('gross-bar', '毛利', dates.reverse(), datas['gross'].reverse())
 
                 toastr.success('查綜合損益表成功')
                 return true
@@ -227,8 +387,8 @@
                     }
                 })
 
-                dates = []
                 eps = []
+                epsq = []
 
                 $("#eps-year>thead>tr>th").remove()
                 $("#eps-year>tbody>tr>td").remove()
@@ -242,15 +402,98 @@
                     $("#eps-year>tbody>tr:nth-child(4)").append("<td>" + v.q4 + "</td>")
 
                     if (v.eps !== '') {
-                        dates.push(v.year)
-                        eps.push(v.eps)
+                        eps.push([v.year, v.eps])
+                    }
+
+                    if (v.q4 !== '') {
+                        epsq.push([v.year + '-Q4', v.q4])
+                    }
+
+                    if (v.q3 !== '') {
+                        epsq.push([v.year + '-Q3', v.q3])
+                    }
+
+                    if (v.q2 !== '') {
+                        epsq.push([v.year + '-Q2', v.q2])
+                    }
+
+                    if (v.q1 !== '') {
+                        epsq.push([v.year + '-Q1', v.q1])
                     }
                 })
 
-                dates.reverse()
                 eps.reverse()
+                epsq.reverse()
 
-                chartBar('quarterly-eps-bar', 'EPS', dates, eps)
+                Highcharts.chart('quarterly-eps-bar', {
+                    colors: ['#45617d'],
+                    chart: {
+                        type: 'column',
+                        height: 200
+                    },
+                    plotOptions: {
+                        column: {
+                            borderColor: '#45617d'
+                        }
+                    },
+                    title: {
+                        text: 'EPS'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.key + ': ' + this.y + '</span>'
+                        }
+                    },
+                    series: [{
+                        data: eps,
+                    }]
+                });
+
+                Highcharts.chart('eps-year-bar', {
+                    colors: ['#45617d'],
+                    chart: {
+                        type: 'column'
+                    },
+                    plotOptions: {
+                        column: {
+                            borderColor: '#45617d'
+                        }
+                    },
+                    title: {
+                        text: 'EPS'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.key + ': ' + this.y + '</span>'
+                        }
+                    },
+                    series: [{
+                        data: epsq,
+                    }]
+                });
+
                 dividend(code, response.data)
 
                 toastr.success('查EPS成功')
@@ -266,7 +509,6 @@
         function dividend(code, eps) {
             var url = '{{ route("profit.dividend", ['code' => ':code']) }}'
             return axios.get(url.replace(':code', code)).then(function (response) {
-                dates = []
                 dividends = []
                 rates = []
 
@@ -274,25 +516,91 @@
                     v = response.data[index]
                     rate = Math.round((v.cash / eps[index + 1].eps) * 100)
 
-                    dividends.push(v.cash)
-                    dates.push(v.year)
-                    rates.push(rate)
+                    dividends.push([v.year, v.cash])
+                    rates.push([v.year, rate])
 
                     $(this).find('.input-date').html(v.year)
                     $(this).find('.input-rate').html(rate + '%')
                     $(this).find('.input-value').val(Math.round(v.cash * 100) / 100)
                 })
 
-                dates.reverse()
                 rates.reverse()
                 dividends.reverse()
 
-                chartBar('quarterly-dividend-bar', '股利', dates, dividends)
-                chartBar('quarterly-dividend-send-bar', 'EPS現金配發率', dates, rates, 100)
+                Highcharts.chart('quarterly-dividend-bar', {
+                    colors: ['#45617d'],
+                    chart: {
+                        type: 'column',
+                        height: 200
+                    },
+                    plotOptions: {
+                        column: {
+                            borderColor: '#45617d'
+                        }
+                    },
+                    title: {
+                        text: '股利'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.key + ': ' + this.y + '</span>'
+                        }
+                    },
+                    series: [{
+                        data: dividends,
+                    }]
+                });
+
+                Highcharts.chart('quarterly-dividend-send-bar', {
+                    colors: ['#45617d'],
+                    chart: {
+                        type: 'column',
+                        height: 200
+                    },
+                    plotOptions: {
+                        column: {
+                            borderColor: '#45617d'
+                        }
+                    },
+                    title: {
+                        text: 'EPS現金配發率'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.key + ': ' + this.y + '</span>'
+                        }
+                    },
+                    series: [{
+                        data: rates,
+                    }]
+                });
 
                 toastr.success('查股利成功')
                 return true
             }).catch(function (error) {
+                console.log(error)
                 toastr.error('查股利無資料')
                 return false
             })
@@ -316,7 +624,7 @@
 
         function setInput(e, date, rate, value) {
             e.find('.input-date').html(date)
-            e.find('.input-text').html(roundText(value))
+            e.find('.input-text').html(amountText(value))
             e.find('.input-rate').html(rate + '%')
             e.find('.input-value').val(Math.round(value))
         }
@@ -507,23 +815,30 @@
         </div>
         <div class="card-body" style="display: block;">
             <div class="row">
-                <div class="col-md-5">
-                    @for ($i = 1; $i <= 12; $i++)
-                        <div class="form-group form-group-month-revenue">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text input-date input-width"></span>
-                                    <span class="input-group-text input-text input-width"></span>
-                                    <span class="input-group-text input-rate input-width"></span>
-                                </div>
-                                <input type="number" class="form-control input-value" readonly>
-                            </div>
-                        </div>
-                    @endfor
+                <div class="col-md-12">
+                    <table id="month-revenue" class="table table-dark">
+                        <thead>
+                        <tr>
+                            <th scope="col">年月</th>
+                            <th scope="col">營收</th>
+                            <th scope="col">yoy</th>
+                            <th scope="col">qoq</th>
+                            <th scope="col">營收(千)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="col-md-7">
-                    <canvas id="month-revenue-bar"></canvas>
-                    <canvas id="month-revenue-yoy-bar"></canvas>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenue-bar"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenue-yoy-bar"></div>
                 </div>
             </div>
         </div>
@@ -540,23 +855,29 @@
         </div>
         <div class="card-body" style="display: block;">
             <div class="row">
-                <div class="col-md-5">
-                    @for ($i = 1; $i <= 12; $i++)
-                        <div class="form-group form-group-quarterly-revenue">
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text input-date input-width"></span>
-                                    <span class="input-group-text input-text input-width"></span>
-                                    <span class="input-group-text input-rate input-width"></span>
-                                </div>
-                                <input type="number" class="form-control input-value" readonly>
-                            </div>
-                        </div>
-                    @endfor
+                <div class="col-md-12">
+                    <table id="quarterly-month-revenue" class="table table-dark">
+                        <thead>
+                        <tr>
+                            <th scope="col">年季</th>
+                            <th scope="col">營收</th>
+                            <th scope="col">yoy</th>
+                            <th scope="col">營收(千)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="col-md-7">
-                    <canvas id="quarterly-revenue-bar"></canvas>
-                    <canvas id="quarterly-revenue-yoy-bar"></canvas>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="quarterly-month-revenue-bar"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="quarterly-month-revenue-yoy-bar"></div>
                 </div>
             </div>
         </div>
@@ -625,9 +946,9 @@
                     @endfor
                 </div>
                 <div class="col-md-5">
-                    <canvas id="quarterly-eps-bar"></canvas>
-                    <canvas id="quarterly-dividend-send-bar"></canvas>
-                    <canvas id="quarterly-dividend-bar"></canvas>
+                    <div id="quarterly-eps-bar"></div>
+                    <div id="quarterly-dividend-send-bar"></div>
+                    <div id="quarterly-dividend-bar"></div>
                 </div>
             </div>
         </div>
@@ -668,73 +989,15 @@
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="card card-default" id="business-title">
-        <div class="card-header">
-            <h3 class="card-title">經營績效</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                        class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
-                        class="fas fa-remove"></i></button>
-            </div>
-        </div>
-        <div class="card-body" style="display: block;">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="form-group">
-                        <div class="input-group">
-                            <input type="text" class="form-control input-width-1" value="季度" readonly>
-                            <input type="text" class="form-control input-width-1" value="營" readonly>
-                            <input type="text" class="form-control input-width-1" value="毛" readonly>
-                            <input type="text" class="form-control input-width-1" value="費" readonly>
-                            <input type="text" class="form-control input-width-1" value="業" readonly>
-                            <input type="text" class="form-control input-width-1" value="其" readonly>
-                            <input type="text" class="form-control input-width-1" value="利" readonly>
-                            <input type="text" class="form-control input-width-1" value="稅前" readonly>
-                            <input type="text" class="form-control input-width-1" value="稅後" readonly>
-                            <input type="text" class="form-control input-width-1" value="所得" readonly>
-                            <input type="text" class="form-control input-width-1" value="非" readonly>
-                            <input type="text" class="form-control input-width-1" value="母" readonly>
-                            <input type="text" class="form-control input-width-1" value="e" readonly>
-                            <input type="text" class="form-control input-width-1" value="非e" readonly>
-                            <input type="text" class="form-control input-width-1" value="本%" readonly>
-                        </div>
-
-                        @for ($i = 1; $i <= 12; $i++)
-                            <div class="input-group form-group-total" data-index="{{ $i-1 }}">
-                                <input type="text" class="form-control input-width-1" data-name="year" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="revenue" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="gross" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="fee" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="outside" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="other" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="profit" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="profit_pre" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="profit_after" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="tax" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="profit_non" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="profit_main" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="eps" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="non_eps" readonly>
-                                <input type="text" class="form-control input-width-1" data-name="this" readonly>
-                            </div>
-                        @endfor
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <canvas id="gross-bar"></canvas>
+                    <div id="eps-year-bar"></div>
                 </div>
             </div>
         </div>
-    </div>
-    @foreach($business as $i => $value)
-        <div class="card card-default" id="business-{{ $i }}-title">
+        <div class="card card-default" id="business-title">
             <div class="card-header">
-                <h3 class="card-title">{{ $value['title'] }}</h3>
+                <h3 class="card-title">經營績效</h3>
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
                             class="fas fa-minus"></i></button>
@@ -744,31 +1007,97 @@
             </div>
             <div class="card-body" style="display: block;">
                 <div class="row">
-                    @foreach($value['list'] as $v)
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" class="input-group-text input-group-width"
-                                           value="{{ $v['title'] }}" disabled>
-                                </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control input-width-1" value="季度" readonly>
+                                <input type="text" class="form-control input-width-1" value="營" readonly>
+                                <input type="text" class="form-control input-width-1" value="毛" readonly>
+                                <input type="text" class="form-control input-width-1" value="費" readonly>
+                                <input type="text" class="form-control input-width-1" value="業" readonly>
+                                <input type="text" class="form-control input-width-1" value="其" readonly>
+                                <input type="text" class="form-control input-width-1" value="利" readonly>
+                                <input type="text" class="form-control input-width-1" value="稅前" readonly>
+                                <input type="text" class="form-control input-width-1" value="稅後" readonly>
+                                <input type="text" class="form-control input-width-1" value="所得" readonly>
+                                <input type="text" class="form-control input-width-1" value="非" readonly>
+                                <input type="text" class="form-control input-width-1" value="母" readonly>
+                                <input type="text" class="form-control input-width-1" value="e" readonly>
+                                <input type="text" class="form-control input-width-1" value="非e" readonly>
+                                <input type="text" class="form-control input-width-1" value="本%" readonly>
                             </div>
+
                             @for ($i = 1; $i <= 12; $i++)
-                                <div class="form-group form-group-quarterly" data-index="{{ $i-1 }}"
-                                     data-name="{{ $v['name'] }}">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text input-date input-width"></span>
-                                            <span class="input-group-text input-text input-width"></span>
-                                            <span class="input-group-text input-rate input-width"></span>
-                                        </div>
-                                        <input type="number" class="form-control input-value" readonly>
-                                    </div>
+                                <div class="input-group form-group-total" data-index="{{ $i-1 }}">
+                                    <input type="text" class="form-control input-width-1" data-name="year" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="revenue" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="gross" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="fee" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="outside" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="other" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="profit" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="profit_pre"
+                                           readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="profit_after"
+                                           readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="tax" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="profit_non"
+                                           readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="profit_main"
+                                           readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="eps" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="non_eps" readonly>
+                                    <input type="text" class="form-control input-width-1" data-name="this" readonly>
                                 </div>
                             @endfor
                         </div>
-                    @endforeach
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="profit-bar"></div>
+                    </div>
                 </div>
             </div>
         </div>
+        @foreach($business as $i => $value)
+            <div class="card card-default" id="business-{{ $i }}-title">
+                <div class="card-header">
+                    <h3 class="card-title">{{ $value['title'] }}</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                class="fas fa-minus"></i></button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                                class="fas fa-remove"></i></button>
+                    </div>
+                </div>
+                <div class="card-body" style="display: block;">
+                    <div class="row">
+                        @foreach($value['list'] as $v)
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="text" class="input-group-text input-group-width"
+                                               value="{{ $v['title'] }}" disabled>
+                                    </div>
+                                </div>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <div class="form-group form-group-quarterly" data-index="{{ $i-1 }}"
+                                         data-name="{{ $v['name'] }}">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text input-date input-width"></span>
+                                                <span class="input-group-text input-text input-width"></span>
+                                                <span class="input-group-text input-rate input-width"></span>
+                                            </div>
+                                            <input type="number" class="form-control input-value" readonly>
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
     @endforeach
 @stop

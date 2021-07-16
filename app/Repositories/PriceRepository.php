@@ -111,27 +111,25 @@ class PriceRepository extends Repository
     }
 
     /**
-     * @param array $codes
+     * @param int $tag
      * @param int $year
      *
      * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function codes(array $codes, int $year)
+    public function stockByTag(int $tag, int $year)
     {
-        //        $now = Carbon::now();
-        //        $year -= 1;
-        //        return Price::query()->select(
-        //            'stock_id', 'open', 'close', 'increase', 'value', 'date'
-        //        )->whereIn('stock_id', $codes)->whereBetween('date',
-        //            ["{$year}-12-31", $now->format('Y-m-d')]
-        //        )->orderByDesc('date')->orderByDesc('stock_id')->get();
-
+        $year -= 1;
+        $m = date('m');
+        $d = date('m');
         return Price::query()->select(
-            'stock_id', 'open', 'close', 'increase', 'value', 'date'
-        )->whereIn('stock_id', $codes)
-            ->orderBy('date')
-            ->orderByDesc('stock_id')
-            ->get();
+            'prices.stock_id', 'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high',
+            'low'
+        )->join('stock_tags', 'stock_tags.stock_id', '=', 'prices.stock_id')
+            ->where('stock_tags.tag_id', $tag)
+            ->where('prices.date', '>=', "{$year}-{$m}-{$d}")
+            ->orderBy('prices.date')
+            ->get()
+            ->groupBy('stock_id');
     }
 
     /**

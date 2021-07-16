@@ -1,15 +1,17 @@
 @extends('page')
 
 @section('js')
-    <script src="{{ asset('js/app.js?_=' . $time) }}"></script>
     <script src="{{ asset('js/highstock.js') }}"></script>
     <script src="{{ asset('js/highstock/modules/data.js') }}"></script>
     <script src="{{ asset('js/highstock/themes/dark-unica.js') }}"></script>
     <script src="{{ asset('js/highstock/indicators.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
+    <script src="{{ asset('js/app.js?_=' . $time) }}"></script>
     <script>
+        initK()
+
         $('#select-btn').click(function () {
-            var url = "{{ route('exponent.tag', ['id' => ':id', 'year' => ':year']) }}"
+            var url = "{{ route('exponent.tag.k', ['id' => ':id', 'year' => ':year']) }}"
             newK('stock', url.replace(':id', $('#tag').val()).replace(':year', $('#year').val()))
         })
 
@@ -37,15 +39,33 @@
                     $("#financial>tbody").append(html)
                 })
 
-                toastr.success('查成功')
+                toastr.success('查財報成功')
             }).catch(function (error) {
-                toastr.error('查E無資料')
+                toastr.error('財報查無資料')
+            })
+        })
+
+        $('#select-ks-btn').click(function () {
+            var url = "{{ route('exponent.tag.stock.k', ['id' => ':id', 'year' => ':year']) }}"
+            axios.get(url.replace(':id', $('#tag').val()).replace(':year', $('#year').val())).then(function (response) {
+                $("#stocks>div").remove()
+
+                response.data.forEach(function (v) {
+                    let id = 'stock_' + v.code
+                    $('#stocks').append('<div id="' + id + '" class="row"></div>')
+
+                    newStockChat(id, v)
+                })
+
+                toastr.success('查多K成功')
+            }).catch(function (error) {
+                toastr.error('多K查無資料')
             })
         })
 
         function tdAmountText(value1, value2) {
             if (value2 === undefined) {
-                return "<td>" + amountText(value1 * 1000) + "</td>"
+                return "<td>" + amountText(value1) + "</td>"
             }
 
             if (value2 > 0) {
@@ -54,7 +74,7 @@
                 color = '#2a9309'
             }
 
-            return "<td>" + amountText(value1 * 1000) + '</br><span style="color:' + color + '"> (' + value2 + '%)</span> ' + "</td>"
+            return "<td>" + amountText(value1) + '</br><span style="color:' + color + '"> (' + value2 + '%)</span> ' + "</td>"
         }
     </script>
 @stop
@@ -126,6 +146,12 @@
                         財報
                     </button>
                 </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-sm"
+                            id="select-ks-btn">
+                        多k
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -195,6 +221,20 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">K比較</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                        class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                        class="fas fa-remove"></i></button>
+            </div>
+        </div>
+        <div id="stocks" class="card-body" style="display: block;">
+            <div id="stock" class="row"></div>
         </div>
     </div>
 @stop

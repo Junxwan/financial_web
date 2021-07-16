@@ -52,6 +52,17 @@ class ExponentController extends Controller
     }
 
     /**
+     * @param int $tagId
+     * @param int $year
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function stockK(int $tagId, int $year)
+    {
+        return response($this->exponent->stockK($tagId, $year));
+    }
+
+    /**
      * @param int $tag
      * @param int $year
      * @param int $quarterly

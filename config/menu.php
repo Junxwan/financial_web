@@ -41,11 +41,11 @@ return [
         'icon' => 'fas fa-list',
         'name' => '投信個股持股',
     ],
-    [
-        'route' => 'category.index',
-        'icon' => 'fas fa-list',
-        'name' => '類股',
-    ],
+//    [
+//        'route' => 'category.index',
+//        'icon' => 'fas fa-list',
+//        'name' => '類股',
+//    ],
     [
         'route' => 'industry.index',
         'icon' => 'fas fa-list',

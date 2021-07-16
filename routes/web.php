@@ -67,7 +67,7 @@ Route::get('/cash/recent/{code}/code/{year}/year/{quarterly}/quarterly',
 // 月營收
 Route::get('/revenue/{code}/code/{year}/year',
     [\App\Http\Controllers\RevenueController::class, 'year'])->name('revenue.year');
-Route::get('/revenue/recent/{code}/code/{year}/year/{month}/monyh',
+Route::get('/revenue/recent/{code}/code/{year}/year/{month}/month',
     [\App\Http\Controllers\RevenueController::class, 'recent'])->name('revenue.recent');
 
 // 投信持股
@@ -94,9 +94,11 @@ Route::get('/industry/list',
 // 產業指數
 Route::get('/exponent', [\App\Http\Controllers\ExponentController::class, 'index'])->name('exponent.index');
 Route::get('/exponent/tag/{id}/year/{year}',
-    [\App\Http\Controllers\ExponentController::class, 'tag'])->name('exponent.tag');
+    [\App\Http\Controllers\ExponentController::class, 'tag'])->name('exponent.tag.k');
 Route::get('/exponent/profit/tag/{id}/year/{year}/quarterly/{quarterly}',
     [\App\Http\Controllers\ExponentController::class, 'tagProfit'])->name('exponent.tag.profit');
+Route::get('/exponent/k/tag/{id}/year/{year}',
+    [\App\Http\Controllers\ExponentController::class, 'stockK'])->name('exponent.tag.stock.k');
 
 // 股價
 Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');

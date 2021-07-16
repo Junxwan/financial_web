@@ -96,7 +96,7 @@
 
         // 股本
         $("#start_capital, #end_capital").change(function () {
-            $('#' + $(this).attr('id') + '_text').html(roundText($(this).val()))
+            $('#' + $(this).attr('id') + '_text').html(amountText($(this).val()))
             compute()
         })
 
@@ -132,9 +132,9 @@
                 $('#eps3_sum').val(response.data.eps3_sum)
                 $('#eps4_sum').val(response.data.eps4_sum)
                 $('#start_capital').val(Math.round(response.data.start_capital / 1000))
-                $('#start_capital_text').html(roundText(response.data.start_capital / 1000))
+                $('#start_capital_text').html(amountText(response.data.start_capital))
                 $('#end_capital').val(Math.round(response.data.capital / 1000))
-                $('#end_capital_text').html(roundText(response.data.capital / 1000))
+                $('#end_capital_text').html(amountText(response.data.capital))
                 toastr.success('查訊成功')
             }).catch(function (error) {
                 toastr.error('查無資料')
@@ -256,9 +256,9 @@
         $('#evaluate').val(data.evaluate)
         $('#price_f').val(data.price_f)
         $('#start_capital').val(data.start_stock)
-        $('#start_capital_text').html(roundText(data.start_stock))
+        $('#start_capital_text').html(amountText(data.start_stock))
         $('#end_capital').val(data.capital)
-        $('#end_capital_text').html(roundText(data.capital))
+        $('#end_capital_text').html(amountText(data.capital))
 
         $('#editor-desc').html(data.desc)
         $('#editor-total').html(data.desc_total)

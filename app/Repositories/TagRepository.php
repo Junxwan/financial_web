@@ -79,6 +79,7 @@ class TagRepository extends Repository
             ->select('stocks.code', 'stocks.name')
             ->join('stocks', 'stock_tags.stock_id', '=', 'stocks.id')
             ->where('stock_tags.tag_id', $id)
+            ->orderBy('code')
             ->get();
     }
 

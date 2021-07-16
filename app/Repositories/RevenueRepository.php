@@ -43,19 +43,22 @@ class RevenueRepository extends Repository
             ->where('revenues.year', '<=', $year)
             ->orderByDesc('revenues.year')
             ->orderByDesc('revenues.month')
-            ->limit(48)
+            ->limit(72)
             ->get()->filter(function ($v) use ($year, $month) {
                 return ($year == $v->year) ? $v->month <= $month : true;
-            })->slice(0, 36)->values();
+            })->slice(0, 60)->values();
 
-        return $revenue->values()->map(function ($v) use ($revenue) {
+        return $revenue->values()->map(function ($v, $i) use ($revenue) {
             $ye = $revenue->where('year', $v->year - 1)
                 ->where('month', $v->month)
                 ->first();
 
             $v->yoy = is_null($ye) ? 0 : round((($v->value / $ye->value) - 1) * 100, 2);
+            $v->qoq = isset($revenue[$i + 1]) ? round((($v->value / $revenue[$i + 1]->value) - 1) * 100, 2) : 0;
 
             return $v;
+        })->filter(function ($value) {
+            return $value->yoy != 0;
         });
     }
 }

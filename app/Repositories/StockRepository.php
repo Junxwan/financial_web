@@ -11,6 +11,16 @@ use Illuminate\Support\Facades\DB;
 class StockRepository extends Repository
 {
     /**
+     * @param array $ids
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function gets(array $ids)
+    {
+        return Stock::query()->whereIn('id', $ids)->orderBy('code')->get();
+    }
+
+    /**
      * @param array $data
      *
      * @return array

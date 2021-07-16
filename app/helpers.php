@@ -62,3 +62,27 @@ if (! function_exists('q4r')) {
 }
 
 
+if (! function_exists('profitFilter')) {
+    function profitFilter(Collection $profit, array $keys)
+    {
+        return $profit->map(function ($value) use ($profit, $keys) {
+            if ($value->quarterly == 1) {
+                return $value;
+            }
+
+            $yv = $profit->where('year', $value->year)
+                ->where('quarterly', $value->quarterly - 1)
+                ->first();
+
+            if (is_null($yv)) {
+                return null;
+            }
+
+            foreach ($keys as $key) {
+                $value[$key] -= $yv[$key];
+            }
+
+            return $value;
+        });
+    }
+}
