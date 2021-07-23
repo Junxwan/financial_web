@@ -25,7 +25,7 @@ class NewsRepository extends Repository
                 $queryTotal = $this->whereLike($queryTotal, $search);
             }
 
-            $query = $this->whereDate($query, $search);
+            $query = $this->whereDate($query->getQuery(), $search);
             $queryTotal = $this->whereDate($queryTotal, $search);
         }
 
