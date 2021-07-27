@@ -48,6 +48,9 @@ class PriceRepository extends Repository
                 $query = $query->where('stocks.market', $this->market[$search['name']]);
                 $queryTotal = $queryTotal->where('stocks.market', $this->market[$search['name']]);
             }
+        } else {
+            $query = $this->latestDate($query);
+            $queryTotal = $this->latestDate($queryTotal);
         }
 
         $total = $queryTotal->count();
