@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\News;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class NewsRepository extends Repository
@@ -16,16 +16,16 @@ class NewsRepository extends Repository
     public function list(array $data)
     {
         $query = news::query()->select('id', 'title', 'publish_time', 'url', 'remark');
-        $queryTotal = DB::table('news');
+        $queryTotal = news::query();
 
         if (isset($data['search'])) {
             $search = $data['search'];
             if (isset($search['value']) && ! empty($search['value'])) {
-                $query = $this->whereLike($query->getQuery(), $search);
+                $query = $this->whereLike($query, $search);
                 $queryTotal = $this->whereLike($queryTotal, $search);
             }
 
-            $query = $this->whereDate($query->getQuery(), $search);
+            $query = $this->whereDate($query, $search);
             $queryTotal = $this->whereDate($queryTotal, $search);
         }
 
@@ -75,8 +75,8 @@ class NewsRepository extends Repository
         $f = function ($name) {
             return $this->transaction(function () use ($name) {
                 DB::statement("SET SQL_SAFE_UPDATES = 0;");
-                return news::query()->whereIn('id', function (Builder $query) use ($name) {
-                    $query->fromSub(function (Builder $query2) use ($name) {
+                return news::query()->whereIn('id', function (\Illuminate\Database\Query\Builder $query) use ($name) {
+                    $query->fromSub(function (\Illuminate\Database\Query\Builder $query2) use ($name) {
                         $query2->select('id')
                             ->from('news')
                             ->groupBy([$name])
