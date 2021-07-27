@@ -192,7 +192,11 @@ class Profit
                 ->where('quarterly', $v->quarterly)
                 ->first();
 
-            $v->revenue_yoy = is_null($ye) ? 0 : round((($v->revenue / $ye->revenue) - 1) * 100, 2);
+            if (is_null($ye) || $ye->revenue == 0) {
+                $v->revenue_yoy = 0;
+            } else {
+                $v->revenue_yoy = round((($v->revenue / $ye->revenue) - 1) * 100, 2);
+            }
 
             return $v;
         })->filter(function ($v) {

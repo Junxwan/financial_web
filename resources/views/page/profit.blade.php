@@ -379,7 +379,7 @@
             var url = '{{ route("profit.eps", ['code' => ':code']) }}'
             return axios.get(url.replace(':code', code)).then(function (response) {
                 $('.form-group-eps').each(function (index) {
-                    v = response.data[index]
+                    v = response.data[index+1]
 
                     if (v.eps !== '') {
                         $(this).find('.input-date').html(v.year)
