@@ -49,9 +49,11 @@ class TagRepository extends Repository
      */
     public function count(array $ids)
     {
-        return Tag::query()
-            ->select('id',DB::RAW('COUNT(1) AS count'))
-            ->whereIn('id', $ids)->get();
+        return StockTag::query()
+            ->select(DB::RAW('tag_id AS id'))
+            ->whereIn('tag_id', $ids)
+            ->get()
+            ->countBy('id');
     }
 
     /**

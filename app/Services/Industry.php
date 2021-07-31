@@ -68,11 +68,10 @@ class Industry
                 $item->volume = array_sum($value);
             }
 
-            $c = $count->where('id', $item->id)->first();
-            $item->count = is_null($c) ? 0 : $c->count;
+            $item->count = isset($count[$item->id]) ? $count[$item->id] : 0;
 
             return $item;
-        })->filter(function ($item){
+        })->filter(function ($item) {
             return $item->count > 0;
         })->sortByDesc(isset($select['order']) ? $select['order'] : 'increase')->values();
 
