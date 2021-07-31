@@ -270,41 +270,45 @@
                 // eps
                 $('.form-group-quarterly-eps').each(function (index) {
                     v = response.data[index]
-                    $(this).find('.input-date').html(v.year + "Q" + v.quarterly)
-                    $(this).find('.input-value').val(Math.round(v.eps * 100) / 100)
+                    if (typeof v !== 'undefined') {
+                        $(this).find('.input-date').html(v.year + "Q" + v.quarterly)
+                        $(this).find('.input-value').val(Math.round(v.eps * 100) / 100)
+                    }
                 })
 
                 // 總結
                 $('.form-group-total').each(function () {
                     v = response.data[$(this).data('index')]
 
-                    $(this).find('span').html(v.year + "Q" + v.quarterly)
-                    $(this).find('input').each(function () {
-                        name = $(this).data('name')
+                    if (typeof v !== 'undefined') {
+                        $(this).find('span').html(v.year + "Q" + v.quarterly)
+                        $(this).find('input').each(function () {
+                            name = $(this).data('name')
 
-                        switch (name) {
-                            case 'year':
-                                value = v.year + "Q" + v.quarterly
-                                break
-                            case 'eps':
-                                value = Math.round(v[name] * 100) / 100
-                                break
-                            case 'non_eps':
-                                value = Math.round((v.outside / v.profit_main) * v.eps * 100) / 100
-                                break
-                            case 'this':
-                                if (v.eps > 0) {
-                                    value = Math.round(100 - (Math.round((v.outside / v.profit_main) * v.eps * 100) / 100) / v.eps * 100);
-                                } else {
-                                    value = 0
-                                }
-                                break;
-                            default:
-                                value = amountText(Math.round(v[$(this).data('name')]))
-                        }
+                            switch (name) {
+                                case 'year':
+                                    value = v.year + "Q" + v.quarterly
+                                    break
+                                case 'eps':
+                                    value = Math.round(v[name] * 100) / 100
+                                    break
+                                case 'non_eps':
+                                    value = Math.round((v.outside / v.profit_main) * v.eps * 100) / 100
+                                    break
+                                case 'this':
+                                    if (v.eps > 0) {
+                                        value = Math.round(100 - (Math.round((v.outside / v.profit_main) * v.eps * 100) / 100) / v.eps * 100);
+                                    } else {
+                                        value = 0
+                                    }
+                                    break;
+                                default:
+                                    value = amountText(Math.round(v[$(this).data('name')]))
+                            }
 
-                        $(this).val(value)
-                    })
+                            $(this).val(value)
+                        })
+                    }
                 })
 
                 Highcharts.chart('profit-bar', {
@@ -347,21 +351,23 @@
 
                 $('.form-group-quarterly').each(function () {
                     v = response.data[$(this).data('index')]
-                    name = $(this).data('name')
-                    value = v[name]
-                    rate = Math.round((value / v.revenue) * 10000) / 100
+                    if (typeof v !== 'undefined') {
+                        name = $(this).data('name')
+                        value = v[name]
+                        rate = Math.round((value / v.revenue) * 10000) / 100
 
-                    if (typeof datas[name] !== 'undefined') {
-                        datas[name].push(rate)
-                    }
+                        if (typeof datas[name] !== 'undefined') {
+                            datas[name].push(rate)
+                        }
 
-                    if (!isNaN(value)) {
-                        setInput(
-                            $(this),
-                            v.year + "Q" + v.quarterly,
-                            rate,
-                            value
-                        )
+                        if (!isNaN(value)) {
+                            setInput(
+                                $(this),
+                                v.year + "Q" + v.quarterly,
+                                rate,
+                                value
+                            )
+                        }
                     }
                 })
 
@@ -379,7 +385,7 @@
             var url = '{{ route("profit.eps", ['code' => ':code']) }}'
             return axios.get(url.replace(':code', code)).then(function (response) {
                 $('.form-group-eps').each(function (index) {
-                    v = response.data[index+1]
+                    v = response.data[index + 1]
 
                     if (v.eps !== '') {
                         $(this).find('.input-date').html(v.year)

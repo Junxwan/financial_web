@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Repositories\PriceRepository;
 use App\Repositories\TagRepository;
-use Illuminate\Support\Arr;
 
 class Industry
 {
@@ -47,9 +46,11 @@ class Industry
             }
         }
 
-        $price = $this->price->getByTag($tag->pluck('id')->toArray(), $date);
+        $ids = $tag->pluck('id')->toArray();
+        $count = $this->tag->count($ids);
+        $price = $this->price->getByTag($ids, $date);
 
-        $data = $tag->map(function ($item) use ($price) {
+        $data = $tag->map(function ($item) use ($price, $count) {
             $item->increase = 0;
             $item->volume = 0;
 
@@ -67,7 +68,12 @@ class Industry
                 $item->volume = array_sum($value);
             }
 
+            $c = $count->where('id', $item->id)->first();
+            $item->count = is_null($c) ? 0 : $c->count;
+
             return $item;
+        })->filter(function ($item){
+            return $item->count > 0;
         })->sortByDesc(isset($select['order']) ? $select['order'] : 'increase')->values();
 
         return [

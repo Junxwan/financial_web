@@ -23,6 +23,7 @@
                             return (Math.round(data / 1000000) / 100) + '億'
                         },
                     },
+                    {data: "count", width: '10%'},
                 ],
                 buttons: [reloadBtn, selectBtn,],
                 pageLength: 50,

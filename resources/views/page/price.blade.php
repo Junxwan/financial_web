@@ -9,7 +9,6 @@
                 columns: [
                     {data: "code", width: '7%'},
                     {data: "name", width: '10%'},
-                    {data: "open", width: '10%'},
                     {data: "close", width: '10%'},
                     {data: "increase", width: '5%'},
                     {
@@ -57,6 +56,19 @@
                     {data: "increase_5", width: '5%'},
                     {data: "increase_23", width: '5%'},
                     {data: "increase_63", width: '5%'},
+                    {
+                        data: "tags",
+                        width: '15%',
+                        render: function (data, t, row, meta) {
+                            var html = ''
+
+                            data.forEach(function (v) {
+                                html += '<span class="badge badge-pill badge-dark">' + v.name + '</span>'
+                            })
+
+                            return html
+                        },
+                    },
                 ],
                 buttons: [
                     reloadBtn,
@@ -95,7 +107,7 @@
                 '<select id="search-order">' +
                 '<option value="increase">漲幅</option>' +
                 '<option value="volume">成交量</option>' +
-                '<option value="value">成交金額</option>' +
+                '<option value="value">成交值</option>' +
                 '<option value="increase_5">週%</option>' +
                 '<option value="increase_23">月%</option>' +
                 '<option value="increase_63">季%</option>' +

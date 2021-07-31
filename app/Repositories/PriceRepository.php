@@ -3,7 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Price;
-use Carbon\Carbon;
+use App\Models\StockTag;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +26,7 @@ class PriceRepository extends Repository
     {
         $queryTotal = Price::query()->join('stocks', 'stocks.id', '=', 'prices.stock_id');
         $query = Price::query()->select(
-            'stocks.code', 'stocks.name', 'prices.open', 'prices.close', 'prices.fund_value', 'prices.foreign_value',
+            'stocks.code', 'stocks.name', 'prices.close', 'prices.fund_value', 'prices.foreign_value',
             DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market',
             DB::RAW('classifications.name AS cName'), DB::RAW('ROUND(prices.increase_5,2) AS increase_5'),
             DB::RAW('ROUND(prices.increase_23,2) AS increase_23'), DB::RAW('ROUND(prices.increase_63,2) AS increase_63')
@@ -54,13 +54,35 @@ class PriceRepository extends Repository
         }
 
         $total = $queryTotal->count();
+        $data = $query
+            ->offset($data['start'])
+            ->limit($data['limit'])
+            ->orderByDesc(isset($data['order']) ? $data['order'] : 'increase')
+            ->get();
+
+        $tags = StockTag::query()->select(
+            DB::RAW('stock_tags.stock_id'),
+            DB::RAW('tags.id'),
+            DB::RAW('tags.name')
+        )->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
+            ->whereIn('stock_tags.stock_id', $data->pluck('id'))
+            ->get();
 
         return [
-            'data' => $query
-                ->offset($data['start'])
-                ->limit($data['limit'])
-                ->orderByDesc(isset($data['order']) ? $data['order'] : 'increase')
-                ->get(),
+            'data' => $data->map(function ($value) use ($tags) {
+                $t = [];
+                foreach ($tags as $v) {
+                    if ($value->id == $v->stock_id) {
+                        $t[] = [
+                            'id' => $v->id,
+                            'name' => $v->name,
+                        ];
+                    }
+                }
+
+                $value->tags = $t;
+                return $value;
+            }),
             'total' => $total,
         ];
     }

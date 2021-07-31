@@ -199,8 +199,6 @@ class Profit
             }
 
             return $v;
-        })->filter(function ($v) {
-            return $v->revenue_yoy != 0;
         });
     }
 

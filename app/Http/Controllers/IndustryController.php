@@ -19,6 +19,7 @@ class IndustryController extends Controller
         '名稱',
         '漲幅',
         '成交值',
+        '檔數',
     ];
 
     /**

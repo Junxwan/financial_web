@@ -673,7 +673,7 @@ function newStockChat(select, data, height = 550) {
                                 value = (Math.round(value / 10000 * 100) / 100) + '萬'
                             }
 
-                            html += ' 成交金額: ' + '<span style="color:#7dbbd2">' + value + '</span>'
+                            html += ' 成交值: ' + '<span style="color:#7dbbd2">' + value + '</span>'
                             break
                         case '5Ma':
                             html += '<span style="color:#ff8c00"> ' + this.series.name + ': </span> ' + '<span style="color:#ff8c00">' + Math.round(this.y * 100) / 100 + '</span>'

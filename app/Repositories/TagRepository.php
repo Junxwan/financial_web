@@ -8,6 +8,7 @@ use App\Models\StockTag;
 use App\Models\Tag;
 use App\Models\TagExponent;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class TagRepository extends Repository
 {
@@ -39,6 +40,18 @@ class TagRepository extends Repository
             ->join('tags', 'tags.id', '=', 'tag_exponents.tag_id')
             ->join('stocks', 'stocks.id', '=', 'tag_exponents.stock_id')
             ->get();
+    }
+
+    /**
+     * @param array $ids
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function count(array $ids)
+    {
+        return Tag::query()
+            ->select('id',DB::RAW('COUNT(1) AS count'))
+            ->whereIn('id', $ids)->get();
     }
 
     /**

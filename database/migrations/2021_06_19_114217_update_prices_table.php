@@ -19,7 +19,7 @@ class UpdatePricesTable extends Migration
     public function up()
     {
         Schema::table($this->table, function (Blueprint $table) {
-            $table->unsignedBigInteger('value')->default(0)->comment('成交金額');
+            $table->unsignedBigInteger('value')->default(0)->comment('成交值');
             $table->integer('main')->default(0)->comment('主力買賣超');
             $table->integer('fund')->default(0)->comment('投信買賣超');
             $table->integer('foreign')->default(0)->comment('外資買賣超');
