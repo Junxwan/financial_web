@@ -28,6 +28,16 @@ class Price
      */
     public function list(array $data)
     {
-        return $this->repo->list($data);
+        $prices = $this->repo->list($data);
+        $yPrices = $this->repo->yesterdayListById(
+            $prices['data']->pluck('id')->toArray(), $prices['data'][0]['date']
+        );
+
+        $prices['data']->map(function ($item) use ($yPrices) {
+            $item->y_volume_b = round($item->volume / $yPrices->where('stock_id', $item->id)->first()->volume, 1);
+            return $item;
+        });
+
+        return $prices;
     }
 }

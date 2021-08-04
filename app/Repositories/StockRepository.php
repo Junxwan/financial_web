@@ -27,20 +27,29 @@ class StockRepository extends Repository
      */
     public function list(array $data)
     {
-        $query = Stock::query()->select('id', 'code', 'name', 'classification_id', 'market', DB::RAW('"tags"'))
-            ->whereIn('market', [1, 2]);
-        $queryTotal = Stock::query()->whereIn('market', [1, 2])->getQuery();
+        $query = Stock::query()->select(
+            'stocks.id',
+            'stocks.code',
+            'stocks.name',
+            'stocks.classification_id',
+            'stocks.market',
+            DB::RAW('"tags"')
+        )->whereIn('market', [1, 2]);
 
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
             if (isset($search['value']) && ! empty($search['value'])) {
                 $query = $this->whereLike($query->getQuery(), $search);
-                $queryTotal = $this->whereLike($queryTotal, $search);
+            }
+
+            if (isset($search['name']) && ! empty($search['name'])) {
+                $query = $query->join('stock_tags', 'stock_tags.stock_id', '=', 'stocks.id')
+                    ->where('stock_tags.tag_id', $search['name']);
             }
         }
 
         $data = $query->offset($data['start'])
             ->limit($data['limit'])
-            ->orderBy('code')
+            ->orderBy('stocks.code')
             ->get();
 
         $tags = StockTag::query()->select(
@@ -66,7 +75,7 @@ class StockRepository extends Repository
                 $value->tags = $t;
                 return $value;
             }),
-            'total' => $queryTotal->count(),
+            'total' => $query->count(),
         ];
     }
 

@@ -11,13 +11,8 @@
                     {data: "name", width: '10%'},
                     {data: "close", width: '10%'},
                     {data: "increase", width: '5%'},
-                    {
-                        data: "volume",
-                        width: '10%',
-                        render: function (data, t, row, meta) {
-                            return data
-                        },
-                    },
+                    {data: "volume", width: '10%'},
+                    {data: "y_volume_b", width: '10%'},
                     {
                         data: "value",
                         width: '10%',

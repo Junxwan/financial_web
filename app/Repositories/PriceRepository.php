@@ -26,7 +26,8 @@ class PriceRepository extends Repository
     {
         $queryTotal = Price::query()->join('stocks', 'stocks.id', '=', 'prices.stock_id');
         $query = Price::query()->select(
-            'stocks.code', 'stocks.name', 'prices.close', 'prices.fund_value', 'prices.foreign_value',
+            'stocks.id', 'stocks.code', 'stocks.name', 'prices.date',
+            'prices.close', 'prices.fund_value', 'prices.foreign_value',
             DB::RAW('ROUND(prices.increase, 2) AS increase'), 'prices.volume', 'prices.value', 'stocks.market',
             DB::RAW('classifications.name AS cName'), DB::RAW('ROUND(prices.increase_5,2) AS increase_5'),
             DB::RAW('ROUND(prices.increase_23,2) AS increase_23'), DB::RAW('ROUND(prices.increase_63,2) AS increase_63')
@@ -85,6 +86,21 @@ class PriceRepository extends Repository
             }),
             'total' => $total,
         ];
+    }
+
+    /**
+     * @param array $ids
+     * @param string $date
+     *
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function yesterdayListById(array $ids, string $date)
+    {
+        return Price::query()
+            ->whereIn('stock_id', $ids)
+            ->where('date', function ($query) use ($date) {
+                $query->select('date')->from('prices')->where('date', '<', $date)->orderByDesc('id')->limit(1);
+            })->get();
     }
 
     /**
