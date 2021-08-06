@@ -218,7 +218,7 @@
                             "<td>" + v.revenue + "</td>" +
                             "</tr>"
 
-                        $("#quarterly-month-revenue>tbody").append(html)
+                        $("#quarterly-revenue>tbody").append(html)
                     }
 
                     datas.push(date)
@@ -233,7 +233,7 @@
                 profits.reverse()
                 profit_after.reverse()
 
-                Highcharts.chart('quarterly-month-revenue-bar', {
+                Highcharts.chart('quarterly-revenue-bar', {
                     colors: ['#45617d'],
                     plotOptions: {
                         column: {
@@ -862,7 +862,7 @@
         <div class="card-body" style="display: block;">
             <div class="row">
                 <div class="col-md-12">
-                    <table id="quarterly-month-revenue" class="table table-dark">
+                    <table id="quarterly-revenue" class="table table-dark">
                         <thead>
                         <tr>
                             <th scope="col">年季</th>
@@ -878,12 +878,12 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="quarterly-month-revenue-bar"></div>
+                    <div id="quarterly-revenue-bar"></div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="quarterly-month-revenue-yoy-bar"></div>
+                    <div id="quarterly-revenue-yoy-bar"></div>
                 </div>
             </div>
         </div>
