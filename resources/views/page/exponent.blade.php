@@ -76,6 +76,12 @@
 
             return "<td>" + amountText(value1) + '</br><span style="color:' + color + '"> (' + value2 + '%)</span> ' + "</td>"
         }
+
+        let urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('tag')) {
+            $('#tag').val(urlParams.get('tag'))
+            $('#select-btn').click()
+        }
     </script>
 @stop
 

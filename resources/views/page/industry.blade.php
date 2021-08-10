@@ -1,5 +1,33 @@
 @extends('partials.table')
 
+@section('table_css')
+    <style>
+        a:link {
+            color: whitesmoke;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: cadetblue;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: whitesmoke;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+
+        a:active {
+            color: whitesmoke;
+            background-color: transparent;
+            text-decoration: underline;
+        }
+    </style>
+@stop
+
 @section('table_js')
     <script>
         $(document).ready(function () {
@@ -8,7 +36,13 @@
                 url: "{{ route('industry.list') }}",
                 columns: [
                     {data: "code", width: '10%'},
-                    {data: "name", width: '10%'},
+                    {
+                        data: "name",
+                        width: '10%',
+                        render: function (data, t, row, meta) {
+                            return '<a href="' + "{{ route('exponent.index') }}?tag=" + row.id + '" target="_blank">' + data + '</a>'
+                        },
+                    },
                     {
                         data: "increase",
                         width: '10%',
