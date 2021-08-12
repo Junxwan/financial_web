@@ -88,7 +88,7 @@
                         $("#month-revenue>tbody").append(html)
                     }
 
-                    let t = (new Date(v.year, v.month, 1)).getTime()
+                    let t = Date.parse(v.year + '-' + v.month + '-02')
                     revenues.push([t, v.value])
                     yoys.push([t, v.yoy])
                     qoqs.push([t, v.qoq])
