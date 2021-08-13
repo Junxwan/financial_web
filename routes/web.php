@@ -110,3 +110,8 @@ Route::get('/stock/price', [\App\Http\Controllers\Stock\PriceController::class, 
 Route::get('/stock/price/list',
     [\App\Http\Controllers\Stock\PriceController::class, 'list'])->name('stock.price.list');
 
+# 個股股價
+Route::get('/revenues/month',
+    [\App\Http\Controllers\MonthRevenuesController::class, 'index'])->name('revenues.month.index');
+Route::get('/revenues/month/list',
+    [\App\Http\Controllers\MonthRevenuesController::class, 'list'])->name('revenues.month.list');

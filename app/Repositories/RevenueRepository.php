@@ -8,6 +8,23 @@ use Illuminate\Support\Facades\DB;
 class RevenueRepository extends Repository
 {
     /**
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function list(int $year, int $month)
+    {
+        return Revenue::query()->select(
+            'year', 'month', 'value', 'qoq', 'yoy', 'stocks.code', 'stocks.name'
+        )->join('stocks', 'stocks.id', '=', 'revenues.stock_id')
+            ->where('year', $year)
+            ->where('month', $month)
+            ->orderByDesc('yoy')
+            ->get();
+    }
+
+    /**
      * @param string $code
      * @param int $year
      *

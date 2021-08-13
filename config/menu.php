@@ -32,6 +32,11 @@ return [
         'name' => '財報',
     ],
     [
+        'route' => 'revenues.month.index',
+        'icon' => 'fas fa-signal',
+        'name' => '月營收',
+    ],
+    [
         'route' => 'fund.index',
         'icon' => 'fas fa-list',
         'name' => '投信持股',
@@ -41,11 +46,11 @@ return [
         'icon' => 'fas fa-list',
         'name' => '投信個股持股',
     ],
-//    [
-//        'route' => 'category.index',
-//        'icon' => 'fas fa-list',
-//        'name' => '類股',
-//    ],
+    //    [
+    //        'route' => 'category.index',
+    //        'icon' => 'fas fa-list',
+    //        'name' => '類股',
+    //    ],
     [
         'route' => 'industry.index',
         'icon' => 'fas fa-list',
