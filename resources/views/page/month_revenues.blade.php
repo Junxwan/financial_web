@@ -129,8 +129,8 @@
             <div id="stock" class="row">
             </div>
             <div class="row">
-                <div class="col-md-12">
-                    <table id="stock_list" class="table table-dark">
+                <div class="col-md-12 card-body table-responsive p-0" style="height: 500px;">
+                    <table id="stock_list" class="table table-dark table-head-fixed text-nowrap">
                         <thead>
                         <tr>
                             <th scope="col">代碼</th>

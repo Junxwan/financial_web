@@ -30,19 +30,20 @@
         $('#select-btn').click(function () {
             var url = "{{ route('stock.fund.list', ['year' => ':year', 'code' => ':code']) }}"
             axios.get(url.replace(':year', $('#year').val()).replace(':code', $('#code').val())).then(function (response) {
-                $('.table').each(function () {
-                    index = $(this).data('m') - 1
+                if (response.data.length > 0) {
+                    $('#name').val(response.data[0][0].name)
 
-                    if (response.data[index] !== undefined) {
-                        $('#name').val(response.data[index][0].name)
-
-                        response.data[index].forEach(function (v) {
-                            $('#list_' + (index + 1) + ' tbody').append('<tr><td>' + v.fName + '</td><td>' + v.ratio + '</td></tr>')
+                    response.data.forEach(function (data) {
+                        data.forEach(function (v) {
+                            $('#list_' + v.month + ' tbody').append('<tr><td>' + v.fName + '</td><td>' + v.ratio + '</td></tr>')
                         })
-                    }
-                })
+                    })
 
-                toastr.success('查詢成功')
+                    toastr.success('查詢成功')
+                } else {
+                    toastr.success('沒資料')
+                }
+
             }).catch(function (error) {
                 toastr.error('無資料')
             })

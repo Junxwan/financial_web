@@ -23,7 +23,7 @@ class MonthRevenuesController
         $now = Carbon::now();
         return view($this->view, [
             'year' => $now->year,
-            'month' => $now->month,
+            'month' => $now->month - 1,
         ]);
     }
 
