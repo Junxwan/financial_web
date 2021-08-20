@@ -59,6 +59,9 @@ Route::get('/profit/eps/{code}/code',
     [\App\Http\Controllers\ProfitController::class, 'eps'])->name('profit.eps');
 Route::get('/profit/dividend/{code}/code',
     [\App\Http\Controllers\ProfitController::class, 'dividend'])->name('profit.dividend');
+Route::get('/profit/rank', [\App\Http\Controllers\ProfitController::class, 'rankIndex'])->name('profit.rank.index');
+Route::get('/profit/rank/{year}/year/{season}/season/{name}',
+    [\App\Http\Controllers\ProfitController::class, 'rank'])->name('profit.rank');
 
 // 現金流量表
 Route::get('/cash/recent/{code}/code/{year}/year/{quarterly}/quarterly',

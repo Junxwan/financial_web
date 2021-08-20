@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Dividend;
 use App\Models\Profit as Model;
+use App\Models\StockTag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -263,5 +264,73 @@ class Profit
             ->orderByDesc('dividends.year')
             ->limit(8)
             ->get();
+    }
+
+    /**
+     * @param int $year
+     * @param int $quarterly
+     * @param string $name
+     * @param string $order
+     * @param array $options
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function rank(int $year, int $quarterly, string $name, string $order, array $options)
+    {
+        $query = Model::query()->select('code', 'stocks.name', DB::RAW('classifications.name as cName'))
+            ->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+            ->join('classifications', 'classifications.id', '=', 'stocks.classification_id');
+
+        switch ($name) {
+            case 'gross':
+            case 'profit':
+            case 'profit_after':
+                $query = $query->addSelect(DB::RAW('ROUND((' . $name . '/revenue)*100, 2) AS value'));
+                break;
+            case 'outside':
+                $query = $query->addSelect(DB::RAW('ROUND((outside/profit_after)*100, 2) AS value'));
+                break;
+            case 'eps':
+                $query = $query->addSelect(DB::RAW('ROUND(eps, 2) AS value'));
+                break;
+            case 'revenue':
+                $query = $query->addSelect(DB::RAW('revenue AS value'));
+                break;
+        }
+
+        $query = $query->where('year', $year)
+            ->where('quarterly', $quarterly);
+
+        $data = $query
+            ->orderBy('value', $order)
+            ->offset($options['start'])
+            ->limit($options['limit'])
+            ->get();
+
+        $tags = StockTag::query()->select(
+            DB::RAW('stock_tags.stock_id'),
+            DB::RAW('tags.id'),
+            DB::RAW('tags.name')
+        )->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
+            ->whereIn('stock_tags.stock_id', $data->pluck('id'))
+            ->get();
+
+        return [
+            'data' => $data->map(function ($value) use ($tags) {
+                $t = [];
+                foreach ($tags as $v) {
+                    if ($value->id == $v->stock_id) {
+                        $t[] = [
+                            'id' => $v->id,
+                            'name' => $v->name,
+                        ];
+                    }
+                }
+
+                $value->tags = $t;
+                return $value;
+            }),
+            'total' => $query->count(),
+        ];
     }
 }

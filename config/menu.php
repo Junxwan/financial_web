@@ -37,6 +37,11 @@ return [
         'name' => '月營收',
     ],
     [
+        'route' => 'profit.rank.index',
+        'icon' => 'fas fa-signal',
+        'name' => '財報排行',
+    ],
+    [
         'route' => 'fund.index',
         'icon' => 'fas fa-list',
         'name' => '投信持股',

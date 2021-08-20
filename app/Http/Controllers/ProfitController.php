@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Services\Cash;
 use App\Services\Profit;
+use Illuminate\Http\Request;
+use function Symfony\Component\String\s;
 
 class ProfitController
 {
@@ -120,6 +122,48 @@ class ProfitController
                     ],
                 ],
             ],
+        ]);
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function rankIndex()
+    {
+        return view('page.profit_rank', [
+            'year' => date('Y'),
+            'name' => [
+                '毛利率' => 'gross',
+                '營利率' => 'profit',
+                '純益率' => 'profit_after',
+                'eps' => 'eps',
+                '營收' => 'revenue',
+                '業外率' => 'outside',
+            ],
+            'header' => ['代碼', '名稱', '值', '類別', '標籤'],
+            'modal' => []
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $year
+     * @param int $season
+     * @param string $name
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function rank(Request $request, int $year, int $season, string $name)
+    {
+        $data = $this->profit->rank(
+            $year, $season, $name, $request->get('order', 'desc'), $request->all()
+        );
+
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $data['total'],
+            'recordsFiltered' => $data['total'],
+            'data' => $data['data'],
         ]);
     }
 
