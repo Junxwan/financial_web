@@ -387,7 +387,7 @@
                 $('.form-group-eps').each(function (index) {
                     v = response.data[index + 1]
 
-                    if (v.eps !== '') {
+                    if (v !== undefined && v.eps !== '') {
                         $(this).find('.input-date').html(v.year)
                         $(this).find('.input-value').val(Math.round(v.eps * 100) / 100)
                     }
@@ -402,10 +402,10 @@
 
                 response.data.forEach(function (v) {
                     $("#eps-year>thead>tr").append("<th>" + v.year + "</th>")
-                    $("#eps-year>tbody>tr:nth-child(1)").append("<td>" + v.q1 + "</td>")
-                    $("#eps-year>tbody>tr:nth-child(2)").append("<td>" + v.q2 + "</td>")
-                    $("#eps-year>tbody>tr:nth-child(3)").append("<td>" + v.q3 + "</td>")
-                    $("#eps-year>tbody>tr:nth-child(4)").append("<td>" + v.q4 + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(1)").append("<td>" + (v.q1 !== undefined ? v.q1 : '') + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(2)").append("<td>" + (v.q2 !== undefined ? v.q2 : '') + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(3)").append("<td>" + (v.q3 !== undefined ? v.q3 : '') + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(4)").append("<td>" + (v.q4 !== undefined ? v.q4 : '') + "</td>")
 
                     if (v.eps !== '') {
                         eps.push([v.year, v.eps])
@@ -506,6 +506,7 @@
                 hint()
                 return true
             }).catch(function (error) {
+                console.log(error)
                 toastr.error('查EPS無資料')
                 return false
             })
@@ -519,15 +520,17 @@
                 rates = []
 
                 $('.form-group-dividend').each(function (index) {
-                    v = response.data[index]
-                    rate = Math.round((v.cash / eps[index + 1].eps) * 100)
+                    if (eps[index + 1] !== undefined) {
+                        v = response.data[index]
+                        rate = Math.round((v.cash / eps[index + 1].eps) * 100)
 
-                    dividends.push([v.year, v.cash])
-                    rates.push([v.year, rate])
+                        dividends.push([v.year, v.cash])
+                        rates.push([v.year, rate])
 
-                    $(this).find('.input-date').html(v.year)
-                    $(this).find('.input-rate').html(rate + '%')
-                    $(this).find('.input-value').val(Math.round(v.cash * 100) / 100)
+                        $(this).find('.input-date').html(v.year)
+                        $(this).find('.input-rate').html(rate + '%')
+                        $(this).find('.input-value').val(Math.round(v.cash * 100) / 100)
+                    }
                 })
 
                 rates.reverse()
