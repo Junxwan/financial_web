@@ -77,6 +77,6 @@ class RevenueRepository extends Repository
             return $v;
         })->filter(function ($value) {
             return $value->yoy != 0;
-        });
+        })->toArray();
     }
 }
