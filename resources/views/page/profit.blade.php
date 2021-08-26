@@ -179,6 +179,7 @@
                 toastr.success('月營收成功')
                 return true
             }).catch(function (error) {
+                console.log(error)
                 toastr.error('查無月營收')
                 return false
             })
