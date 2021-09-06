@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Classification;
 use App\Repositories\RevenueRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class MonthRevenuesController
         return view($this->view, [
             'year' => $now->year,
             'month' => $now->month - 1,
+            'classification' => Classification::query()->get(),
         ]);
     }
 

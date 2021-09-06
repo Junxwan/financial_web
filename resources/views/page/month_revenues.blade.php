@@ -19,6 +19,7 @@
                             "<td>" + amountText(v.value) + "</td>" +
                             "<td>" + textR(v.yoy, r) + "</td>" +
                             "<td>" + textR(v.qoq, r) + "</td>" +
+                            "<td>" + v.cname + "</td>" +
                             "</tr>"
 
                         $("#stock_list>tbody").append(html)
@@ -31,6 +32,28 @@
             })
         })
 
+        $('#export-btn').click(function () {
+            let header = []
+            $('#stock_list>thead>tr>th').each(function () {
+                header.push($(this).text())
+            })
+
+            let data = [header]
+            $('#stock_list>tbody>tr').each(function () {
+                let v = []
+                $(this).children('td').each(function () {
+                    v.push($(this).text().trim())
+                })
+                data.push(v)
+            })
+
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(convertToCSV(data));
+            hiddenElement.target = '_blank';
+            hiddenElement.download = $('#year').val() + '-' + $('#month').val() + '-revenues.csv';
+            hiddenElement.click();
+        })
+
         function textR(value, r) {
             if (value >= r) {
                 color = '#f33f7a'
@@ -41,6 +64,24 @@
             }
 
             return '<span style="color:' + color + '"> ' + value + '%</span> '
+        }
+
+        function convertToCSV(objArray) {
+            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line != '') line += ','
+
+                    line += array[i][index];
+                }
+
+                str += line + '\r\n';
+            }
+
+            return str;
         }
     </script>
 @stop
@@ -112,6 +153,12 @@
                         查
                     </button>
                 </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-sm"
+                            id="export-btn">
+                        匯出
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -138,6 +185,7 @@
                             <th scope="col">營收</th>
                             <th scope="col">yoy</th>
                             <th scope="col">qoq</th>
+                            <th scope="col">類別</th>
                         </tr>
                         </thead>
                         <tbody>
