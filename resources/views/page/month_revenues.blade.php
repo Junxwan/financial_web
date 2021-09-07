@@ -20,6 +20,9 @@
                             "<td>" + textR(v.yoy, r) + "</td>" +
                             "<td>" + textR(v.qoq, r) + "</td>" +
                             "<td>" + v.cname + "</td>" +
+                            "<td>" + amountText(v.total) + "</td>" +
+                            "<td>" + amountText(v.y_total) + "</td>" +
+                            "<td>" + textR(v.total_increase) + "</td>" +
                             "</tr>"
 
                         $("#stock_list>tbody").append(html)
@@ -186,6 +189,9 @@
                             <th scope="col">yoy</th>
                             <th scope="col">qoq</th>
                             <th scope="col">類別</th>
+                            <th scope="col">累積</th>
+                            <th scope="col">去年累積</th>
+                            <th scope="col">累積成長</th>
                         </tr>
                         </thead>
                         <tbody>

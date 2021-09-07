@@ -16,8 +16,17 @@ class RevenueRepository extends Repository
     public function list(int $year, int $month)
     {
         return Revenue::query()->select(
-            'year', 'month', 'value', DB::RAW("ROUND(qoq, 2) AS qoq"),
-            DB::RAW("ROUND(yoy, 2) AS yoy"), 'stocks.code', 'stocks.name', DB::RAW('classifications.name as cname')
+            'year',
+            'month',
+            'value',
+            DB::RAW("ROUND(qoq, 2) AS qoq"),
+            DB::RAW("ROUND(yoy, 2) AS yoy"),
+            'stocks.code',
+            'stocks.name',
+            DB::RAW('classifications.name as cname'),
+            'total',
+            'y_total',
+            'total_increase',
         )->join('stocks', 'stocks.id', '=', 'revenues.stock_id')
             ->join('classifications', 'classifications.id', '=', 'stocks.classification_id')
             ->where('year', $year)
