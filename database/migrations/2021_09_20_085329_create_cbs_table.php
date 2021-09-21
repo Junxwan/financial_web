@@ -31,6 +31,7 @@ class CreateCbsTable extends Migration
             $table->unsignedBigInteger('apply_total_amount')->comment('申請總額');
             $table->unsignedBigInteger('publish_total_amount')->comment('發佈總額');
             $table->float('publish_price')->default(0)->comment('發行價格');
+            $table->float('conversion_price')->default(0)->comment('轉換價格');
             $table->date('start_conversion_date')->comment('開始轉換日期');
             $table->date('end_conversion_date')->comment('結束轉換日期');
             $table->float('conversion_premium_rate')->default(100)->comment('轉換溢價率');
