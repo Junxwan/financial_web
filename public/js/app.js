@@ -111,7 +111,7 @@ function NewTable(config) {
         ajax: {
             url: config.url,
             data: function (d) {
-                return {
+                let data = {
                     'draw': d.draw,
                     'start': d.start,
                     'limit': d.length,
@@ -123,6 +123,12 @@ function NewTable(config) {
                     },
                     'order': $('#search-order').val(),
                 }
+
+                if (typeof config.data !== 'undefined') {
+                    data = config.data(data, d)
+                }
+
+                return data
             }
         },
         columns: config.columns,
@@ -139,6 +145,11 @@ function NewTable(config) {
         autoWidth: false,
         responsive: false,
         language: language,
+        drawCallback: function (settings) {
+            if (typeof config.drawCallback !== 'undefined') {
+                config.drawCallback()
+            }
+        }
     })
 
     // 編輯視窗
@@ -552,10 +563,12 @@ function newK(select, url) {
     Highcharts.getJSON(url, function (data) {
         toastr.success('成功')
 
-        $("#" + select + "_list>tbody>tr").remove()
-        data.stock.forEach(function (v) {
-            $("#" + select + "_list>tbody").append("<tr><td>" + v.code + "</td><td>" + v.name + "</td></tr>")
-        })
+        if (typeof data.stock !== 'undefined') {
+            $("#" + select + "_list>tbody>tr").remove()
+            data.stock.forEach(function (v) {
+                $("#" + select + "_list>tbody").append("<tr><td>" + v.code + "</td><td>" + v.name + "</td></tr>")
+            })
+        }
 
         newStockChat(select, data)
     });

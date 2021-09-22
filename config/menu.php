@@ -76,6 +76,21 @@ return [
         'icon' => 'fas fa-chart-bar',
         'name' => '個股股價',
     ],
+    [
+        'route' => 'cb.index',
+        'icon' => 'fas fa-list',
+        'name' => '可轉債',
+    ],
+    [
+        'route' => 'cb.stock.balance.index',
+        'icon' => 'fas fa-list',
+        'name' => '可轉債餘額',
+    ],
+    [
+        'route' => 'cb.price.index',
+        'icon' => 'fas fa-list',
+        'name' => '可轉債價格',
+    ],
 ];
 
 

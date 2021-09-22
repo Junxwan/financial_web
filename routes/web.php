@@ -118,3 +118,26 @@ Route::get('/revenues/month',
     [\App\Http\Controllers\MonthRevenuesController::class, 'index'])->name('revenues.month.index');
 Route::get('/revenues/month/list',
     [\App\Http\Controllers\MonthRevenuesController::class, 'list'])->name('revenues.month.list');
+
+// 可轉債
+Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
+    # 個股
+    Route::get('/', [\App\Http\Controllers\Cb\IndexController::class, 'index'])->name('index');
+    Route::get('/list', [\App\Http\Controllers\Cb\IndexController::class, 'list'])->name('list');
+
+    # 餘額變化
+    Route::get('/stock/balance',
+        [\App\Http\Controllers\Cb\StockBalanceController::class, 'index'])->name('stock.balance.index');
+    Route::get('/stock/balance/list',
+        [\App\Http\Controllers\Cb\StockBalanceController::class, 'list'])->name('stock.balance.list');
+    Route::get('/stock/{code}/balance',
+        [\App\Http\Controllers\Cb\StockBalanceController::class, 'get'])->name('stock.balance');
+
+    # 價格
+    Route::get('/price', [\App\Http\Controllers\Cb\PriceController::class, 'index'])->name('price.index');
+    Route::get('/price/{code}', [\App\Http\Controllers\Cb\PriceController::class, 'get'])->name('price');
+    Route::get('/price/{code}/month', [\App\Http\Controllers\Cb\PriceController::class, 'month'])->name('price.month');
+});
+
+
+
