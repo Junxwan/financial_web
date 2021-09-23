@@ -87,7 +87,7 @@
                             yAxis: 1,
                             data: balance,
                         }, {
-                            name: '月收盤',
+                            name: '可轉債月收盤',
                             type: 'spline',
                             data: price,
                             color: '#a0821a'
@@ -115,7 +115,7 @@
                 let premium = []
 
                 response.data.data.forEach(function (v, index) {
-                    close.push([v.date, v.close])
+                    close.push([v.date, v.cb_close])
                     premium.push([v.date, v.premium])
                 })
 
@@ -136,7 +136,7 @@
                         shared: true
                     },
                     series: [{
-                        name: '收盤',
+                        name: '可轉債',
                         type: 'line',
                         data: close,
                     }, {

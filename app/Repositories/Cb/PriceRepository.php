@@ -32,7 +32,7 @@ class PriceRepository
         $year = (int)date('Y');
         $month = (int)date('m');
 
-        return Price::query()->select(
+        return CbPrice::query()->select(
             'year', 'month', 'close'
         )->join('cbs', 'cbs.id', 'cb_prices.cb_id')
             ->whereIn('date', function ($query) use ($code) {
@@ -82,8 +82,9 @@ class PriceRepository
 
         return [
             'data' => $price->map(function ($value) use ($conversionPrice) {
-                $offPrice = $value->close * $conversionPrice->where('date', '<=', $value->date)->first()->stock;
-                $value['premium'] = round(((($value->cb_close * 1000) - $offPrice) / $offPrice) * 100, 2);
+                $offPrice = round($value->close * ($conversionPrice->where('date', '<=',
+                            $value->date)->first()->stock / 1000), 2);
+                $value['premium'] = round((($value->cb_close - $offPrice) / $offPrice) * 100, 2);
                 return $value;
             }),
             'name' => $cb->name,
