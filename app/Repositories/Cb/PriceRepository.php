@@ -2,7 +2,9 @@
 
 namespace App\Repositories\Cb;
 
-use App\Models\Cb\Price;
+use App\Models\Cb\Cb;
+use App\Models\Cb\ConversionPrice;
+use App\Models\Cb\Price as CbPrice;
 use Illuminate\Support\Facades\DB;
 
 class PriceRepository
@@ -12,7 +14,7 @@ class PriceRepository
      */
     public function get(string $code)
     {
-        return Price::query()->select(
+        return CbPrice::query()->select(
             'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high', 'low'
         )->join('cbs', 'cbs.id', 'cb_prices.cb_id')
             ->where('cbs.code', $code)
@@ -46,5 +48,45 @@ class PriceRepository
             ->filter(function ($value) use ($year, $month) {
                 return ! ($value->year == $year && $value->month == $month);
             });
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return array
+     */
+    public function premium(string $code)
+    {
+        $cb = Cb::query()
+            ->select('id', 'stock_id')
+            ->where('code', $code)
+            ->first();
+
+        $conversionPrice = ConversionPrice::query()
+            ->select('stock', 'date')
+            ->where('cb_id', $cb->id)
+            ->orderByDesc('date')
+            ->get();
+
+        $price = CbPrice::query()->select(
+            'cb_prices.date',
+            'prices.close',
+            DB::RAW('cb_prices.close as cb_close'),
+        )->join('cbs', 'cbs.id', '=', 'cb_prices.cb_id')
+            ->join('prices', function ($query) {
+                $query->on('cbs.stock_id', '=', 'prices.stock_id')
+                    ->where(DB::RAW('cb_prices.date'), '=', DB::RAW('prices.date'));
+            })->where('cbs.code', $code)
+            ->orderByDesc('cb_prices.date')
+            ->get();
+
+        return [
+            'data' => $price->map(function ($value) use ($conversionPrice) {
+                $offPrice = $value->close * $conversionPrice->where('date', '<=', $value->date)->first()->stock;
+                $value['premium'] = round(((($value->cb_close * 1000) - $offPrice) / $offPrice) * 100, 2);
+                return $value;
+            }),
+            'name' => $cb->name,
+        ];
     }
 }

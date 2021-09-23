@@ -20,7 +20,7 @@
             var price = []
             var name = ''
 
-            let url = "{{ route('cb.stock.balance', ['code' => ':code']) }}"
+            let url = "{{ route('cb.balance', ['code' => ':code']) }}"
             axios.get(url.replace(':code', $('#code').val())).then(function (response) {
                 response.data.data.forEach(function (v, index) {
                     balance.push([v.year + '-' + v.month, v.balance])
@@ -108,6 +108,53 @@
             })
         })
 
+        $('#select-premium-btn').click(function () {
+            let url = "{{ route('cb.price.premium', ['code' => ':code']) }}"
+            axios.get(url.replace(':code', $('#code').val())).then(function (response) {
+                let close = []
+                let premium = []
+
+                response.data.data.forEach(function (v, index) {
+                    close.push([v.date, v.close])
+                    premium.push([v.date, v.premium])
+                })
+
+                close.reverse()
+                premium.reverse()
+
+                Highcharts.chart('premium-chat', {
+                    title: {
+                        text: name
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: [{}, {
+                        opposite: true
+                    }],
+                    tooltip: {
+                        shared: true
+                    },
+                    series: [{
+                        name: '收盤',
+                        type: 'line',
+                        data: close,
+                    }, {
+                        name: '折溢',
+                        type: 'line',
+                        yAxis: 1,
+                        data: premium,
+                        color: '#a0821a'
+                    }]
+                });
+
+                toastr.success('查折溢價成功')
+            }).catch(function (error) {
+                console.log(error)
+                toastr.error('查無折溢價')
+            })
+        })
+
         let urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('code')) {
             $('#code').val(urlParams.get('code'))
@@ -149,6 +196,12 @@
                     <button type="button" class="btn btn-block bg-gradient-secondary btn-sm"
                             id="select-balance-btn">
                         餘額
+                    </button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-sm"
+                            id="select-premium-btn">
+                        折溢
                     </button>
                 </div>
             </div>
@@ -196,6 +249,21 @@
         </div>
         <div class="card-body" style="display: block;">
             <div id="balance-price-chat" class="row">
+            </div>
+        </div>
+    </div>
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">折溢價</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                        class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                        class="fas fa-remove"></i></button>
+            </div>
+        </div>
+        <div class="card-body" style="display: block;">
+            <div id="premium-chat" class="row">
             </div>
         </div>
     </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cb;
 
 use App\Models\Cb\Cb;
+use App\Models\Cb\Price;
 use App\Repositories\Cb\PriceRepository;
 
 class PriceController
@@ -71,5 +72,29 @@ class PriceController
     public function month(string $code)
     {
         return response()->json($this->repo->month($code));
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function date()
+    {
+        return response()->json([
+            'date' => Price::query()
+                ->select('date')
+                ->orderByDesc('date')
+                ->limit(1)
+                ->first()->date,
+        ]);
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function premium(string $code)
+    {
+        return response()->json($this->repo->premium($code));
     }
 }

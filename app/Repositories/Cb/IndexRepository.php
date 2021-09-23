@@ -3,6 +3,8 @@
 namespace App\Repositories\Cb;
 
 use App\Models\Cb\Cb;
+use App\Models\Cb\Price as CbPrice;
+use App\Models\Price;
 
 class IndexRepository
 {
@@ -14,8 +16,9 @@ class IndexRepository
     public function list(array $data)
     {
         $query = Cb::query()->select(
-            'cbs.id', 'cbs.code', 'cbs.name', 'start_date', 'end_date',
-            'publish_total_amount', 'conversion_price', 'start_conversion_date', 'conversion_premium_rate',
+            'cbs.id', 'cbs.stock_id', 'cbs.code', 'cbs.name', 'start_date', 'end_date',
+            'publish_total_amount', 'conversion_price', 'conversion_stock', 'start_conversion_date',
+            'conversion_premium_rate',
             'is_collateral', 'url'
         );
 
@@ -31,12 +34,45 @@ class IndexRepository
             }
         }
 
+        $data = $query->offset($data['start'])
+            ->limit($data['limit'])
+            ->orderByDesc($order)
+            ->get();
+
+        $date = CbPrice::query()
+            ->select('date')
+            ->orderByDesc('date')
+            ->limit(1)
+            ->first()->date;
+
+        $cbPrice = CbPrice::query()->select('cb_id', 'close')
+            ->where('date', $date)
+            ->whereIn('cb_id', $data->where('conversion_price', '!=', 0)->pluck('id'))
+            ->get();
+
+        $price = Price::query()->select('stock_id', 'close')
+            ->where('date', $date)
+            ->whereIn('stock_id', $data->where('conversion_price', '!=', 0)->pluck('stock_id'))
+            ->get();
+
         return [
             'total' => $query->count(),
-            'data' => $query->offset($data['start'])
-                ->limit($data['limit'])
-                ->orderByDesc($order)
-                ->get(),
+            'data' => $data->map(function ($value) use ($cbPrice, $price) {
+                $value['premium'] = 0;
+                $value['off_price'] = 0;
+                $value['price'] = 0;
+
+                if (! is_null($cbP = $cbPrice->where('cb_id', $value->id)->first())) {
+                    $value['price'] = $cbP->close;
+
+                    if (! is_null($p = $price->where('stock_id', $value->stock_id)->first())) {
+                        $value['off_price'] = $p->close * $value->conversion_stock;
+                        $value['premium'] = round(((($cbP->close * 1000) - $value['off_price']) / $value['off_price']) * 100, 2);
+                    }
+                }
+
+                return $value;
+            }),
         ];
     }
 }

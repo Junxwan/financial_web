@@ -127,16 +127,18 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
 
     # 餘額變化
     Route::get('/stock/balance',
-        [\App\Http\Controllers\Cb\StockBalanceController::class, 'index'])->name('stock.balance.index');
+        [\App\Http\Controllers\Cb\BalanceController::class, 'index'])->name('balance.index');
     Route::get('/stock/balance/list',
-        [\App\Http\Controllers\Cb\StockBalanceController::class, 'list'])->name('stock.balance.list');
+        [\App\Http\Controllers\Cb\BalanceController::class, 'list'])->name('balance.list');
     Route::get('/stock/{code}/balance',
-        [\App\Http\Controllers\Cb\StockBalanceController::class, 'get'])->name('stock.balance');
+        [\App\Http\Controllers\Cb\BalanceController::class, 'get'])->name('balance');
 
     # 價格
     Route::get('/price', [\App\Http\Controllers\Cb\PriceController::class, 'index'])->name('price.index');
     Route::get('/price/{code}', [\App\Http\Controllers\Cb\PriceController::class, 'get'])->name('price');
     Route::get('/price/{code}/month', [\App\Http\Controllers\Cb\PriceController::class, 'month'])->name('price.month');
+    Route::get('/price/last/date', [\App\Http\Controllers\Cb\PriceController::class, 'date'])->name('price.last.date');
+    Route::get('/price/{code}/premium', [\App\Http\Controllers\Cb\PriceController::class, 'premium'])->name('price.premium');
 });
 
 

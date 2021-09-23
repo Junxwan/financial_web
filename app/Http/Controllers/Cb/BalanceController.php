@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Cb\BalanceRepository;
 use Illuminate\Http\Request;
 
-class StockBalanceController extends Controller
+class BalanceController extends Controller
 {
     /**
      * @var string
      */
-    protected $view = 'page.cb.stock_balance';
+    protected $view = 'page.cb.balance';
 
     /**
      * @var string[]
@@ -24,7 +24,7 @@ class StockBalanceController extends Controller
         '轉換張數',
         '剩餘張數',
         '轉換股數',
-        '轉換餘額股數(未登記)',
+        '未登記股數',
         '剩餘比例',
     ];
 

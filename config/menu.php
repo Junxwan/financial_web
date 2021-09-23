@@ -82,7 +82,7 @@ return [
         'name' => '可轉債',
     ],
     [
-        'route' => 'cb.stock.balance.index',
+        'route' => 'cb.balance.index',
         'icon' => 'fas fa-list',
         'name' => '可轉債餘額',
     ],
