@@ -76,7 +76,7 @@
                     },
                 ],
                 buttons: [reloadBtn, selectBtn],
-                pageLength: 20,
+                pageLength: 10,
             })
 
             $('.right').html(

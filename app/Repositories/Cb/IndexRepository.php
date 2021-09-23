@@ -56,7 +56,7 @@ class IndexRepository
             ->get();
 
         return [
-            'total' => $query->count(),
+            'total' => Cb::query()->count(),
             'data' => $data->map(function ($value) use ($cbPrice, $price) {
                 $value['premium'] = 0;
                 $value['off_price'] = 0;
