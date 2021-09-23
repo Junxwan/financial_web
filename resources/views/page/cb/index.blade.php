@@ -4,6 +4,20 @@
     <h1></h1>
 @stop
 
+@section('table_css')
+    <style>
+        a {
+            color: #7d8294;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        td {
+            color: #7d8294;
+        }
+    </style>
+@stop
+
 @section('table_js')
     <script>
         axios.get("{{ route('cb.price.last.date') }}").then(function (response) {
@@ -31,10 +45,16 @@
                             return '<a href="' + row.url + '" target="_blank">' + data + '</a>'
                         },
                     },
-                    {data: 'start_date', width: '10%'},
-                    {data: 'end_date', width: '10%'},
+                    {
+                        data: 'start_date',
+                        width: '10%',
+                        render: function (data, t, row, meta) {
+                            return data + '\n' + row.end_date
+                        },
+                    },
                     {data: 'start_conversion_date', width: '10%'},
                     {data: 'conversion_price', width: '7%'},
+                    {data: 's_price', width: '7%'},
                     {data: 'price', width: '7%'},
                     {data: 'off_price', width: '7%'},
                     {data: 'premium', width: '7%'},

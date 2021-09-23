@@ -61,13 +61,16 @@ class IndexRepository
                 $value['premium'] = 0;
                 $value['off_price'] = 0;
                 $value['price'] = 0;
+                $value['s_price'] = 0;
 
                 if (! is_null($cbP = $cbPrice->where('cb_id', $value->id)->first())) {
                     $value['price'] = $cbP->close;
 
                     if (! is_null($p = $price->where('stock_id', $value->stock_id)->first())) {
-                        $value['off_price'] = $p->close * $value->conversion_stock;
-                        $value['premium'] = round(((($cbP->close * 1000) - $value['off_price']) / $value['off_price']) * 100, 2);
+                        $value['s_price'] = $p->close;
+
+                        $value['off_price'] = round($p->close * ($value->conversion_stock / 1000), 2);
+                        $value['premium'] = round((($cbP->close - $value['off_price']) / $value['off_price']) * 100, 2);
                     }
                 }
 
