@@ -19,7 +19,6 @@ class IndexController extends Controller
         '代碼',
         '名',
         '開始/結束',
-        '開始轉換',
         '轉換價',
         '股價',
         '市價',
@@ -28,7 +27,6 @@ class IndexController extends Controller
         '轉換率',
         '股數',
         '金額',
-        '擔保',
     ];
 
     /**

@@ -107,6 +107,9 @@ Route::get('/exponent/k/tag/{id}/year/{year}',
 Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');
 Route::get('/price/list',
     [\App\Http\Controllers\PriceController::class, 'list'])->name('price.list');
+Route::get('/price/{code}/code',
+    [\App\Http\Controllers\PriceController::class, 'price'])->name('price');
+
 
 # 個股股價
 Route::get('/stock/price', [\App\Http\Controllers\Stock\PriceController::class, 'index'])->name('stock.price.index');
@@ -138,7 +141,8 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
     Route::get('/price/{code}', [\App\Http\Controllers\Cb\PriceController::class, 'get'])->name('price');
     Route::get('/price/{code}/month', [\App\Http\Controllers\Cb\PriceController::class, 'month'])->name('price.month');
     Route::get('/price/last/date', [\App\Http\Controllers\Cb\PriceController::class, 'date'])->name('price.last.date');
-    Route::get('/price/{code}/premium', [\App\Http\Controllers\Cb\PriceController::class, 'premium'])->name('price.premium');
+    Route::get('/price/{code}/premium',
+        [\App\Http\Controllers\Cb\PriceController::class, 'premium'])->name('price.premium');
 });
 
 

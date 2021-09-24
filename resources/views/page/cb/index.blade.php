@@ -42,6 +42,10 @@
                         data: 'name',
                         width: '10%',
                         render: function (data, t, row, meta) {
+                            if (row.is_collateral) {
+                                data = '*' + data
+                            }
+
                             return '<a href="' + row.url + '" target="_blank">' + data + '</a>'
                         },
                     },
@@ -52,7 +56,6 @@
                             return data + '\n' + row.end_date
                         },
                     },
-                    {data: 'start_conversion_date', width: '10%'},
                     {data: 'conversion_price', width: '7%'},
                     {data: 's_price', width: '7%'},
                     {data: 'price', width: '7%'},
@@ -66,14 +69,7 @@
                         render: function (data, t, row, meta) {
                             return '<a href="' + "{{ route('cb.balance.index') }}?code=" + row.code + '" target="_blank">' + (data / 100000000) + '億' + '</a>'
                         },
-                    },
-                    {
-                        data: 'is_collateral',
-                        width: '5%',
-                        render: function (data, t, row, meta) {
-                            return data === 1 ? '是' : '否'
-                        },
-                    },
+                    }
                 ],
                 buttons: [reloadBtn, selectBtn],
                 pageLength: 10,

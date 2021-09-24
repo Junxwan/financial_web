@@ -67,7 +67,7 @@ class Exponent
     {
         $exponent = $this->price->exponentByTag($id, $year);
         $data = [
-            'prices' => [],
+            'price' => [],
             'volume' => [],
         ];
 

@@ -64,4 +64,14 @@ class PriceController
             'data' => $data['data'],
         ]);
     }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function price(string $code)
+    {
+        return response()->json($this->price->price($code));
+    }
 }

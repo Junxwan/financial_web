@@ -141,7 +141,7 @@ class PriceRepository extends Repository
     {
         $year -= 1;
         $m = date('m');
-        $d = date('m');
+        $d = date('d');
         return Price::query()->select(
             'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high', 'low'
         )->join('tag_exponents', 'tag_exponents.stock_id', '=', 'prices.stock_id')
@@ -161,7 +161,7 @@ class PriceRepository extends Repository
     {
         $year -= 1;
         $m = date('m');
-        $d = date('m');
+        $d = date('d');
         return Price::query()->select(
             'prices.stock_id', 'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high',
             'low'
@@ -171,6 +171,27 @@ class PriceRepository extends Repository
             ->orderBy('prices.date')
             ->get()
             ->groupBy('stock_id');
+    }
+
+    /**
+     * @param string $code
+     * @param int $year
+     *
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function stock(string $code, int $year)
+    {
+        $year -= 1;
+        $m = date('m');
+        $d = date('d');
+        return Price::query()->select(
+            'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high',
+            'low'
+        )->join('stocks', 'stocks.id', '=', 'prices.stock_id')
+            ->where('stocks.code', $code)
+            ->where('prices.date', '>=', "{$year}-{$m}-{$d}")
+            ->orderBy('prices.date')
+            ->get();
     }
 
     /**

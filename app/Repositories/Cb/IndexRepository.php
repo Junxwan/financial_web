@@ -17,7 +17,7 @@ class IndexRepository
     {
         $query = Cb::query()->select(
             'cbs.id', 'cbs.stock_id', 'cbs.code', 'cbs.name', 'start_date', 'end_date',
-            'publish_total_amount', 'conversion_price', 'conversion_stock', 'start_conversion_date',
+            'publish_total_amount', 'conversion_price', 'conversion_stock',
             'conversion_premium_rate',
             'is_collateral', 'url'
         );
