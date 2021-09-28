@@ -1,7 +1,17 @@
 @extends('partials.table')
 
+@section('content_header')
+    <h1></h1>
+@stop
+
 @section('table_js')
     <script>
+        axios.get("{{ route('price.last.date') }}").then(function (response) {
+            $('.container-fluid>h1').html(response.data.date)
+        }).catch(function (error) {
+            console.log(error)
+        })
+
         $(document).ready(function () {
             NewTable({
                 name: '#list',

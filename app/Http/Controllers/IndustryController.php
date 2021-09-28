@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Price;
+use App\Models\TagExponent;
 use App\Services\Industry;
 
 class IndustryController extends Controller
@@ -30,5 +32,21 @@ class IndustryController extends Controller
     public function __construct(Industry $industry)
     {
         $this->service = $industry;
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function date()
+    {
+        return response()->json([
+            'date' => Price::query()
+                ->select('date')
+                ->where('stock_id', TagExponent::query()->select('stock_id')->limit(1)->first()->stock_id)
+                ->orderByDesc('date')
+                ->limit(1)
+                ->first()
+                ->date,
+        ]);
     }
 }

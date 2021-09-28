@@ -93,6 +93,8 @@ Route::get('/category/list',
 Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index'])->name('industry.index');
 Route::get('/industry/list',
     [\App\Http\Controllers\IndustryController::class, 'list'])->name('industry.list');
+Route::get('/industry/last/date',
+    [\App\Http\Controllers\IndustryController::class, 'date'])->name('industry.last.date');
 
 // 產業指數
 Route::get('/exponent', [\App\Http\Controllers\ExponentController::class, 'index'])->name('exponent.index');
@@ -109,7 +111,8 @@ Route::get('/price/list',
     [\App\Http\Controllers\PriceController::class, 'list'])->name('price.list');
 Route::get('/price/{code}/code',
     [\App\Http\Controllers\PriceController::class, 'price'])->name('price');
-
+Route::get('/price/last/date',
+    [\App\Http\Controllers\PriceController::class, 'date'])->name('price.last.date');
 
 # 個股股價
 Route::get('/stock/price', [\App\Http\Controllers\Stock\PriceController::class, 'index'])->name('stock.price.index');
