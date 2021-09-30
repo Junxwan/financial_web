@@ -91,6 +91,11 @@ return [
         'icon' => 'fas fa-list',
         'name' => '可轉債價格',
     ],
+    [
+        'route' => 'export.index',
+        'icon' => 'fas fa-list',
+        'name' => '匯出',
+    ],
 ];
 
 

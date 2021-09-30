@@ -141,7 +141,7 @@ class ProfitController
                 '業外率' => 'outside',
             ],
             'header' => ['代碼', '名稱', '值', '類別', '標籤'],
-            'modal' => []
+            'modal' => [],
         ]);
     }
 
@@ -233,5 +233,24 @@ class ProfitController
         return response()->json(
             $this->profit->dividend($code)
         );
+    }
+
+    /**
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function download(int $year, int $quarterly)
+    {
+        return response()->stream(function () use ($year, $quarterly) {
+            $this->profit->download($year, $quarterly);
+        }, 200, [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=test.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0",
+        ]);
     }
 }

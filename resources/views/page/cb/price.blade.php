@@ -12,12 +12,12 @@
 
         $('#select-cb-k-btn').click(function () {
             var url = "{{ route('cb.price', ['code' => ':code']) }}"
-            newK('cb-chat', url.replace(':code', $('#code').val()))
+            newK('cb-chat', url.replace(':code', $('#code').val()), false)
         })
 
         $('#select-k-btn').click(function () {
             var url = "{{ route('price', ['code' => ':code']) }}"
-            newK('stock-chat', url.replace(':code', $('#code').val().slice(0,-1)))
+            newK('stock-chat', url.replace(':code', $('#code').val().slice(0, -1)), false)
         })
 
         $('#select-balance-btn').click(function () {
@@ -117,17 +117,20 @@
             let url = "{{ route('cb.price.premium', ['code' => ':code']) }}"
             axios.get(url.replace(':code', $('#code').val())).then(function (response) {
                 let offClose = []
+                let close = []
                 let cbClose = []
                 let premium = []
 
                 response.data.data.forEach(function (v, index) {
                     offClose.push([v.date, v.off_price])
+                    close.push([v.date, v.close])
                     cbClose.push([v.date, v.cb_close])
                     premium.push([v.date, v.premium])
                 })
 
                 offClose.reverse()
                 cbClose.reverse()
+                close.reverse()
                 premium.reverse()
 
                 Highcharts.chart('premium-chat', {
@@ -142,7 +145,8 @@
                             color: '#FF0000',
                             width: 1,
                             value: 0,
-                            zIndex:2}]
+                            zIndex: 2
+                        }]
                     },
                     series: [{
                         type: 'line',
@@ -158,8 +162,15 @@
                     xAxis: {
                         type: "category"
                     },
-                    yAxis: [{}, {
-                        opposite: true
+                    yAxis: [{
+                    }, {
+                        opposite: true,
+                        plotLines: [{
+                            color: '#FF0000',
+                            width: 1,
+                            value: 0,
+                            zIndex: 2
+                        }]
                     }],
                     tooltip: {
                         shared: true
@@ -174,6 +185,34 @@
                         type: 'line',
                         yAxis: 1,
                         data: premium,
+                        color: '#2f99a3'
+                    }]
+                });
+
+                Highcharts.chart('cb-price-chat', {
+                    title: {
+                        text: '可轉債/個股'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: [{
+                    }, {
+                        opposite: true,
+                    }],
+                    tooltip: {
+                        shared: true
+                    },
+                    series: [{
+                        name: '可轉債',
+                        type: 'line',
+                        data: cbClose,
+                        color: '#af5661'
+                    }, {
+                        name: '個股',
+                        type: 'line',
+                        yAxis: 1,
+                        data: close,
                         color: '#2f99a3'
                     }]
                 });
@@ -311,28 +350,13 @@
             </div>
         </div>
         <div class="card-body" style="display: block;">
-            <div id="balance-chat" class="row">
-            </div>
+            <div id="balance-chat" class="row"></div>
+            <div id="balance-price-chat" class="row"></div>
         </div>
     </div>
     <div class="card card-default">
         <div class="card-header">
-            <h3 class="card-title">餘額/月收盤價</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                        class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
-                        class="fas fa-remove"></i></button>
-            </div>
-        </div>
-        <div class="card-body" style="display: block;">
-            <div id="balance-price-chat" class="row">
-            </div>
-        </div>
-    </div>
-    <div class="card card-default">
-        <div class="card-header">
-            <h3 class="card-title">折溢價</h3>
+            <h3 class="card-title">折溢</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
                         class="fas fa-minus"></i></button>
@@ -345,7 +369,10 @@
             </div>
             <div id="premium-price-chat" class="row">
             </div>
+            <div id="cb-price-chat" class="row">
+            </div>
             <div id="premium-off-price-chat" class="row">
             </div>
         </div>
+    </div>
 @stop

@@ -559,7 +559,7 @@ function initK() {
     }(Highcharts.seriesTypes.column.prototype.pointAttribs));
 }
 
-function newK(select, url) {
+function newK(select, url, volume_value = true) {
     Highcharts.getJSON(url, function (data) {
         toastr.success('成功')
 
@@ -570,11 +570,11 @@ function newK(select, url) {
             })
         }
 
-        newStockChat(select, data)
+        newStockChat(select, data, 550, volume_value)
     });
 }
 
-function newStockChat(select, data, height = 550) {
+function newStockChat(select, data, height = 550, volume_value = true) {
     Highcharts.stockChart(select, {
         rangeSelector: {
             buttons: [{
@@ -680,13 +680,19 @@ function newStockChat(select, data, height = 550) {
                             break
                         case 'volume':
                             value = this.y
-                            if (value > Math.pow(10, 8)) {
-                                value = (Math.round(value / Math.pow(10, 8) * 100) / 100) + '億'
+
+                            if (volume_value) {
+                                if (value > Math.pow(10, 8)) {
+                                    value = (Math.round(value / Math.pow(10, 8) * 100) / 100) + '億'
+                                } else {
+                                    value = (Math.round(value / 10000 * 100) / 100) + '萬'
+                                }
+
+                                html += ' 成交值: ' + '<span style="color:#7dbbd2">' + value + '</span>'
                             } else {
-                                value = (Math.round(value / 10000 * 100) / 100) + '萬'
+                                html += ' 量: ' + '<span style="color:#7dbbd2">' + value + '</span>'
                             }
 
-                            html += ' 成交值: ' + '<span style="color:#7dbbd2">' + value + '</span>'
                             break
                         case '5Ma':
                             html += '<span style="color:#ff8c00"> ' + this.series.name + ': </span> ' + '<span style="color:#ff8c00">' + Math.round(this.y * 100) / 100 + '</span>'

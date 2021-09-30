@@ -89,4 +89,31 @@ class RevenueRepository extends Repository
             return $value->yoy != 0;
         })->values()->toArray();
     }
+
+    /**
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     */
+    public function download(int $year, int $month)
+    {
+        return Revenue::query()
+            ->select(
+                'code', 'stocks.name', DB::RAW('classifications.name as c_name'), 'value', 'yoy', 'qoq',
+            )->join('stocks', 'revenues.stock_id', '=', 'stocks.id')
+            ->join('classifications', 'classifications.id', '=', 'stocks.classification_id')
+            ->where('year', $year)
+            ->where('month', $month)
+            ->get()
+            ->map(function ($value) {
+                return [
+                    '代碼' => $value['code'],
+                    '名稱' => $value['name'],
+                    '營收' => number_format($value['value']),
+                    'yoy' => $value['yoy'],
+                    'qoq' => $value['qoq'],
+                ];
+            });
+    }
 }

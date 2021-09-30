@@ -62,6 +62,8 @@ Route::get('/profit/dividend/{code}/code',
 Route::get('/profit/rank', [\App\Http\Controllers\ProfitController::class, 'rankIndex'])->name('profit.rank.index');
 Route::get('/profit/rank/{year}/year/{season}/season/{name}',
     [\App\Http\Controllers\ProfitController::class, 'rank'])->name('profit.rank');
+Route::get('/profit/{year}/year/{quarterly}/quarterly/download',
+    [\App\Http\Controllers\ProfitController::class, 'download'])->name('profit.download');
 
 // 現金流量表
 Route::get('/cash/recent/{code}/code/{year}/year/{quarterly}/quarterly',
@@ -124,6 +126,9 @@ Route::get('/revenues/month',
     [\App\Http\Controllers\MonthRevenuesController::class, 'index'])->name('revenues.month.index');
 Route::get('/revenues/month/list',
     [\App\Http\Controllers\MonthRevenuesController::class, 'list'])->name('revenues.month.list');
+Route::get('/revenues/{year}/year/{month}/month/download',
+    [\App\Http\Controllers\MonthRevenuesController::class, 'download'])->name('revenues.download');
+
 
 // 可轉債
 Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
@@ -148,5 +153,6 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
         [\App\Http\Controllers\Cb\PriceController::class, 'premium'])->name('price.premium');
 });
 
-
+// 匯出
+Route::get('/export', [\App\Http\Controllers\ExportController::class, 'index'])->name('export.index');
 

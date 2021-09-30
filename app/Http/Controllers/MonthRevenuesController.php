@@ -43,4 +43,33 @@ class MonthRevenuesController
             $request->get('month', $now->month),
         );
     }
+
+    /**
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function download(int $year, int $month, RevenueRepository $revenue)
+    {
+        return response()->stream(function () use ($year, $month, $revenue) {
+            $data = $revenue->download($year, $month);
+
+            $file = fopen('php://output', 'w');
+            fputcsv($file, array_keys($data->first()));
+
+            foreach($data as $v) {
+                fputcsv($file, array_values($v));
+            }
+
+            fclose($file);
+
+        }, 200, [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=test.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0",
+        ]);
+    }
 }
