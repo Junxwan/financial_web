@@ -53,7 +53,7 @@
                         data: 'start_date',
                         width: '10%',
                         render: function (data, t, row, meta) {
-                            return data + '\n' + row.end_date
+                            return data + "</br>" + row.end_date
                         },
                     },
                     {data: 'conversion_price', width: '7%'},
