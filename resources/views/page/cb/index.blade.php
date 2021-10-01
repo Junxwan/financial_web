@@ -40,7 +40,7 @@
                     },
                     {
                         data: 'name',
-                        width: '10%',
+                        width: '8%',
                         render: function (data, t, row, meta) {
                             if (row.is_collateral) {
                                 data = '*' + data
@@ -60,16 +60,31 @@
                     {data: 's_price', width: '7%'},
                     {data: 'price', width: '7%'},
                     {data: 'off_price', width: '7%'},
-                    {data: 'premium', width: '7%'},
-                    {data: 'conversion_premium_rate', width: '8%'},
-                    {data: 'conversion_stock', width: '8%'},
+                    {data: 'premium', width: '6%'},
+                    {
+                        data: 'conversion_premium_rate',
+                        width: '6%',
+                        render: function (data, t, row, meta) {
+                            if (row.off_price >= 100 && row.off_price <= 102) {
+                                return "平"
+                            } else if (row.off_price > 102) {
+                                return "<span style='color: #c73333'>內</span>"
+                            } else if (row.off_price === 0) {
+                                return ""
+                            }
+
+                            return "<span style='color: #5a9e0f'>外</span>"
+                        },
+                    },
+                    {data: 'conversion_stock', width: '6%'},
                     {
                         data: 'publish_total_amount',
                         width: '7%',
                         render: function (data, t, row, meta) {
                             return '<a href="' + "{{ route('cb.balance.index') }}?code=" + row.code + '" target="_blank">' + (data / 100000000) + '億' + '</a>'
                         },
-                    }
+                    },
+                    {data: 'balance_rate', width: '5%'},
                 ],
                 buttons: [reloadBtn, selectBtn],
                 pageLength: 10,
@@ -79,7 +94,6 @@
                 '<div id="example_filter" class="dataTables_filter">' +
                 '<select id="search-select">' +
                 '<option value=""></option>' +
-                '<option value="conversion_premium_rate">轉換溢價率</option>' +
                 '<option value="publish_total_amount">發行額度</option>' +
                 '</select>' +
                 '<input type="search" id="search-input">' +

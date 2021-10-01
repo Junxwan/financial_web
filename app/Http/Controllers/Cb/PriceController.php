@@ -97,4 +97,14 @@ class PriceController
     {
         return response()->json($this->repo->premium($code));
     }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function conversion(string $code)
+    {
+        return response()->json($this->repo->conversion($code));
+    }
 }

@@ -3,6 +3,7 @@
 @section('js')
     <script src="{{ asset('js/highstock.js') }}"></script>
     <script src="{{ asset('js/highstock/modules/data.js') }}"></script>
+    <script src="{{ asset('js/highstock/modules/annotations.js') }}"></script>
     <script src="{{ asset('js/highstock/themes/dark-unica.js') }}"></script>
     <script src="{{ asset('js/highstock/indicators.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
@@ -16,22 +17,35 @@
         })
 
         $('#select-k-btn').click(function () {
-            var url = "{{ route('price', ['code' => ':code']) }}"
-            newK('stock-chat', url.replace(':code', $('#code').val().slice(0, -1)), false)
+            axios.get("{{ route('cb.price.conversion', ['code' => ':code']) }}".replace(':code', $('#code').val())).then(function (response) {
+                var url = "{{ route('price', ['code' => ':code']) }}"
+                newK('stock-chat', url.replace(':code', $('#code').val().slice(0, -1)), false, [{
+                    color: '#4d169e',
+                    width: 1,
+                    value: response.data[response.data.length - 1].value,
+                    zIndex: 1
+                }])
+            }).catch(function (error) {
+                console.log(error)
+            })
         })
 
         $('#select-balance-btn').click(function () {
             var balance = []
+            var balanceRate = []
             var price = []
             var name = ''
 
             let url = "{{ route('cb.balance', ['code' => ':code']) }}"
             axios.get(url.replace(':code', $('#code').val())).then(function (response) {
+
                 response.data.data.forEach(function (v, index) {
                     balance.push([v.year + '-' + v.month, v.balance])
+                    balanceRate.push([v.year + '-' + v.month, v.balance_rate])
                 })
 
                 balance.reverse()
+                balanceRate.reverse()
 
                 name = response.data.name
 
@@ -42,15 +56,19 @@
                     xAxis: {
                         type: "category"
                     },
-                    yAxis: {
+                    yAxis: [{
                         title: {
-                            text: null
-                        }
-                    },
+                            text: '張'
+                        },
+                    }, {
+                        title: {
+                            text: '%'
+                        },
+                        opposite: true
+                    }],
                     navigator: {
                         enabled: false
                     },
-
                     exporting: {
                         enabled: false
                     },
@@ -61,7 +79,14 @@
                     series: [{
                         id: 'balance',
                         name: '餘額',
+                        type: 'line',
                         data: balance
+                    }, {
+                        id: 'balanceRate',
+                        name: '餘額%',
+                        yAxis: 1,
+                        type: 'line',
+                        data: balanceRate
                     }]
                 });
 
@@ -133,6 +158,27 @@
                 close.reverse()
                 premium.reverse()
 
+                let labels = []
+                response.data.conversion_prices.forEach(function (v, index) {
+                    close.every(function (cV, cIndex) {
+                        if (cV[0] >= v.date) {
+                            labels.push({
+                                point: {
+                                    xAxis: 0,
+                                    yAxis: 1,
+                                    x: cIndex,
+                                    y: v.value
+                                },
+                                text: v.value.toString()
+                            })
+
+                            return false
+                        }
+
+                        return true
+                    })
+                })
+
                 Highcharts.chart('premium-chat', {
                     title: {
                         text: '折溢'
@@ -141,6 +187,9 @@
                         type: "category"
                     },
                     yAxis: {
+                        title: {
+                            text: null
+                        },
                         plotLines: [{
                             color: '#FF0000',
                             width: 1,
@@ -151,19 +200,25 @@
                     series: [{
                         type: 'line',
                         data: premium,
-                        color: '#2f99a3'
+                        color: '#2f99a3',
                     }]
                 });
 
                 Highcharts.chart('premium-price-chat', {
                     title: {
-                        text: '市價/折溢'
+                        text: '可轉債/折溢'
                     },
                     xAxis: {
                         type: "category"
                     },
                     yAxis: [{
+                        title: {
+                            text: '可轉債'
+                        },
                     }, {
+                        title: {
+                            text: '折溢'
+                        },
                         opposite: true,
                         plotLines: [{
                             color: '#FF0000',
@@ -176,14 +231,14 @@
                         shared: true
                     },
                     series: [{
-                        name: '市價',
+                        name: '可轉債',
                         type: 'line',
                         data: cbClose,
                         color: '#af5661'
                     }, {
                         name: '折溢',
-                        type: 'line',
                         yAxis: 1,
+                        type: 'line',
                         data: premium,
                         color: '#2f99a3'
                     }]
@@ -191,14 +246,23 @@
 
                 Highcharts.chart('cb-price-chat', {
                     title: {
-                        text: '可轉債/個股'
+                        text: '可轉債/股價 (' + response.data.conversion_prices[response.data.conversion_prices.length - 1].value + ')'
                     },
                     xAxis: {
                         type: "category"
                     },
                     yAxis: [{
+                        title: {
+                            text: '可轉債'
+                        },
                     }, {
+                        title: {
+                            text: '股價'
+                        },
                         opposite: true,
+                    }],
+                    annotations: [{
+                        labels: labels
                     }],
                     tooltip: {
                         shared: true
@@ -210,37 +274,44 @@
                         color: '#af5661'
                     }, {
                         name: '個股',
-                        type: 'line',
                         yAxis: 1,
+                        type: 'line',
                         data: close,
-                        color: '#2f99a3'
+                        color: '#2f75a3'
                     }]
                 });
 
                 Highcharts.chart('premium-off-price-chat', {
                     title: {
-                        text: '市價/理論'
+                        text: '可轉債/理論'
                     },
                     xAxis: {
                         type: "category"
                     },
-                    yAxis: [{}, {
+                    yAxis: [{
+                        title: {
+                            text: '可轉債'
+                        },
+                    }, {
+                        title: {
+                            text: '理論價'
+                        },
                         opposite: true
                     }],
                     tooltip: {
                         shared: true
                     },
                     series: [{
-                        name: '市價',
+                        name: '可轉債',
                         type: 'line',
                         data: cbClose,
                         color: '#af5661'
                     }, {
                         name: '理論',
                         type: 'line',
-                        yAxis: 1,
                         data: offClose,
-                        color: '#2f99a3'
+                        color: '#b18535',
+                        yAxis: 1,
                     }]
                 });
 

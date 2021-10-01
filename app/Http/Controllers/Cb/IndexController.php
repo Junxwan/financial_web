@@ -24,9 +24,10 @@ class IndexController extends Controller
         '市價',
         '理論價',
         '折溢%',
-        '轉換率',
+        '價內外',
         '股數',
         '金額',
+        '餘%',
     ];
 
     /**

@@ -58,7 +58,7 @@ class PriceRepository
     public function premium(string $code)
     {
         $cb = Cb::query()
-            ->select('id', 'stock_id')
+            ->select('id', 'name')
             ->where('code', $code)
             ->first();
 
@@ -89,6 +89,26 @@ class PriceRepository
                 return $value;
             }),
             'name' => $cb->name,
+            'conversion_prices' => ConversionPrice::query()
+                ->select('date', 'value')
+                ->where('cb_id', $cb->id)
+                ->orderBy('date')
+                ->get(),
         ];
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function conversion(string $code)
+    {
+        return ConversionPrice::query()
+            ->select('cb_conversion_prices.date', 'cb_conversion_prices.value')
+            ->join('cbs', 'cbs.id', '=', 'cb_conversion_prices.cb_id')
+            ->where('cbs.code', $code)
+            ->orderBy('cb_conversion_prices.date')
+            ->get();
     }
 }

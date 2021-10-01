@@ -64,18 +64,24 @@ class BalanceRepository
      */
     public function get(string $code)
     {
+        $cb = Cb::query()
+            ->select('name', 'publish_total_amount')
+            ->where('code', $code)
+            ->first();
+
         return [
-            'name' => Cb::query()
-                ->select('name')
-                ->where('code', $code)
-                ->first()->name,
+            'name' => $cb->name,
             'data' => Balance::query()
                 ->select('year', 'month', 'change', 'balance')
                 ->join('cbs', 'cbs.id', '=', 'cb_balances.cb_id')
                 ->where('code', $code)
                 ->orderByDesc('year')
                 ->orderByDesc('month')
-                ->get(),
+                ->get()
+                ->map(function ($value) use ($cb) {
+                    $value['balance_rate'] = round((($value->balance * 100000) / $cb->publish_total_amount) * 100);
+                    return $value;
+                }),
         ];
     }
 }

@@ -151,6 +151,8 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
     Route::get('/price/last/date', [\App\Http\Controllers\Cb\PriceController::class, 'date'])->name('price.last.date');
     Route::get('/price/{code}/premium',
         [\App\Http\Controllers\Cb\PriceController::class, 'premium'])->name('price.premium');
+    Route::get('/price/{code}/conversion',
+        [\App\Http\Controllers\Cb\PriceController::class, 'conversion'])->name('price.conversion');
 });
 
 // 匯出
