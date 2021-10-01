@@ -8,7 +8,7 @@
             var url = "{{ route('profit.download', ['year' => ':year', 'quarterly' => ':quarterly']) }}"
             axios.get(url.replace(':year', $('#year').val()).replace(':quarterly', $('#quarterly').val())).then(function (response) {
                 var hiddenElement = document.createElement('a');
-                hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(response.data);
+                hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF,' + encodeURI(response.data);
                 hiddenElement.target = '_blank';
                 hiddenElement.download = 'profit.csv';
                 hiddenElement.click();
@@ -23,7 +23,7 @@
             var url = "{{ route('revenues.download', ['year' => ':year', 'month' => ':month']) }}"
             axios.get(url.replace(':year', $('#year').val()).replace(':month', $('#month').val())).then(function (response) {
                 var hiddenElement = document.createElement('a');
-                hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(response.data);
+                hiddenElement.href = 'data:text/csv;charset=utf-8,%EF%BB%BF,' + encodeURI(response.data);
                 hiddenElement.target = '_blank';
                 hiddenElement.download = 'revenues.csv';
                 hiddenElement.click();
