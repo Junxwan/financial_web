@@ -51,7 +51,8 @@
             })
 
             var hiddenElement = document.createElement('a');
-            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(convertToCSV(data));
+            var blob = new Blob(["\ufeff" + convertToCSV(data)], {type: 'text/csv;charset=utf-8;'})
+            hiddenElement.href = URL.createObjectURL(blob)
             hiddenElement.target = '_blank';
             hiddenElement.download = $('#year').val() + '-' + $('#month').val() + '-revenues.csv';
             hiddenElement.click();

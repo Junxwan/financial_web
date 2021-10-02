@@ -92,7 +92,8 @@
                             })
 
                             var hiddenElement = document.createElement('a');
-                            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+                            var blob = new Blob(["\ufeff" + csv], {type: 'text/csv;charset=utf-8;'})
+                            hiddenElement.href = URL.createObjectURL(blob)
                             hiddenElement.target = '_blank';
                             hiddenElement.download = 'xq.csv';
                             hiddenElement.click();
