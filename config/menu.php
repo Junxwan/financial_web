@@ -96,6 +96,11 @@ return [
         'icon' => 'fas fa-list',
         'name' => '匯出',
     ],
+    [
+        'route' => 'news.keyWord.index',
+        'icon' => 'fas fa-list',
+        'name' => '新聞推播關鍵字',
+    ],
 ];
 
 

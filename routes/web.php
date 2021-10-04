@@ -17,11 +17,18 @@ use Illuminate\Support\Facades\Validator;
 Route::get('/', [\App\Http\Controllers\IndexController::class, 'index'])->name('index');
 
 // 新聞
-Route::get('/news', [\App\Http\Controllers\NewsController::class, 'index'])->name('news.index');
-Route::get('/news/list', [\App\Http\Controllers\NewsController::class, 'list'])->name('news.list');
-Route::put('/news/{id}', [\App\Http\Controllers\NewsController::class, 'update'])->name('news.update');
-Route::delete('/news/{id}', [\App\Http\Controllers\NewsController::class, 'delete'])->name('news.delete');
-Route::post('/news/clear', [\App\Http\Controllers\NewsController::class, 'clear'])->name('news.clear');
+Route::get('/news', [\App\Http\Controllers\News\IndexController::class, 'index'])->name('news.index');
+Route::get('/news/list', [\App\Http\Controllers\News\IndexController::class, 'list'])->name('news.list');
+Route::put('/news/{id}', [\App\Http\Controllers\News\IndexController::class, 'update'])->name('news.update');
+Route::delete('/news/{id}', [\App\Http\Controllers\News\IndexController::class, 'delete'])->name('news.delete');
+Route::post('/news/clear', [\App\Http\Controllers\News\IndexController::class, 'clear'])->name('news.clear');
+
+// 新聞關鍵字
+Route::get('/news/keyWord', [\App\Http\Controllers\News\KeyWordController::class, 'index'])->name('news.keyWord.index');
+Route::get('/news/keyWord/list', [\App\Http\Controllers\News\KeyWordController::class, 'list'])->name('news.keyWord.list');
+Route::post('/news/keyWord', [\App\Http\Controllers\News\KeyWordController::class, 'create'])->name('news.keyWord.create');
+Route::put('/news/keyWord/{id}', [\App\Http\Controllers\News\KeyWordController::class, 'update'])->name('news.keyWord.update');
+Route::delete('/news/keyWord/{id}', [\App\Http\Controllers\News\KeyWordController::class, 'delete'])->name('news.keyWord.delete');
 
 // 個股
 Route::get('/stock', [\App\Http\Controllers\Stock\IndexController::class, 'index'])->name('stock.index');

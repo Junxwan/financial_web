@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Classification;
 use App\Models\Revenue;
 use Illuminate\Support\Facades\DB;
 
@@ -100,7 +101,8 @@ class RevenueRepository extends Repository
     {
         return Revenue::query()
             ->select(
-                'code', 'stocks.name', DB::RAW('classifications.name as c_name'), 'value', 'yoy', 'qoq',
+                'code', 'stocks.name', DB::RAW('classifications.name as c_name'),
+                'value', 'yoy', 'qoq', 'total', 'y_total', 'total_increase'
             )->join('stocks', 'revenues.stock_id', '=', 'stocks.id')
             ->join('classifications', 'classifications.id', '=', 'stocks.classification_id')
             ->where('year', $year)
@@ -110,9 +112,13 @@ class RevenueRepository extends Repository
                 return [
                     '代碼' => $value['code'],
                     '名稱' => $value['name'],
-                    '營收' => number_format($value['value']),
+                    '營收(千)' => number_format($value['value']),
                     'yoy' => $value['yoy'],
                     'qoq' => $value['qoq'],
+                    '累績營收(千)' => $value['total'],
+                    '去年累績營收(千)' => $value['y_total'],
+                    '累績成長' => $value['total_increase'],
+                    '產業分類' => $value['c_name'],
                 ];
             });
     }
