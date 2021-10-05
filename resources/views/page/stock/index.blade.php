@@ -23,6 +23,7 @@
                 tag_Name = []
                 data.tags.forEach(function (v) {
                     tag_id.push(v.id)
+                    tag_Name.push(v.name)
                 })
 
                 $('#modal-edit-tag').selectpicker('val', tag_id);
