@@ -1,13 +1,15 @@
 @extends('partials.table')
 
 @section('table_css')
-    <link rel="stylesheet" href="{{ asset('css/bootstrap-duallistbox.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-select.min.css') }}">
 @stop
 
 @section('table_js')
-    <script src="{{ asset('js/jquery.bootstrap-duallistbox.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script>
         var tags = @json($tags);
+        var tag_id = []
+        var tag_Name = []
 
         $(document).ready(function () {
             var edit = function (data) {
@@ -17,24 +19,13 @@
                 $('#modal-edit-classification_id').val(data.classification_id)
                 $('#modal-id').val(data.id)
 
-                ids = []
+                tag_id = []
+                tag_Name = []
                 data.tags.forEach(function (v) {
-                    ids.push(v.id)
+                    tag_id.push(v.id)
                 })
 
-                $("#modal-edit-tag option").each(function () {
-                    $(this).remove();
-                });
-
-                tags.forEach(function (v) {
-                    if (ids.includes(v.id)) {
-                        editTag.append('<option value="' + v.id + '" selected>' + v.name + '</option>')
-                    } else {
-                        editTag.append('<option value="' + v.id + '">' + v.name + '</option>')
-                    }
-                })
-
-                editTag.bootstrapDualListbox('refresh');
+                $('#modal-edit-tag').selectpicker('val', tag_id);
             }
 
             var del = function (data) {
@@ -82,7 +73,7 @@
                     name: name,
                     classification_id: classification_id,
                     market: market,
-                    tags: createTag.val()
+                    tags: tag_id
                 }).then(function (response) {
                     if (response.data.result) {
                         toastr.success('新增成功')
@@ -128,7 +119,7 @@
                     name: name,
                     classification_id: classification,
                     market: market,
-                    tags: editTag.val()
+                    tags: tag_id
                 }).then(function (response) {
                     if (response.data.result) {
                         table.row($('#modal-id').val()).remove().draw(false)
@@ -196,7 +187,15 @@
                     },
                     editorEditBtn, editorDelete
                 ],
-                buttons: [reloadBtn, createBtn, selectBtn],
+                buttons: [reloadBtn, {
+                    text: '新增',
+                    className: "bg-gradient-primary",
+                    action: function (e, dt, node, config) {
+                        tag_id = []
+                        tag_Name = []
+                        $('#modal-create').modal('toggle');
+                    }
+                }, selectBtn],
                 create: create,
                 edit: edit,
                 delete: del,
@@ -215,9 +214,26 @@
                 '<input type="search" id="search-input">' +
                 '</div>'
             )
-
-            var createTag = NewDualListBox('#modal-create-tag')
-            var editTag = NewDualListBox('#modal-edit-tag')
         });
+
+        $('#modal-edit-tag, #modal-create-tag').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            if (isSelected === null) {
+                return
+            }
+
+            if (isSelected) {
+                tag_id.push(tags[clickedIndex].id)
+                tag_Name.push(tags[clickedIndex].name)
+            } else {
+                index = tag_id.indexOf(tags[clickedIndex].id)
+                if (index !== -1) {
+                    tag_id.splice(index, 1);
+                    tag_Name.splice(index, 1);
+                }
+            }
+
+            $('*[data-id="' + $(this).attr('id') + '"] .filter-option-inner-inner').html(tag_Name.join(','))
+        });
+
     </script>
 @stop

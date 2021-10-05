@@ -54,10 +54,13 @@ class StockRepository extends Repository
 
         $tags = StockTag::query()->select(
             DB::RAW('stock_tags.stock_id'),
+            DB::RAW('stock_tags.isGroup'),
+            DB::RAW('stock_tags.order'),
             DB::RAW('tags.id'),
             DB::RAW('tags.name')
         )->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
             ->whereIn('stock_tags.stock_id', $data->pluck('id'))
+            ->orderBy('stock_tags.order')
             ->get();
 
         return [
@@ -168,10 +171,11 @@ class StockRepository extends Repository
             }
 
             $insert = [];
-            foreach ($data['tags'] as $v) {
+            foreach ($data['tags'] as $i => $v) {
                 $insert[] = [
                     'stock_id' => $id,
                     'tag_id' => $v,
+                    'order' => $i,
                 ];
             }
 
@@ -198,10 +202,11 @@ class StockRepository extends Repository
             StockTag::query()->where('stock_id', $id)->delete();
 
             $insert = [];
-            foreach ($data['tags'] as $v) {
+            foreach ($data['tags'] as $i => $v) {
                 $insert[] = [
                     'stock_id' => $id,
                     'tag_id' => $v,
+                    'order' => $i,
                 ];
             }
 

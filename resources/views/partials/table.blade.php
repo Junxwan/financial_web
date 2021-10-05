@@ -90,7 +90,9 @@
                                     </div>
                                     <input type="text" class="form-control" value="{{ $v['name'] }}" {{ $t }}>
                                 @elseif($v['type'] == 'duallistbox')
-                                    <select multiple="multiple" size="10" id="modal-{{ $value['id'] }}-{{ $v['id'] }}">
+                                    <select multiple class="selectpicker form-control" size="10" id="modal-{{ $value['id'] }}-{{ $v['id'] }}"
+                                            data-container="body" data-live-search="true" title="Select" data-hide-disabled="true"
+                                            data-actions-box="true" data-virtual-scroll="false">
                                         @foreach($v['value'] as $a)
                                             <option value="{{ $a->id }}">{{ $a->name }}</option>
                                         @endforeach

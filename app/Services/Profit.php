@@ -385,13 +385,18 @@ class Profit
             ->limit(1)
             ->first()->date;
 
-        $prices = Price::query()
+        $_prices = Price::query()
             ->select(
                 'stocks.code',
                 'prices.close'
             )->join('stocks', 'prices.stock_id', '=', 'stocks.id')
-            ->where('date', $date)
+            ->where('prices.date', '2021-07-28')
             ->get();
+
+        $prices = [];
+        foreach ($_prices as $value) {
+            $prices[$value->code] = $value->close;
+        }
 
         return $data[$year]->where('quarterly', $quarterly)->map(function ($value) use (
             $year,
@@ -402,68 +407,68 @@ class Profit
             $date,
             $prices
         ) {
-            $yGross = 0;
-            $revenueYoy = 0;
-            $ysRevenue = 0;
-            $eps = 0;
-            $yEps = 0;
-            $close = 0;
-            $pe = 0;
+            $v = isset($cData[$value['code']]) ? $cData[$value['code']] : collect();
+            $yv = isset($cyData[$value['code']]) ? $cyData[$value['code']] : collect();
+            $yq = $yv->where('quarterly', $quarterly)->first();
+            $yqe = $yv->where('quarterly', 4)->first();
 
-            // 去年
-            if (isset($cyData[$value['code']])) {
+            // 收盤價
+            $close = isset($prices[$value['code']]) ? $prices[$value['code']] : 0;
 
-                // 去年營收/eps
-                if ($quarterly == 4) {
-                    $ysRevenue = $cyData[$value['code']]['revenue'];
-                    $yEps = $cyData[$value['code']]['eps'];
-                } else {
-                    $ysRevenue = $cyData[$value['code']]->sum('revenue');
-                    $yEps = $cyData[$value['code']]->sum('eps');
-                }
+            // 該季eps
+            $eps = $value['eps'];
 
-                $yData = $cyData[$value['code']]->where('quarterly', $quarterly)->first();
+            // 該年累積eps
+            $epsTotal = $quarterly == 4 ? $eps : $v->sum('eps');
 
-                if (! is_null($yData)) {
-                    // 去年毛利
-                    $yGross = round(($yData['gross'] / $yData['revenue']) * 100, 2);
-
-                    // 今年營收yoy
-                    $revenueYoy = round((($value['revenue'] / $yData['revenue']) - 1) * 100, 2);
-                }
-            }
-
-            // 今年
-            $v = $cData[$value['code']];
-
-            $gross = round(($value['gross'] / $value['revenue']) * 100, 2);
-
-            if ($quarterly == 4) {
-                $ysGross = $gross;
-                $sRevenue = $value['revenue'];
-                $ysEps = $value['eps'];
-                $eps = $value['eps'] - $v->where('quarterly', '!=', 4)->sum('eps');
+            // 去年eps
+            if (is_null($yqe)) {
+                $yEpsTotal = $yv->sum('eps');
             } else {
-                // 今年累積毛利
-                $ysGross = round(($v->sum('gross') / $v->sum('revenue')) * 100, 2);
-
-                // 今年累積營收
-                $sRevenue = $v->sum('revenue');
-
-                // 今年累積eps
-                $ysEps = $v->sum('eps');
-
-                $eps = $value['eps'];
+                $yEpsTotal = $yqe->eps;
             }
 
-            if (! is_null($p = $prices->where('code', $value['code'])->first())) {
-                $close = $p->close;
-                $e = 0;
+            // eps yoy
+            if (! is_null($yq) && $yq->eps != 0) {
+                $epsYoy = round(($value['eps'] / $yq->eps) * 100, 2);
+            } else {
+                $epsYoy = 0;
+            }
 
+            // 該季毛利%
+            $gross = $value['revenue'] > 0 ? round(($value['gross'] / $value['revenue']) * 100, 2) : 0;
+
+            // 去年同期毛利%
+            if (! is_null($yq) && $yq['revenue'] > 0) {
+                $yGross = round(($yq['gross'] / $yq['revenue']) * 100, 2);
+            } else {
+                $yGross = 0;
+            }
+
+            // 該季營收yoy
+            if (! is_null($yq) && $value['revenue'] > 0 && $yq['revenue'] > 0) {
+                $revenueYoy = round(($value['revenue'] / $yq['revenue']) * 100, 2);
+            } else {
+                $revenueYoy = 0;
+            }
+
+            // 今年累積營收
+            $revenueTotal = $quarterly == 4 ? $value['revenue'] : $cData[$value['code']]->sum('revenue');
+
+            // 去年營收
+            if (is_null($yqe)) {
+                $yRevenueTotal = $yv->sum('revenue');
+            } else {
+                $yRevenueTotal = $yqe->revenue;
+            }
+
+            // 近四季PE
+            $pe = 0;
+            if ($close > 0) {
                 if ($quarterly == 4) {
                     $e = $value['eps'];
-                } elseif (isset($cData[$value['code']]) && isset($cyData[$value['code']])) {
-                    $all = collect(array_merge($cData[$value['code']]->toArray(), $cyData[$value['code']]->toArray()));
+                } else {
+                    $all = collect(array_merge($v->toArray(), $yv->toArray()));
 
                     if ($all->count() >= 4) {
                         $e = $all->slice(0, 4)->sum('eps');
@@ -483,14 +488,14 @@ class Profit
                 "{$year} {$date} 收盤價" => $close,
                 '近四季PE' => $pe,
                 "{$sq}-毛利%" => $gross,
-                "{$sq}-累積毛利%" => $ysGross,
                 "去年-毛利%" => $yGross,
                 "{$sq}-營收yoy" => $revenueYoy,
-                "{$sq}-累積營收" => number_format($sRevenue),
-                "去年-營收" => number_format($ysRevenue),
+                "{$sq}-累積營收" => number_format($revenueTotal),
+                "去年-營收" => number_format($yRevenueTotal),
                 "{$sq}-eps" => $eps,
-                "{$sq}-累積eps" => $ysEps,
-                "去年-eps" => $yEps,
+                "{$sq}-eps-yoy" => $epsYoy,
+                "{$sq}-累積eps" => $epsTotal,
+                "去年-eps" => $yEpsTotal,
                 '產業分類' => $classification[$value['classification_id']],
             ];
         });
