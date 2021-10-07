@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\Price;
 use App\Models\Stock;
 use App\Models\StockTag;
+use App\Models\Tag;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -248,6 +249,62 @@ class StockRepository extends Repository
     {
         return $query->where('prices.date', '<=', function ($query) {
             $query->select('date')->from('prices')->orderByDesc('id')->limit(1);
+        });
+    }
+
+    /**
+     * @param string $code
+     */
+    public function name(string $code)
+    {
+        $stocks = Stock::query()
+            ->select(
+                'stocks.id', 'stocks.code', 'stocks.name',
+                DB::RAW('classifications.name as c_name'), 'stocks.capital',
+            )
+            ->join('classifications', 'classifications.id', '=', 'stocks.classification_id')
+            ->where('code', $code)
+            ->first();
+
+        $stocks->tags = StockTag::query()
+            ->select('tags.name')
+            ->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
+            ->where('stock_id', $stocks->id)
+            ->orderBy('stock_tags.order')
+            ->get()
+            ->pluck('name');
+
+        return $stocks;
+    }
+
+    /**
+     * @param int $tag
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function namesByTag(int $tag)
+    {
+        $stocks = StockTag::query()
+            ->select(
+                'stocks.id', 'stocks.code', 'stocks.name',
+                DB::RAW('classifications.name as c_name'), 'stocks.capital',
+            )
+            ->join('stocks', 'stocks.id', '=', 'stock_tags.stock_id')
+            ->join('classifications', 'classifications.id', '=', 'stocks.classification_id')
+            ->where('stock_tags.tag_id', $tag)
+            ->get();
+
+        $tags = StockTag::query()
+            ->select('stock_tags.stock_id', 'tags.name')
+            ->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
+            ->whereIn('stock_id', $stocks->pluck('id'))
+            ->orderBy('stock_tags.order')
+            ->get()
+            ->groupBy('stock_id');
+
+        return $stocks->map(function ($value) use ($tags) {
+            $value->tags = $tags[$value->id]->pluck('name');
+            return $value;
         });
     }
 }

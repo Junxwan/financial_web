@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\Controller;
 use App\Models\Classification;
+use App\Models\Stock;
 use App\Repositories\StockRepository;
 use App\Repositories\TagRepository;
 use App\Services\Profit as Service;
@@ -121,5 +122,29 @@ class IndexController extends Controller
         $data['eps3_sum'] = $eps3;
 
         return response()->json($data);
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function name(string $code)
+    {
+        return response()->json(
+            $this->service->name($code)
+        );
+    }
+
+    /**
+     * @param int $tag
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function namesByTag(int $tag)
+    {
+        return response()->json(
+            $this->service->namesByTag($tag)
+        );
     }
 }

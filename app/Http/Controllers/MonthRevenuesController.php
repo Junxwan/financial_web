@@ -58,7 +58,7 @@ class MonthRevenuesController
             $file = fopen('php://output', 'w');
             fputcsv($file, array_keys($data->first()));
 
-            foreach($data as $v) {
+            foreach ($data as $v) {
                 fputcsv($file, array_values($v));
             }
 
@@ -71,5 +71,20 @@ class MonthRevenuesController
             "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
             "Expires" => "0",
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param RevenueRepository $revenue
+     * @param int $year
+     * @param int $month
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function last(Request $request, RevenueRepository $revenue, int $year, int $month)
+    {
+        return response()->json(
+            $revenue->last($year, $month, explode(',', $request->get('code')))
+        );
     }
 }

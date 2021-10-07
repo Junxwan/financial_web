@@ -169,7 +169,6 @@ class Profit
             ->where('profits.year', '<=', $year)
             ->orderByDesc('profits.year')
             ->orderByDesc('profits.quarterly')
-            ->limit(28)
             ->get()->filter(function ($v) use ($year, $quarterly) {
                 return ($year == $v->year) ? $v->quarterly <= $quarterly : true;
             });

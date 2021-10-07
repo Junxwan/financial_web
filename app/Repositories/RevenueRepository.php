@@ -122,4 +122,22 @@ class RevenueRepository extends Repository
                 ];
             });
     }
+
+    /**
+     * @param int $year
+     * @param int $month
+     * @param array $codes
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function last(int $year, int $month, array $codes)
+    {
+        return Revenue::query()
+            ->select('stocks.code', 'stocks.name', 'value', 'yoy', 'qoq', 'total', 'total_increase', 'y_total')
+            ->join('stocks', 'stocks.id', '=', 'revenues.stock_id')
+            ->where('year', $year)
+            ->where('month', $month)
+            ->whereIn('stocks.code', $codes)
+            ->get();
+    }
 }

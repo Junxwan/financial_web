@@ -29,7 +29,12 @@ return [
     [
         'route' => 'profit.index',
         'icon' => 'fas fa-signal',
-        'name' => '財報',
+        'name' => '損益表',
+    ],
+    [
+        'route' => 'profits.index',
+        'icon' => 'fas fa-signal',
+        'name' => '損益比較',
     ],
     [
         'route' => 'revenues.month.index',
