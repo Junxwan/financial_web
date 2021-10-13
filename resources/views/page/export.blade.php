@@ -21,7 +21,7 @@
         })
 
         $('#month-revenue-btn').click(function () {
-            var url = "{{ route('revenues.download', ['year' => ':year', 'month' => ':month']) }}"
+            var url = "{{ route('revenue.rank.download', ['year' => ':year', 'month' => ':month']) }}"
             axios.get(url.replace(':year', $('#year').val()).replace(':month', $('#month').val())).then(function (response) {
                 var hiddenElement = document.createElement('a')
                 var blob = new Blob(["\ufeff" + response.data], {type: 'text/csv;charset=utf-8;'})

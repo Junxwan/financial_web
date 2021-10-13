@@ -74,14 +74,4 @@ class PriceController
     {
         return response()->json($this->price->price($code));
     }
-
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function date()
-    {
-        return response()->json([
-            'date' => \App\Models\Price::query()->select('date')->orderByDesc('date')->first()->date,
-        ]);
-    }
 }

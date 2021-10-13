@@ -37,7 +37,7 @@ return [
         'name' => '損益比較',
     ],
     [
-        'route' => 'revenues.month.index',
+        'route' => 'revenue.rank.month.index',
         'icon' => 'fas fa-signal',
         'name' => '月營收',
     ],

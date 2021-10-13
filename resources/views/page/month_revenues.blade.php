@@ -5,7 +5,7 @@
     <script src="{{ asset('js/app.js?_=' . $time) }}"></script>
     <script>
         $('#select-btn').click(function () {
-            axios.get("{{ route('revenues.month.list') }}?year=" + $('#year').val() + '&month=' + $('#month').val()).then(function (response) {
+            axios.get("{{ route('revenue.rank.month.list') }}?year=" + $('#year').val() + '&month=' + $('#month').val()).then(function (response) {
                 $("#stock_list>tbody>tr").remove()
                 r = $('#r').val()
                 f = $('#f').val()

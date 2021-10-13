@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Stock;
 
 use App\Services\Category;
 use Illuminate\Http\Request;

@@ -60,21 +60,51 @@
         })
 
         $('#financial-btn').click(function () {
+            $("#month-revenue-table>tbody>tr").remove()
+            $("#financial-table>tbody>tr").remove()
+
             let url = "{{ route('revenue.last', ['year' => ':year', 'month' => ':month']) }}"
             url = url.replace(':year', $('#year').val()).replace(':month', $('#month').val())
             url += '?code=' + codes().join(',')
 
+            // 月營收
             axios.get(url).then(function (response) {
                 response.data.forEach(function (v) {
                     $("#month-revenue-table>tbody").append("<tr>" +
                         "<td>" + v.code + "</td>" +
                         "<td>" + v.name + "</td>" +
                         "<td>" + amountText(v.value) + "</td>" +
-                        "<td>" + v.yoy + "</td>" +
+                        "<td>" + textR(v.yoy, 30) + "</td>" +
                         "<td>" + v.qoq + "</td>" +
                         "<td>" + amountText(v.total) + "</td>" +
                         "<td>" + amountText(v.y_total) + "</td>" +
                         "<td>" + v.total_increase + "</td>" +
+                        "</tr>")
+                })
+
+                toastr.success('查詢成功')
+            }).catch(function (error) {
+                console.log(error)
+                toastr.error('查無資料')
+            })
+
+            url = "{{ route('profit.codes', ['year' => ':year', 'quarterly' => ':quarterly']) }}"
+            url = url.replace(':year', $('#year').val()).replace(':quarterly', $('#quarterly').val())
+            url += '?code=' + codes().join(',')
+
+            // 季報
+            axios.get(url).then(function (response) {
+                response.data.forEach(function (v) {
+                    $("#financial-table>tbody").append("<tr>" +
+                        "<td>" + v.code + "</td>" +
+                        "<td>" + v.name + "</td>" +
+                        "<td>" + amountText(v.revenue) + "</td>" +
+                        "<td>" + textR(v.gross_ratio, 50) + "</td>" +
+                        "<td>" + v.fee_ratio + "</td>" +
+                        "<td>" + textR(v.profit_ratio, 100) + "</td>" +
+                        "<td>" + textR(v.profit_pre_ratio, 100) + "</td>" +
+                        "<td>" + textR(v.profit_after_ratio, 100) + "</td>" +
+                        "<td>" + textR(v.eps, 100) + "</td>" +
                         "</tr>")
                 })
 
@@ -91,6 +121,18 @@
                 codes.push(e.innerHTML)
             })
             return codes
+        }
+
+        function textR(value, r) {
+            if (value >= r) {
+                color = '#f33f7a'
+            } else if (value < 0) {
+                color = '#2a9309'
+            } else {
+                color = '#f2f5f1'
+            }
+
+            return '<span style="color:' + color + '"> ' + value + '</span> '
         }
     </script>
 @stop
@@ -197,14 +239,8 @@
                 </div>
                 <div class="col-md-1">
                     <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
-                            id="profit-btn">
-                        查
-                    </button>
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
                             id="financial-btn">
-                        財
+                        查
                     </button>
                 </div>
             </div>
@@ -264,6 +300,40 @@
                             <th scope="col">累績營收</th>
                             <th scope="col">去年累績營收</th>
                             <th scope="col">累績營收成長</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">季報</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                        class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                        class="fas fa-remove"></i></button>
+            </div>
+        </div>
+        <div class="card-body" style="display: block;">
+            <div class="row">
+                <div class="col-md-12">
+                    <table id="financial-table" class="table table-dark">
+                        <thead>
+                        <tr>
+                            <th scope="col">代碼</th>
+                            <th scope="col">名稱</th>
+                            <th scope="col">營收</th>
+                            <th scope="col">毛利率</th>
+                            <th scope="col">費用率</th>
+                            <th scope="col">利益率</th>
+                            <th scope="col">稅前淨利率</th>
+                            <th scope="col">稅後淨利率</th>
+                            <th scope="col">eps</th>
                         </tr>
                         </thead>
                         <tbody>

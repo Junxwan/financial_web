@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Financial;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tag;
+use App\Repositories\ProfitRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -38,5 +39,20 @@ class ProfitsController extends Controller
             'quarterly' => $quarterly,
             'tags' => Tag::query()->get(),
         ];
+    }
+
+    /**
+     * @param Request $request
+     * @param ProfitRepository $repo
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function quarterly(Request $request, ProfitRepository $repo, int $year, int $quarterly)
+    {
+        return response()->json(
+            $repo->quarterly($year, $quarterly, explode(',', $request->query('code')))
+        );
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 
 if (! function_exists('q4r')) {
     /**
@@ -84,5 +85,37 @@ if (! function_exists('profitFilter')) {
 
             return $value;
         });
+    }
+}
+
+if (! function_exists('years')) {
+    function years()
+    {
+        $now = Carbon::now();
+        $years = [];
+
+        for ($i = 0; $i < ($now->year - 2015); $i++) {
+            $years[] = $now->year - $i;
+        }
+
+        return $years;
+    }
+}
+
+if (! function_exists('currentQuarterly')) {
+    function currentQuarterly()
+    {
+        $now = Carbon::now();
+        $quarterly = 4;
+
+        if ($now->month >= 11) {
+            $quarterly = 3;
+        } elseif ($now->month >= 8) {
+            $quarterly = 2;
+        } elseif ($now->month >= 5) {
+            $quarterly = 1;
+        }
+
+        return $quarterly;
     }
 }

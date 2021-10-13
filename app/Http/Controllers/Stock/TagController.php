@@ -1,25 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Stock;
 
-use App\Services\News;
+use App\Services\Tag;
 use Illuminate\Http\Request;
 
-class NewsController
+class TagController
 {
     /**
-     * @var News
+     * @var Tag
      */
-    private News $news;
+    private Tag $tag;
 
     /**
-     * NewsController constructor.
+     * TagController constructor.
      *
-     * @param News $news
+     * @param Tag $tag
      */
-    public function __construct(News $news)
+    public function __construct(Tag $tag)
     {
-        $this->news = $news;
+        $this->tag = $tag;
     }
 
     /**
@@ -27,10 +27,10 @@ class NewsController
      */
     public function index()
     {
-        return view('page.news', [
+        return view('page.tag', [
             'header' => [
-                '標題',
-                '時間',
+                '名稱',
+                '指數',
                 '編輯',
                 '刪除',
             ],
@@ -41,19 +41,31 @@ class NewsController
                     'btn' => '更新',
                     'list' => [
                         [
-                            'id' => 'title',
+                            'id' => 'name',
                             'type' => 'text',
-                            'name' => '標題',
+                            'name' => '名稱',
                         ],
                         [
-                            'id' => 'publish_time',
+                            'id' => 'isExponent',
+                            'type' => 'checkbox',
+                            'name' => '指數',
+                        ],
+                    ],
+                ],
+                [
+                    'id' => 'create',
+                    'title' => '新增',
+                    'btn' => '新增',
+                    'list' => [
+                        [
+                            'id' => 'name',
                             'type' => 'text',
-                            'name' => '時間',
+                            'name' => '名稱',
                         ],
                         [
-                            'id' => 'remark',
-                            'type' => 'edit',
-                            'name' => '備註',
+                            'id' => 'isExponent',
+                            'type' => 'checkbox',
+                            'name' => '指數',
                         ],
                     ],
                 ],
@@ -68,12 +80,24 @@ class NewsController
      */
     public function list(Request $request)
     {
-        $data = $this->news->list($request->all());
+        $data = $this->tag->list($request->all());
         return response()->json([
             'draw' => $request->get('draw'),
             'recordsTotal' => $data['total'],
             'recordsFiltered' => $data['total'],
             'data' => $data['data'],
+        ]);
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function create(Request $request)
+    {
+        return response()->json([
+            'result' => $this->tag->insert($request->all()),
         ]);
     }
 
@@ -86,7 +110,7 @@ class NewsController
     public function update(Request $request, int $id)
     {
         return response()->json([
-            'result' => $this->news->update($id, $request->get('remark')),
+            'result' => $this->tag->update($id, $request->all()),
         ]);
     }
 
@@ -98,18 +122,7 @@ class NewsController
     public function delete(int $id)
     {
         return response()->json([
-            'result' => $this->news->delete($id),
-        ]);
-    }
-
-    /**
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function clear()
-    {
-        return response()->json([
-            'result' => true,
-            'count' => $this->news->clear(),
+            'result' => $this->tag->delete($id),
         ]);
     }
 }

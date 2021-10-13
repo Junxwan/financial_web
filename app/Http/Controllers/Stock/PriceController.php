@@ -87,6 +87,16 @@ class PriceController
     }
 
     /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function date()
+    {
+        return response()->json([
+            'date' => \App\Models\Price::query()->select('date')->orderByDesc('date')->first()->date,
+        ]);
+    }
+
+    /**
      * @param Builder $query
      * @param array $data
      *

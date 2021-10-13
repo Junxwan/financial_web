@@ -17,68 +17,93 @@ use Illuminate\Support\Facades\Validator;
 Route::get('/', [\App\Http\Controllers\IndexController::class, 'index'])->name('index');
 
 // 新聞
-Route::get('/news', [\App\Http\Controllers\News\IndexController::class, 'index'])->name('news.index');
-Route::get('/news/list', [\App\Http\Controllers\News\IndexController::class, 'list'])->name('news.list');
-Route::put('/news/{id}', [\App\Http\Controllers\News\IndexController::class, 'update'])->name('news.update');
-Route::delete('/news/{id}', [\App\Http\Controllers\News\IndexController::class, 'delete'])->name('news.delete');
-Route::post('/news/clear', [\App\Http\Controllers\News\IndexController::class, 'clear'])->name('news.clear');
+Route::group(['prefix' => 'news', 'as' => 'news.'], function () {
+    Route::get('/', [\App\Http\Controllers\News\IndexController::class, 'index'])->name('index');
+    Route::get('/list', [\App\Http\Controllers\News\IndexController::class, 'list'])->name('list');
+    Route::put('/{id}', [\App\Http\Controllers\News\IndexController::class, 'update'])->name('update');
+    Route::delete('/{id}', [\App\Http\Controllers\News\IndexController::class, 'delete'])->name('delete');
+    Route::post('/clear', [\App\Http\Controllers\News\IndexController::class, 'clear'])->name('clear');
 
-// 新聞關鍵字
-Route::get('/news/keyWord', [\App\Http\Controllers\News\KeyWordController::class, 'index'])->name('news.keyWord.index');
-Route::get('/news/keyWord/list',
-    [\App\Http\Controllers\News\KeyWordController::class, 'list'])->name('news.keyWord.list');
-Route::post('/news/keyWord',
-    [\App\Http\Controllers\News\KeyWordController::class, 'create'])->name('news.keyWord.create');
-Route::put('/news/keyWord/{id}',
-    [\App\Http\Controllers\News\KeyWordController::class, 'update'])->name('news.keyWord.update');
-Route::delete('/news/keyWord/{id}',
-    [\App\Http\Controllers\News\KeyWordController::class, 'delete'])->name('news.keyWord.delete');
+    // 關鍵字
+    Route::get('/keyWord',
+        [\App\Http\Controllers\News\KeyWordController::class, 'index'])->name('keyWord.index');
+    Route::get('/keyWord/list',
+        [\App\Http\Controllers\News\KeyWordController::class, 'list'])->name('keyWord.list');
+    Route::post('/keyWord',
+        [\App\Http\Controllers\News\KeyWordController::class, 'create'])->name('keyWord.create');
+    Route::put('/keyWord/{id}',
+        [\App\Http\Controllers\News\KeyWordController::class, 'update'])->name('keyWord.update');
+    Route::delete('/keyWord/{id}',
+        [\App\Http\Controllers\News\KeyWordController::class, 'delete'])->name('keyWord.delete');
+});
 
 // 個股
-Route::get('/stock', [\App\Http\Controllers\Stock\IndexController::class, 'index'])->name('stock.index');
-Route::get('/stock/{code}/info', [\App\Http\Controllers\Stock\IndexController::class, 'search'])->name('stock.search');
-Route::get('/stock/list', [\App\Http\Controllers\Stock\IndexController::class, 'list'])->name('stock.list');
-Route::post('/stock', [\App\Http\Controllers\Stock\IndexController::class, 'create'])->name('stock.create');
-Route::delete('/stock/{id}', [\App\Http\Controllers\Stock\IndexController::class, 'delete'])->name('stock.delete');
-Route::put('/stock/{id}', [\App\Http\Controllers\Stock\IndexController::class, 'update'])->name('stock.update');
-Route::get('/stock/{code}/code', [\App\Http\Controllers\Stock\IndexController::class, 'name'])->name('stock.name');
-Route::get('/stocks/{tag}/tag',
-    [\App\Http\Controllers\Stock\IndexController::class, 'namesByTag'])->name('stock.names.tag');
+Route::group(['prefix' => 'stock', 'as' => 'stock.'], function () {
+    Route::get('/', [\App\Http\Controllers\Stock\IndexController::class, 'index'])->name('index');
+    Route::get('/{code}/info', [\App\Http\Controllers\Stock\IndexController::class, 'search'])->name('search');
+    Route::get('/list', [\App\Http\Controllers\Stock\IndexController::class, 'list'])->name('list');
+    Route::post('/', [\App\Http\Controllers\Stock\IndexController::class, 'create'])->name('create');
+    Route::delete('/{id}', [\App\Http\Controllers\Stock\IndexController::class, 'delete'])->name('delete');
+    Route::put('/{id}', [\App\Http\Controllers\Stock\IndexController::class, 'update'])->name('update');
+    Route::get('/{code}/code', [\App\Http\Controllers\Stock\IndexController::class, 'name'])->name('name');
+    Route::get('/{tag}/tag',
+        [\App\Http\Controllers\Stock\IndexController::class, 'namesByTag'])->name('names.tag');
 
-# 標籤
-Route::get('/tag', [\App\Http\Controllers\TagController::class, 'index'])->name('tag.index');
-Route::get('/tag/list', [\App\Http\Controllers\TagController::class, 'list'])->name('tag.list');
-Route::post('/tag', [\App\Http\Controllers\TagController::class, 'create'])->name('tag.create');
-Route::delete('/tag/{id}', [\App\Http\Controllers\TagController::class, 'delete'])->name('tag.delete');
-Route::put('/tag/{id}', [\App\Http\Controllers\TagController::class, 'update'])->name('tag.update');
+    // 投信持股(for 個股)
+    Route::get('/fund', [\App\Http\Controllers\Stock\FundControllers::class, 'index'])->name('fund.index');
+    Route::get('/fund/{code}/code/{year}/year',
+        [\App\Http\Controllers\Stock\FundControllers::class, 'list'])->name('fund.list');
+
+    # 個股股價
+    Route::get('/price', [\App\Http\Controllers\Stock\PriceController::class, 'index'])->name('price.index');
+    Route::get('/price/list',
+        [\App\Http\Controllers\Stock\PriceController::class, 'list'])->name('price.list');
+    Route::get('/last/date',
+        [\App\Http\Controllers\Stock\PriceController::class, 'date'])->name('price.last.date');
+});
+
+// 標籤
+Route::group(['prefix' => 'tag', 'as' => 'tag.'], function () {
+    Route::get('/', [\App\Http\Controllers\Stock\TagController::class, 'index'])->name('index');
+    Route::get('/list', [\App\Http\Controllers\Stock\TagController::class, 'list'])->name('list');
+    Route::post('/', [\App\Http\Controllers\Stock\TagController::class, 'create'])->name('create');
+    Route::delete('/{id}', [\App\Http\Controllers\Stock\TagController::class, 'delete'])->name('delete');
+    Route::put('/{id}', [\App\Http\Controllers\Stock\TagController::class, 'update'])->name('update');
+});
 
 // 投資報告
-Route::get('/report', [\App\Http\Controllers\ReportController::class, 'index'])->name('report.index');
-Route::get('/report/{id}/edit', [\App\Http\Controllers\ReportController::class, 'edit'])->name('report.edit');
-Route::get('/report/create', [\App\Http\Controllers\ReportController::class, 'createView'])->name('report.create.view');
-Route::get('/report/list', [\App\Http\Controllers\ReportController::class, 'list'])->name('report.list');
-Route::post('/report', [\App\Http\Controllers\ReportController::class, 'create'])->name('report.create');
-Route::put('/report/{id}', [\App\Http\Controllers\ReportController::class, 'update'])->name('report.update');
-Route::delete('/report/{id}', [\App\Http\Controllers\ReportController::class, 'delete'])->name('report.delete');
+Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
+    Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
+    Route::get('/{id}/edit', [\App\Http\Controllers\ReportController::class, 'edit'])->name('edit');
+    Route::get('/create', [\App\Http\Controllers\ReportController::class, 'createView'])->name('create.view');
+    Route::get('/list', [\App\Http\Controllers\ReportController::class, 'list'])->name('list');
+    Route::post('', [\App\Http\Controllers\ReportController::class, 'create'])->name('create');
+    Route::put('/{id}', [\App\Http\Controllers\ReportController::class, 'update'])->name('update');
+    Route::delete('/{id}', [\App\Http\Controllers\ReportController::class, 'delete'])->name('delete');
+});
 
 // 綜合損益表
-Route::get('/profit', [\App\Http\Controllers\Financial\ProfitController::class, 'index'])->name('profit.index');
-Route::get('/profit/{code}/code/{year}/year/{season}/season',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'get'])->name('profit.get');
-Route::get('/profit/{code}/code/{year}/year',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'year'])->name('profit.year');
-Route::get('/profit/recent/{code}/code/{year}/year/{quarterly}/quarterly',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'recent'])->name('profit.recent');
-Route::get('/profit/eps/{code}/code',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'eps'])->name('profit.eps');
-Route::get('/profit/dividend/{code}/code',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'dividend'])->name('profit.dividend');
-Route::get('/profit/rank',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'rankIndex'])->name('profit.rank.index');
-Route::get('/profit/rank/{year}/year/{season}/season/{name}',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'rank'])->name('profit.rank');
-Route::get('/profit/{year}/year/{quarterly}/quarterly/download',
-    [\App\Http\Controllers\Financial\ProfitController::class, 'download'])->name('profit.download');
+Route::group(['prefix' => 'profit', 'as' => 'profit.'], function () {
+    Route::get('/', [\App\Http\Controllers\Financial\ProfitController::class, 'index'])->name('index');
+    Route::get('/{code}/code/{year}/year/{season}/season',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'get'])->name('get');
+    Route::get('/{code}/code/{year}/year',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'year'])->name('year');
+    Route::get('/recent/{code}/code/{year}/year/{quarterly}/quarterly',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'recent'])->name('recent');
+    Route::get('/eps/{code}/code',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'eps'])->name('eps');
+    Route::get('/dividend/{code}/code',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'dividend'])->name('dividend');
+    Route::get('/rank',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'rankIndex'])->name('rank.index');
+    Route::get('/rank/{year}/year/{season}/season/{name}',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'rank'])->name('rank');
+    Route::get('download/{year}/year/{quarterly}/quarterly',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'download'])->name('download');
+    Route::get('code/{year}/year/{quarterly}/quarterly',
+        [\App\Http\Controllers\Financial\ProfitsController::class, 'quarterly'])->name('codes');
+});
 
 // 損益比較
 Route::group(['prefix' => 'profits', 'as' => 'profits.'], function () {
@@ -87,72 +112,69 @@ Route::group(['prefix' => 'profits', 'as' => 'profits.'], function () {
 
 // 現金流量表
 Route::get('/cash/recent/{code}/code/{year}/year/{quarterly}/quarterly',
-    [\App\Http\Controllers\CashController::class, 'recent'])->name('cash.recent');
+    [\App\Http\Controllers\Financial\CashController::class, 'recent'])->name('cash.recent');
 
 // 月營收
 Route::group(['prefix' => 'revenue', 'as' => 'revenue.'], function () {
-    Route::get('/revenue/{code}/code/{year}/year',
+    Route::get('/{code}/code/{year}/year',
         [\App\Http\Controllers\RevenueController::class, 'year'])->name('year');
-    Route::get('/revenue/recent/{code}/code/{year}/year/{month}/month',
+    Route::get('/recent/{code}/code/{year}/year/{month}/month',
         [\App\Http\Controllers\RevenueController::class, 'recent'])->name('recent');
-    Route::get('/revenue/{year}/year/{month}/month/last',
+    Route::get('/{year}/year/{month}/month/last',
         [\App\Http\Controllers\MonthRevenuesController::class, 'last'])->name('last');
+
+    // 排行
+    Route::get('/rank/month',
+        [\App\Http\Controllers\MonthRevenuesController::class, 'index'])->name('rank.month.index');
+    Route::get('/rank/month/list',
+        [\App\Http\Controllers\MonthRevenuesController::class, 'list'])->name('rank.month.list');
+    Route::get('/rank/{year}/year/{month}/month/download',
+        [\App\Http\Controllers\MonthRevenuesController::class, 'download'])->name('rank.download');
 });
 
 // 投信持股
-Route::get('/fund', [\App\Http\Controllers\FundController::class, 'index'])->name('fund.index');
-Route::get('/fund/list/{id}', [\App\Http\Controllers\FundController::class, 'funds'])->name('fund.list');
-Route::get('/fund/stocks/{year}/year/{fundId}/fund',
-    [\App\Http\Controllers\FundController::class, 'stocks'])->name('fund.stocks');
-
-// 投信持股(for 個股)
-Route::get('/stock/fund', [\App\Http\Controllers\Stock\FundControllers::class, 'index'])->name('stock.fund.index');
-Route::get('/stock/fund/{code}/code/{year}/year',
-    [\App\Http\Controllers\Stock\FundControllers::class, 'list'])->name('stock.fund.list');
+Route::group(['prefix' => 'fund', 'as' => 'fund.'], function () {
+    Route::get('/', [\App\Http\Controllers\FundController::class, 'index'])->name('index');
+    Route::get('/list/{id}', [\App\Http\Controllers\FundController::class, 'funds'])->name('list');
+    Route::get('/stocks/{year}/year/{fundId}/fund',
+        [\App\Http\Controllers\FundController::class, 'stocks'])->name('stocks');
+});
 
 // 類股
-Route::get('/category', [\App\Http\Controllers\CategoryController::class, 'index'])->name('category.index');
-Route::get('/category/list',
-    [\App\Http\Controllers\CategoryController::class, 'list'])->name('category.list');
+Route::group(['prefix' => 'category', 'as' => 'category.'], function () {
+    Route::get('/', [\App\Http\Controllers\Stock\CategoryController::class, 'index'])->name('index');
+    Route::get('/list',
+        [\App\Http\Controllers\Stock\CategoryController::class, 'list'])->name('list');
+});
 
 // 產業
-Route::get('/industry', [\App\Http\Controllers\IndustryController::class, 'index'])->name('industry.index');
-Route::get('/industry/list',
-    [\App\Http\Controllers\IndustryController::class, 'list'])->name('industry.list');
-Route::get('/industry/last/date',
-    [\App\Http\Controllers\IndustryController::class, 'date'])->name('industry.last.date');
+Route::group(['prefix' => 'industry', 'as' => 'industry.'], function () {
+    Route::get('/', [\App\Http\Controllers\IndustryController::class, 'index'])->name('index');
+    Route::get('/list',
+        [\App\Http\Controllers\IndustryController::class, 'list'])->name('list');
+    Route::get('/last/date',
+        [\App\Http\Controllers\IndustryController::class, 'date'])->name('last.date');
+});
 
 // 產業指數
-Route::get('/exponent', [\App\Http\Controllers\ExponentController::class, 'index'])->name('exponent.index');
-Route::get('/exponent/tag/{id}/year/{year}',
-    [\App\Http\Controllers\ExponentController::class, 'tag'])->name('exponent.tag.k');
-Route::get('/exponent/profit/tag/{id}/year/{year}/quarterly/{quarterly}',
-    [\App\Http\Controllers\ExponentController::class, 'tagProfit'])->name('exponent.tag.profit');
-Route::get('/exponent/k/tag/{id}/year/{year}',
-    [\App\Http\Controllers\ExponentController::class, 'stockK'])->name('exponent.tag.stock.k');
+Route::group(['prefix' => 'exponent', 'as' => 'exponent.'], function () {
+    Route::get('/', [\App\Http\Controllers\ExponentController::class, 'index'])->name('index');
+    Route::get('/tag/{id}/year/{year}',
+        [\App\Http\Controllers\ExponentController::class, 'tag'])->name('tag.k');
+    Route::get('/profit/tag/{id}/year/{year}/quarterly/{quarterly}',
+        [\App\Http\Controllers\ExponentController::class, 'tagProfit'])->name('tag.profit');
+    Route::get('/k/tag/{id}/year/{year}',
+        [\App\Http\Controllers\ExponentController::class, 'stockK'])->name('tag.stock.k');
+});
 
 // 股價
-Route::get('/price', [\App\Http\Controllers\PriceController::class, 'index'])->name('price.index');
-Route::get('/price/list',
-    [\App\Http\Controllers\PriceController::class, 'list'])->name('price.list');
-Route::get('/price/{code}/code',
-    [\App\Http\Controllers\PriceController::class, 'price'])->name('price');
-Route::get('/price/last/date',
-    [\App\Http\Controllers\PriceController::class, 'date'])->name('price.last.date');
-
-# 個股股價
-Route::get('/stock/price', [\App\Http\Controllers\Stock\PriceController::class, 'index'])->name('stock.price.index');
-Route::get('/stock/price/list',
-    [\App\Http\Controllers\Stock\PriceController::class, 'list'])->name('stock.price.list');
-
-// 月營收排行
-Route::get('/revenues/month',
-    [\App\Http\Controllers\MonthRevenuesController::class, 'index'])->name('revenues.month.index');
-Route::get('/revenues/month/list',
-    [\App\Http\Controllers\MonthRevenuesController::class, 'list'])->name('revenues.month.list');
-Route::get('/revenues/{year}/year/{month}/month/download',
-    [\App\Http\Controllers\MonthRevenuesController::class, 'download'])->name('revenues.download');
-
+Route::group(['prefix' => 'price', 'as' => 'price.'], function () {
+    Route::get('/', [\App\Http\Controllers\PriceController::class, 'index'])->name('index');
+    Route::get('/list',
+        [\App\Http\Controllers\PriceController::class, 'list'])->name('list');
+    Route::get('/{code}/code',
+        [\App\Http\Controllers\PriceController::class, 'price'])->name('');
+});
 
 // 可轉債
 Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {

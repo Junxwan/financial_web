@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Financial;
 use App\Services\Cash;
 use App\Services\Profit;
 use Illuminate\Http\Request;
-use function Symfony\Component\String\s;
 
 class ProfitController
 {

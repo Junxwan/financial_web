@@ -67,4 +67,32 @@ class ProfitRepository extends Repository
                 return $value;
             })->sortBy('code')->values();
     }
+
+    /**
+     * @param int $year
+     * @param int $quarterly
+     * @param array $codes
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|Collection
+     */
+    public function quarterly(int $year, int $quarterly, array $codes)
+    {
+        return Profit::query()->select(
+            DB::RAW('stocks.code'),
+            DB::RAW('stocks.name'),
+            DB::RAW('profits.revenue'),
+            DB::RAW('ROUND(profits.gross_ratio, 2) as gross_ratio'),
+            DB::RAW('ROUND(profits.fee_ratio, 2) as fee_ratio'),
+            DB::RAW('ROUND(profits.profit_ratio, 2) as profit_ratio'),
+            DB::RAW('ROUND(profits.profit_pre_ratio, 2) as profit_pre_ratio'),
+            DB::RAW('ROUND(profits.profit_after_ratio, 2) as profit_after_ratio'),
+            DB::RAW('ROUND(profits.eps, 2) as eps'),
+        )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+            ->where('profits.year', $year)
+            ->where('profits.quarterly', $quarterly)
+            ->whereIn('stocks.code', $codes)
+            ->get()
+            ->sortBy('code')
+            ->values();
+    }
 }
