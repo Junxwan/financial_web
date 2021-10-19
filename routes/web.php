@@ -173,7 +173,7 @@ Route::group(['prefix' => 'price', 'as' => 'price.'], function () {
     Route::get('/list',
         [\App\Http\Controllers\PriceController::class, 'list'])->name('list');
     Route::get('/{code}/code',
-        [\App\Http\Controllers\PriceController::class, 'price'])->name('');
+        [\App\Http\Controllers\PriceController::class, 'price'])->name('code');
 });
 
 // 可轉債

@@ -18,7 +18,7 @@
 
         $('#select-k-btn').click(function () {
             axios.get("{{ route('cb.price.conversion', ['code' => ':code']) }}".replace(':code', $('#code').val())).then(function (response) {
-                var url = "{{ route('cb.price', ['code' => ':code']) }}"
+                var url = "{{ route('price.code', ['code' => ':code']) }}"
                 newK('stock-chat', url.replace(':code', $('#code').val().slice(0, -1)), false, [{
                     color: '#4d169e',
                     width: 1,
