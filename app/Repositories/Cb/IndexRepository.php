@@ -77,8 +77,10 @@ class IndexRepository
                     if (! is_null($p = $price->where('stock_id', $value->stock_id)->first())) {
                         $value['s_price'] = $p->close;
 
-                        $value['off_price'] = round($p->close * ($value->conversion_stock / 1000), 2);
-                        $value['premium'] = round((($cbP->close - $value['off_price']) / $value['off_price']) * 100, 2);
+                        if ($value->conversion_stock > 0) {
+                            $value['off_price'] = round($p->close * ($value->conversion_stock / 1000), 2);
+                            $value['premium'] = round((($cbP->close - $value['off_price']) / $value['off_price']) * 100, 2);
+                        }
                     }
                 }
 
