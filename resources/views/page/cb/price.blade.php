@@ -20,7 +20,7 @@
             axios.get("{{ route('cb.price.conversion', ['code' => ':code']) }}".replace(':code', $('#code').val())).then(function (response) {
                 var url = "{{ route('price.code', ['code' => ':code']) }}"
                 newK('stock-chat', url.replace(':code', $('#code').val().slice(0, -1)), false, [{
-                    color: '#4d169e',
+                    color: '#a43efd',
                     width: 1,
                     value: response.data[response.data.length - 1].value,
                     zIndex: 1
@@ -204,7 +204,7 @@
                     }]
                 });
 
-                Highcharts.chart('premium-price-chat', {
+                Highcharts.chart('premium-cb-chat', {
                     title: {
                         text: '可轉債/折溢'
                     },
@@ -234,6 +234,46 @@
                         name: '可轉債',
                         type: 'line',
                         data: cbClose,
+                        color: '#af5661'
+                    }, {
+                        name: '折溢',
+                        yAxis: 1,
+                        type: 'line',
+                        data: premium,
+                        color: '#2f99a3'
+                    }]
+                });
+
+                Highcharts.chart('premium-stock-chat', {
+                    title: {
+                        text: '股價/折溢'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: [{
+                        title: {
+                            text: '股價'
+                        },
+                    }, {
+                        title: {
+                            text: '折溢'
+                        },
+                        opposite: true,
+                        plotLines: [{
+                            color: '#FF0000',
+                            width: 1,
+                            value: 0,
+                            zIndex: 2
+                        }]
+                    }],
+                    tooltip: {
+                        shared: true
+                    },
+                    series: [{
+                        name: '股價',
+                        type: 'line',
+                        data: close,
                         color: '#af5661'
                     }, {
                         name: '折溢',
@@ -326,6 +366,7 @@
         if (urlParams.has('code')) {
             $('#code').val(urlParams.get('code'))
             $('#select-cb-k-btn').click()
+            $('#select-k-btn').click()
         }
     </script>
 @stop
@@ -393,19 +434,6 @@
         <div class="card-body" style="display: block;">
             <div id="cb-chat" class="row">
             </div>
-        </div>
-    </div>
-    <div class="card card-default">
-        <div class="card-header">
-            <h3 class="card-title">個K</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                        class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
-                        class="fas fa-remove"></i></button>
-            </div>
-        </div>
-        <div class="card-body" style="display: block;">
             <div id="stock-chat" class="row">
             </div>
         </div>
@@ -438,7 +466,9 @@
         <div class="card-body" style="display: block;">
             <div id="premium-chat" class="row">
             </div>
-            <div id="premium-price-chat" class="row">
+            <div id="premium-cb-chat" class="row">
+            </div>
+            <div id="premium-stock-chat" class="row">
             </div>
             <div id="cb-price-chat" class="row">
             </div>

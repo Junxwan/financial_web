@@ -57,25 +57,21 @@
                         },
                     },
                     {data: 'conversion_price', width: '7%'},
-                    {data: 's_price', width: '7%'},
                     {data: 'price', width: '7%'},
-                    {data: 'off_price', width: '7%'},
-                    {data: 'premium', width: '6%'},
                     {
-                        data: 'conversion_premium_rate',
-                        width: '6%',
+                        data: 'off_price',
+                        width: '7%',
                         render: function (data, t, row, meta) {
-                            if (row.off_price >= 100 && row.off_price <= 102) {
-                                return "平"
-                            } else if (row.off_price > 102) {
-                                return "<span style='color: #c73333'>內</span>"
-                            } else if (row.off_price === 0) {
-                                return ""
+                            if (row.off_price >= 100) {
+                                return "<span style='color: #c73333'>" + data + "</span>"
+                            } else if (row.off_price <= 95 && row.off_price !== 0) {
+                                return "<span style='color: #5a9e0f'>" + data + "</span>"
                             }
 
-                            return "<span style='color: #5a9e0f'>外</span>"
-                        },
+                            return data
+                        }
                     },
+                    {data: 'premium', width: '6%'},
                     {data: 'conversion_stock', width: '6%'},
                     {
                         data: 'publish_total_amount',

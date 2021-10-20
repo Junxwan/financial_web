@@ -91,8 +91,7 @@ class ProfitRepository extends Repository
             ->where('profits.year', $year)
             ->where('profits.quarterly', $quarterly)
             ->whereIn('stocks.code', $codes)
-            ->get()
-            ->sortBy('code')
-            ->values();
+            ->orderByDesc('gross_ratio')
+            ->get();
     }
 }
