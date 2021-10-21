@@ -129,7 +129,7 @@ class ProfitController
      */
     public function rankIndex()
     {
-        return view('page.profit_rank', [
+        return view('page.profit.rank', [
             'year' => date('Y'),
             'name' => [
                 '毛利率' => 'gross',

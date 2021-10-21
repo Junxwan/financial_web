@@ -27,7 +27,7 @@ class TagController
      */
     public function index()
     {
-        return view('page.tag', [
+        return view('page.stock.tag', [
             'header' => [
                 '名稱',
                 '指數',
