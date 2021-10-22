@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class AddRationToProfitsTable extends Migration
+class AddCodeToFundsTable extends Migration
 {
     /**
      * @var string
