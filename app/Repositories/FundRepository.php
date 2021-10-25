@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Fund;
+use App\Models\FundDetail;
 use App\Models\FundStock;
 use Illuminate\Support\Facades\DB;
 
@@ -60,5 +61,35 @@ class FundRepository extends Repository
             ->groupBy('month')
             ->groupBy('ratio')
             ->values()[0];
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function scale(int $id)
+    {
+        return FundDetail::query()
+            ->select('year', 'month', 'scale')
+            ->where('fund_id', $id)
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->get();
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function value(int $id)
+    {
+        return FundDetail::query()
+            ->select('year', 'month', 'value')
+            ->where('fund_id', $id)
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->get();
     }
 }

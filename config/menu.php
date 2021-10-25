@@ -56,6 +56,11 @@ return [
         'icon' => 'fas fa-list',
         'name' => '投信個股持股',
     ],
+    [
+        'route' => 'fund.detail.index',
+        'icon' => 'fas fa-list',
+        'name' => '基金明細',
+    ],
     //    [
     //        'route' => 'category.index',
     //        'icon' => 'fas fa-list',

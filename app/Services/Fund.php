@@ -66,4 +66,24 @@ class Fund
     {
         return $this->repo->stock($code, $year);
     }
+
+    /**
+     * @param int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function scale(int $id)
+    {
+        return $this->repo->scale($id);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function value(int $id)
+    {
+        return $this->repo->value($id);
+    }
 }

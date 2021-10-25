@@ -134,10 +134,14 @@ Route::group(['prefix' => 'revenue', 'as' => 'revenue.'], function () {
 
 // 投信持股
 Route::group(['prefix' => 'fund', 'as' => 'fund.'], function () {
-    Route::get('/', [\App\Http\Controllers\FundController::class, 'index'])->name('index');
-    Route::get('/list/{id}', [\App\Http\Controllers\FundController::class, 'funds'])->name('list');
+    Route::get('/', [\App\Http\Controllers\Fund\IndexController::class, 'index'])->name('index');
+    Route::get('/list/{id}', [\App\Http\Controllers\Fund\IndexController::class, 'funds'])->name('list');
     Route::get('/stocks/{year}/year/{fundId}/fund',
-        [\App\Http\Controllers\FundController::class, 'stocks'])->name('stocks');
+        [\App\Http\Controllers\Fund\IndexController::class, 'stocks'])->name('stocks');
+
+    Route::get('/detail', [\App\Http\Controllers\Fund\DetailController::class, 'index'])->name('detail.index');
+    Route::get('/scale/{id}', [\App\Http\Controllers\Fund\DetailController::class, 'scale'])->name('detail.scale');
+    Route::get('/value/{id}', [\App\Http\Controllers\Fund\DetailController::class, 'value'])->name('detail.value');
 });
 
 // 類股
