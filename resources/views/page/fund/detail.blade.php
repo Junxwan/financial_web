@@ -85,6 +85,11 @@
                                 text: null
                             }
                         },
+                        tooltip: {
+                            formatter: function () {
+                                return (Math.round(this.y / 1000000) / 100) + '億'
+                            },
+                        },
                         series: [{
                             type: 'line',
                             name: '規模',
