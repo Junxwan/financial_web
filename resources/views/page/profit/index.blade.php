@@ -268,6 +268,113 @@
                     }]
                 });
 
+                q1 = []
+                q2 = []
+                q3 = []
+                q4 = []
+                years = []
+                data = []
+                response.data.forEach(function (v) {
+                    if (!data.hasOwnProperty(v.year)) {
+                        data[v.year] = []
+                    }
+
+                    data[v.year].push(v)
+                })
+
+                data.forEach(function (value, key) {
+                    if (value.length === 4) {
+                        years.push(key)
+                        value.forEach(function (v) {
+                            switch (v.quarterly) {
+                                case 1:
+                                    q1.push(v.revenue)
+                                    break
+                                case 2:
+                                    q2.push(v.revenue)
+                                    break
+                                case 3:
+                                    q3.push(v.revenue)
+                                    break
+                                case 4:
+                                    q4.push(v.revenue)
+                                    break
+                            }
+                        })
+                    }
+                })
+
+                Highcharts.chart('quarterly-revenue-bar2', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '季營收'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + amountText(this.y)
+                        }
+                    },
+                    plotOptions: {
+                        column: {
+                            stacking: 'normal',
+                            dataLabels: {
+                                enabled: true,
+                                formatter: function () {
+                                    return amountText(this.y)
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1
+                    }, {
+                        name: 'Q2',
+                        data: q2
+                    }, {
+                        name: 'Q3',
+                        data: q3
+                    }, {
+                        name: 'Q4',
+                        data: q4
+                    }]
+                })
+
+                Highcharts.chart('quarterly-revenue-bar3', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '季營收'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return '<b>' + this.x + '</b><br/>' + this.series.name + ': ' + amountText(this.y)
+                        }
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1
+                    }, {
+                        name: 'Q2',
+                        data: q2
+                    }, {
+                        name: 'Q3',
+                        data: q3
+                    }, {
+                        name: 'Q4',
+                        data: q4
+                    }]
+                })
+
                 // eps
                 $('.form-group-quarterly-eps').each(function (index) {
                     v = response.data[index]
@@ -797,6 +904,16 @@
             <div class="row">
                 <div class="col-md-12">
                     <div id="quarterly-revenue-bar"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="quarterly-revenue-bar2"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="quarterly-revenue-bar3"></div>
                 </div>
             </div>
             <div class="row">
