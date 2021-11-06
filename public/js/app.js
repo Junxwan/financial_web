@@ -530,6 +530,10 @@ function initK() {
         return function (point, state) {
             var attribs = func.apply(this, arguments);
 
+            if (this.name !== 'volume') {
+                return attribs;
+            }
+
             var candleSeries = this.chart.series[0]; // Probably you'll need to change the index
             var candlePoint = candleSeries.points.filter(function (p) {
                 return p.index == point.index;

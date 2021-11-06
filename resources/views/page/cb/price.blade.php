@@ -116,11 +116,12 @@
                             type: 'column',
                             yAxis: 1,
                             data: balance,
+                            color: '#514d4d',
+                            borderColor: '#514d4d',
                         }, {
                             name: '可轉債月收盤',
                             type: 'spline',
                             data: price,
-                            color: '#a0821a'
                         }]
                     });
 
@@ -145,12 +146,18 @@
                 let close = []
                 let cbClose = []
                 let premium = []
+                let order = []
 
                 response.data.data.forEach(function (v, index) {
                     offClose.push([v.date, v.off_price])
                     close.push([v.date, v.close])
                     cbClose.push([v.date, v.cb_close])
                     premium.push([v.date, v.premium])
+                    order.push({
+                        'cb': v.cb_close,
+                        'premium': v.premium,
+                        'date': v.date,
+                    })
                 })
 
                 offClose.reverse()
@@ -179,6 +186,21 @@
                     })
                 })
 
+                order.sort(function (a, b) {
+                    if (a.cb < b.cb) return -1;
+                    if (a.cb > b.cb) return 1;
+                    return 0;
+                });
+
+                dateOrder = []
+                cbOrder = []
+                premiumOrder = []
+                order.forEach(function (v) {
+                    cbOrder.push(v.cb)
+                    premiumOrder.push(v.premium)
+                    dateOrder.push(v.date)
+                })
+
                 Highcharts.chart('premium-chat', {
                     title: {
                         text: '折溢'
@@ -189,15 +211,10 @@
                     yAxis: {
                         title: {
                             text: null
-                        },
-                        plotLines: [{
-                            color: '#FF0000',
-                            width: 1,
-                            value: 0,
-                            zIndex: 2
-                        }]
+                        }
                     },
                     series: [{
+                        name: '折溢',
                         type: 'line',
                         data: premium,
                         color: '#2f99a3',
@@ -205,6 +222,9 @@
                 });
 
                 Highcharts.chart('premium-cb-chat', {
+                    chart: {
+                        zoomType: 'xy'
+                    },
                     title: {
                         text: '可轉債/折溢'
                     },
@@ -213,38 +233,35 @@
                     },
                     yAxis: [{
                         title: {
-                            text: '可轉債'
+                            text: '折溢'
                         },
                     }, {
                         title: {
-                            text: '折溢'
+                            text: '可轉債'
                         },
-                        opposite: true,
-                        plotLines: [{
-                            color: '#FF0000',
-                            width: 1,
-                            value: 0,
-                            zIndex: 2
-                        }]
+                        opposite: true
                     }],
                     tooltip: {
                         shared: true
                     },
                     series: [{
-                        name: '可轉債',
-                        type: 'line',
-                        data: cbClose,
-                        color: '#af5661'
-                    }, {
                         name: '折溢',
-                        yAxis: 1,
-                        type: 'line',
+                        type: 'column',
                         data: premium,
-                        color: '#2f99a3'
+                        color: '#514d4d',
+                        borderColor: '#514d4d',
+                    }, {
+                        name: '可轉債',
+                        yAxis: 1,
+                        type: 'spline',
+                        data: cbClose,
                     }]
                 });
 
                 Highcharts.chart('premium-stock-chat', {
+                    chart: {
+                        zoomType: 'xy'
+                    },
                     title: {
                         text: '股價/折溢'
                     },
@@ -253,71 +270,66 @@
                     },
                     yAxis: [{
                         title: {
-                            text: '股價'
+                            text: '折溢'
                         },
                     }, {
                         title: {
-                            text: '折溢'
+                            text: '股價'
                         },
-                        opposite: true,
-                        plotLines: [{
-                            color: '#FF0000',
-                            width: 1,
-                            value: 0,
-                            zIndex: 2
-                        }]
+                        opposite: true
                     }],
                     tooltip: {
                         shared: true
                     },
                     series: [{
-                        name: '股價',
-                        type: 'line',
-                        data: close,
-                        color: '#af5661'
-                    }, {
                         name: '折溢',
-                        yAxis: 1,
-                        type: 'line',
+                        type: 'column',
                         data: premium,
-                        color: '#2f99a3'
+                        color: '#514d4d',
+                        borderColor: '#514d4d',
+                    }, {
+                        name: '股價',
+                        yAxis: 1,
+                        type: 'spline',
+                        data: close,
                     }]
                 });
 
-                Highcharts.chart('cb-price-chat', {
+                Highcharts.chart('premium-cb-order-chat', {
+                    chart: {
+                        zoomType: 'xy'
+                    },
                     title: {
-                        text: '可轉債/股價 (' + response.data.conversion_prices[response.data.conversion_prices.length - 1].value + ')'
+                        text: '可轉債/折溢/排序'
                     },
-                    xAxis: {
-                        type: "category"
-                    },
+                    xAxis: [{
+                        categories: dateOrder,
+                        crosshair: true
+                    }],
                     yAxis: [{
                         title: {
-                            text: '可轉債'
+                            text: '折溢'
                         },
                     }, {
                         title: {
-                            text: '股價'
+                            text: '可轉債'
                         },
-                        opposite: true,
-                    }],
-                    annotations: [{
-                        labels: labels
+                        opposite: true
                     }],
                     tooltip: {
                         shared: true
                     },
                     series: [{
-                        name: '可轉債',
-                        type: 'line',
-                        data: cbClose,
-                        color: '#af5661'
+                        name: '折溢',
+                        type: 'column',
+                        data: premiumOrder,
+                        color: '#514d4d',
+                        borderColor: '#514d4d',
                     }, {
-                        name: '個股',
+                        name: '可轉債',
                         yAxis: 1,
-                        type: 'line',
-                        data: close,
-                        color: '#2f75a3'
+                        type: 'spline',
+                        data: cbOrder,
                     }]
                 });
 
@@ -350,7 +362,7 @@
                         name: '理論',
                         type: 'line',
                         data: offClose,
-                        color: '#b18535',
+                        color: '#2f99a3',
                         yAxis: 1,
                     }]
                 });
@@ -469,6 +481,8 @@
             <div id="premium-cb-chat" class="row">
             </div>
             <div id="premium-stock-chat" class="row">
+            </div>
+            <div id="premium-cb-order-chat" class="row">
             </div>
             <div id="cb-price-chat" class="row">
             </div>
