@@ -235,10 +235,12 @@
                         title: {
                             text: '可轉債'
                         },
+                        tickInterval: 10,
                     }, {
                         title: {
                             text: '折溢'
                         },
+                        tickInterval: 5,
                         opposite: true
                     }],
                     tooltip: {
@@ -272,10 +274,12 @@
                         title: {
                             text: '股價'
                         },
+                        tickInterval: 10,
                     }, {
                         title: {
                             text: '折溢'
                         },
+                        tickInterval: 5,
                         opposite: true
                     }],
                     tooltip: {
@@ -310,10 +314,12 @@
                         title: {
                             text: '可轉債'
                         },
+                        tickInterval: 10,
                     }, {
                         title: {
                             text: '折溢'
                         },
+                        tickInterval: 5,
                         opposite: true
                     }],
                     tooltip: {
