@@ -16,6 +16,24 @@
             return '<span style="color:' + color + '"> ' + value + '%</span> '
         }
 
+        function convertToCSV(objArray) {
+            var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line != '') line += ','
+
+                    line += array[i][index];
+                }
+
+                str += line + '\r\n';
+            }
+
+            return str;
+        }
+
         $('#select-btn').click(function () {
             axios.get("{{ route('cb.rank.list') }}" + '?date=' + $('#date').val() + '&order=' + $('#order').val()).then(function (response) {
                 $("#stock_list>tbody>tr").remove()
@@ -43,6 +61,30 @@
                 toastr.error('無資料')
             })
         })
+
+        $('#export-btn').click(function () {
+            let header = []
+            $('#stock_list>thead>tr>th').each(function () {
+                header.push($(this).text())
+            })
+
+            let data = [header]
+            $('#stock_list>tbody>tr').each(function () {
+                let v = []
+                $(this).children('td').each(function () {
+                    v.push($(this).text().trim())
+                })
+                data.push(v)
+            })
+
+            var hiddenElement = document.createElement('a');
+            var blob = new Blob(["\ufeff" + convertToCSV(data)], {type: 'text/csv;charset=utf-8;'})
+            hiddenElement.href = URL.createObjectURL(blob)
+            hiddenElement.target = '_blank';
+            hiddenElement.download = $('#date').val() + '-' + '-cb.csv';
+            hiddenElement.click();
+        })
+
     </script>
 @stop
 
@@ -87,6 +129,12 @@
                     <button type="button" class="btn btn-block bg-gradient-secondary btn-sm"
                             id="select-btn">
                         查
+                    </button>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-sm"
+                            id="export-btn">
+                        匯出
                     </button>
                 </div>
             </div>
