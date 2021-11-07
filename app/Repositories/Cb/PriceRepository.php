@@ -63,7 +63,7 @@ class PriceRepository
             ->first();
 
         $conversionPrice = ConversionPrice::query()
-            ->select('stock', 'date')
+            ->select('value', 'date')
             ->where('cb_id', $cb->id)
             ->orderByDesc('date')
             ->get();
