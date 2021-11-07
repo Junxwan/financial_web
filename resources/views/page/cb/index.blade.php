@@ -88,10 +88,7 @@
 
             $('.right').html(
                 '<div id="example_filter" class="dataTables_filter">' +
-                '<select id="search-select">' +
-                '<option value=""></option>' +
-                '<option value="publish_total_amount">發行額度</option>' +
-                '</select>' +
+                '<input type="date" id="start-date" value="">' +
                 '<input type="search" id="search-input">' +
                 '</div>'
             )

@@ -23,28 +23,32 @@ class IndexRepository
             'is_collateral', 'url'
         );
 
-        $order = 'start_date';
-
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
             if (isset($search['value']) && ! empty($search['value'])) {
                 $query = $query->where('code', 'LIKE', "{$search['value']}%");
             }
 
-            if (isset($search['name']) && ! empty($search['name'])) {
-                $order = $search['name'];
+            if (isset($search['start_date'])) {
+                $date = $search['start_date'];
+            } else {
+                $date = CbPrice::query()
+                    ->select('date')
+                    ->orderByDesc('date')
+                    ->limit(1)
+                    ->first()->date;
             }
+        } else {
+            $date = CbPrice::query()
+                ->select('date')
+                ->orderByDesc('date')
+                ->limit(1)
+                ->first()->date;
         }
 
         $data = $query->offset($data['start'])
             ->limit($data['limit'])
-            ->orderByDesc($order)
+            ->orderByDesc('start_date')
             ->get();
-
-        $date = CbPrice::query()
-            ->select('date')
-            ->orderByDesc('date')
-            ->limit(1)
-            ->first()->date;
 
         $cbPrice = CbPrice::query()->select('cb_id', 'close')
             ->where('date', $date)
@@ -79,7 +83,8 @@ class IndexRepository
 
                         if ($value->conversion_stock > 0) {
                             $value['off_price'] = round($p->close * ($value->conversion_stock / 1000), 2);
-                            $value['premium'] = round((($cbP->close - $value['off_price']) / $value['off_price']) * 100, 2);
+                            $value['premium'] = round((($cbP->close - $value['off_price']) / $value['off_price']) * 100,
+                                2);
                         }
                     }
                 }
