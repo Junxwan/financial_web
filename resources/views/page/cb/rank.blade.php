@@ -13,7 +13,7 @@
                 color = '#f2f5f1'
             }
 
-            return '<span style="color:' + color + '"> ' + value + '%</span> '
+            return '<span style="color:' + color + '"> ' + value + '</span> '
         }
 
         function convertToCSV(objArray) {
