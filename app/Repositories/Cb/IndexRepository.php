@@ -19,7 +19,6 @@ class IndexRepository
         $query = Cb::query()->select(
             'cbs.id', 'cbs.stock_id', 'cbs.code', 'cbs.name', 'start_date', 'end_date',
             'publish_total_amount', 'conversion_price', 'conversion_stock',
-            'conversion_premium_rate',
             'is_collateral', 'url'
         );
 
@@ -82,7 +81,7 @@ class IndexRepository
                         $value['s_price'] = $p->close;
 
                         if ($value->conversion_stock > 0) {
-                            $value['off_price'] = round($p->close * ($value->conversion_stock / 1000), 2);
+                            $value['off_price'] = round(($p->close / $value->conversion_price) * 100, 2);
                             $value['premium'] = round((($cbP->close - $value['off_price']) / $value['off_price']) * 100,
                                 2);
                         }

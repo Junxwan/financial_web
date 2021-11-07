@@ -102,6 +102,11 @@ return [
         'name' => '可轉債價格',
     ],
     [
+        'route' => 'cb.rank.index',
+        'icon' => 'fas fa-list',
+        'name' => '可轉債排名',
+    ],
+    [
         'route' => 'export.index',
         'icon' => 'fas fa-list',
         'name' => '匯出',

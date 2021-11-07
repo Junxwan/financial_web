@@ -185,6 +185,8 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
     # 個股
     Route::get('/', [\App\Http\Controllers\Cb\IndexController::class, 'index'])->name('index');
     Route::get('/list', [\App\Http\Controllers\Cb\IndexController::class, 'list'])->name('list');
+    Route::get('/rank', [\App\Http\Controllers\Cb\RankController::class, 'index'])->name('rank.index');
+    Route::get('/rank/list', [\App\Http\Controllers\Cb\RankController::class, 'list'])->name('rank.list');
 
     # 餘額變化
     Route::get('/stock/balance',

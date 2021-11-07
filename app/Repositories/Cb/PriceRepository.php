@@ -82,8 +82,8 @@ class PriceRepository
 
         return [
             'data' => $price->map(function ($value) use ($conversionPrice) {
-                $offPrice = round($value->close * ($conversionPrice->where('date', '<=',
-                            $value->date)->first()->stock / 1000), 2);
+                $offPrice = round(($value->close / $conversionPrice->where('date', '<=',
+                            $value->date)->first()->value) * 100, 2);
                 $value['premium'] = round((($value->cb_close - $offPrice) / $offPrice) * 100, 2);
                 $value['off_price'] = $offPrice;
                 return $value;
