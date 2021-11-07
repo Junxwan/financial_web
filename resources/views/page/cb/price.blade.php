@@ -469,8 +469,8 @@
         let urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('code')) {
             $('#code').val(urlParams.get('code'))
-            // $('#select-cb-k-btn').click()
-            // $('#select-k-btn').click()
+            $('#select-cb-k-btn').click()
+            $('#select-k-btn').click()
             $('#select-premium-btn').click()
         }
     </script>
