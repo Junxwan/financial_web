@@ -233,11 +233,11 @@
                     },
                     yAxis: [{
                         title: {
-                            text: '折溢'
+                            text: '可轉債'
                         },
                     }, {
                         title: {
-                            text: '可轉債'
+                            text: '折溢'
                         },
                         opposite: true
                     }],
@@ -247,12 +247,12 @@
                     series: [{
                         name: '折溢',
                         type: 'column',
+                        yAxis: 1,
                         data: premium,
                         color: '#514d4d',
                         borderColor: '#514d4d',
                     }, {
                         name: '可轉債',
-                        yAxis: 1,
                         type: 'spline',
                         data: cbClose,
                     }]
@@ -270,11 +270,11 @@
                     },
                     yAxis: [{
                         title: {
-                            text: '折溢'
+                            text: '股價'
                         },
                     }, {
                         title: {
-                            text: '股價'
+                            text: '折溢'
                         },
                         opposite: true
                     }],
@@ -283,13 +283,13 @@
                     },
                     series: [{
                         name: '折溢',
+                        yAxis: 1,
                         type: 'column',
                         data: premium,
                         color: '#514d4d',
                         borderColor: '#514d4d',
                     }, {
                         name: '股價',
-                        yAxis: 1,
                         type: 'spline',
                         data: close,
                     }]
@@ -308,11 +308,11 @@
                     }],
                     yAxis: [{
                         title: {
-                            text: '折溢'
+                            text: '可轉債'
                         },
                     }, {
                         title: {
-                            text: '可轉債'
+                            text: '折溢'
                         },
                         opposite: true
                     }],
@@ -321,13 +321,13 @@
                     },
                     series: [{
                         name: '折溢',
+                        yAxis: 1,
                         type: 'column',
                         data: premiumOrder,
                         color: '#514d4d',
                         borderColor: '#514d4d',
                     }, {
                         name: '可轉債',
-                        yAxis: 1,
                         type: 'spline',
                         data: cbOrder,
                     }]
@@ -379,6 +379,7 @@
             $('#code').val(urlParams.get('code'))
             $('#select-cb-k-btn').click()
             $('#select-k-btn').click()
+            $('#select-premium-btn').click()
         }
     </script>
 @stop
