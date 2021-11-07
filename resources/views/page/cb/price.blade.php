@@ -202,6 +202,15 @@
                 })
 
                 Highcharts.chart('premium-chat', {
+                    chart: {
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
+                    },
                     title: {
                         text: '折溢'
                     },
@@ -211,6 +220,10 @@
                     yAxis: {
                         title: {
                             text: null
+                        },
+                        crosshair: {
+                            width: 1,
+                            color: '#6a33a4'
                         }
                     },
                     series: [{
@@ -218,12 +231,21 @@
                         type: 'line',
                         data: premium,
                         color: '#2f99a3',
+                        marker: {
+                            enabled: false
+                        }
                     }]
                 });
 
                 Highcharts.chart('premium-cb-chat', {
                     chart: {
-                        zoomType: 'xy'
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
                     },
                     title: {
                         text: '可轉債/折溢'
@@ -236,6 +258,10 @@
                             text: '可轉債'
                         },
                         tickInterval: 10,
+                        crosshair: {
+                            width: 1,
+                            color: '#6a33a4'
+                        }
                     }, {
                         title: {
                             text: '折溢'
@@ -244,7 +270,7 @@
                         opposite: true
                     }],
                     tooltip: {
-                        shared: true
+                        shared: true,
                     },
                     series: [{
                         name: '折溢',
@@ -255,14 +281,23 @@
                         borderColor: '#514d4d',
                     }, {
                         name: '可轉債',
-                        type: 'spline',
+                        type: 'line',
                         data: cbClose,
+                        marker: {
+                            enabled: false
+                        }
                     }]
                 });
 
                 Highcharts.chart('premium-stock-chat', {
                     chart: {
-                        zoomType: 'xy'
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
                     },
                     title: {
                         text: '股價/折溢'
@@ -275,6 +310,10 @@
                             text: '股價'
                         },
                         tickInterval: 10,
+                        crosshair: {
+                            width: 1,
+                            color: '#6a33a4'
+                        }
                     }, {
                         title: {
                             text: '折溢'
@@ -294,27 +333,39 @@
                         borderColor: '#514d4d',
                     }, {
                         name: '股價',
-                        type: 'spline',
+                        type: 'line',
                         data: close,
+                        marker: {
+                            enabled: false
+                        }
                     }]
                 });
 
                 Highcharts.chart('premium-cb-order-chat', {
                     chart: {
-                        zoomType: 'xy'
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
                     },
                     title: {
                         text: '可轉債/折溢/排序'
                     },
                     xAxis: [{
                         categories: dateOrder,
-                        crosshair: true
                     }],
                     yAxis: [{
                         title: {
                             text: '可轉債'
                         },
                         tickInterval: 10,
+                        crosshair: {
+                            width: 1,
+                            color: '#6a33a4'
+                        }
                     }, {
                         title: {
                             text: '折溢'
@@ -334,12 +385,24 @@
                         borderColor: '#514d4d',
                     }, {
                         name: '可轉債',
-                        type: 'spline',
+                        type: 'line',
                         data: cbOrder,
+                        marker: {
+                            enabled: false
+                        }
                     }]
                 });
 
                 Highcharts.chart('premium-off-price-chat', {
+                    chart: {
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
+                    },
                     title: {
                         text: '可轉債/理論'
                     },
@@ -383,8 +446,8 @@
         let urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('code')) {
             $('#code').val(urlParams.get('code'))
-            $('#select-cb-k-btn').click()
-            $('#select-k-btn').click()
+            // $('#select-cb-k-btn').click()
+            // $('#select-k-btn').click()
             $('#select-premium-btn').click()
         }
     </script>
