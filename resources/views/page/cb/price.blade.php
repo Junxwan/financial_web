@@ -281,7 +281,13 @@
                             text: '折溢'
                         },
                         tickInterval: 5,
-                        opposite: true
+                        opposite: true,
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 10,
+                            zIndex: 1
+                        }],
                     }],
                     annotations: [{
                         labels: labels
@@ -336,7 +342,13 @@
                             text: '折溢'
                         },
                         tickInterval: 5,
-                        opposite: true
+                        opposite: true,
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 10,
+                            zIndex: 1
+                        }],
                     }],
                     annotations: [{
                         labels: labels
@@ -391,7 +403,13 @@
                             text: '折溢'
                         },
                         tickInterval: 5,
-                        opposite: true
+                        opposite: true,
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 10,
+                            zIndex: 1
+                        }],
                     }],
                     tooltip: {
                         shared: true
