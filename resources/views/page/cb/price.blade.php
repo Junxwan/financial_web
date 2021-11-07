@@ -166,10 +166,21 @@
                 premium.reverse()
 
                 let labels = []
+                let labelsP = []
                 response.data.conversion_prices.forEach(function (v, index) {
                     close.every(function (cV, cIndex) {
                         if (cV[0] >= v.date) {
                             labels.push({
+                                point: {
+                                    xAxis: 0,
+                                    yAxis: 0,
+                                    x: cIndex,
+                                    y: v.value
+                                },
+                                text: v.value.toString()
+                            })
+
+                            labelsP.push({
                                 point: {
                                     xAxis: 0,
                                     yAxis: 1,
@@ -226,6 +237,9 @@
                             color: '#6a33a4'
                         }
                     },
+                    annotations: [{
+                        labels: labelsP
+                    }],
                     series: [{
                         name: '折溢',
                         type: 'line',
@@ -268,6 +282,9 @@
                         },
                         tickInterval: 5,
                         opposite: true
+                    }],
+                    annotations: [{
+                        labels: labels
                     }],
                     tooltip: {
                         shared: true,
@@ -320,6 +337,9 @@
                         },
                         tickInterval: 5,
                         opposite: true
+                    }],
+                    annotations: [{
+                        labels: labels
                     }],
                     tooltip: {
                         shared: true
@@ -418,6 +438,9 @@
                             text: '理論價'
                         },
                         opposite: true
+                    }],
+                    annotations: [{
+                        labels: labels
                     }],
                     tooltip: {
                         shared: true
