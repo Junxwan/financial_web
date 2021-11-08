@@ -78,12 +78,12 @@
                     },
                     series: [{
                         id: 'balance',
-                        name: '餘額',
+                        name: '月底餘額',
                         type: 'line',
                         data: balance
                     }, {
                         id: 'balanceRate',
-                        name: '餘額%',
+                        name: '月底餘額%',
                         yAxis: 1,
                         type: 'line',
                         data: balanceRate
