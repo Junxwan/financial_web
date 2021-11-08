@@ -223,7 +223,7 @@
                         }
                     },
                     title: {
-                        text: '折溢'
+                        text: response.data.name + '-折溢'
                     },
                     xAxis: {
                         type: "category"
@@ -262,7 +262,7 @@
                         }
                     },
                     title: {
-                        text: '可轉債/折溢'
+                        text: response.data.name + '-可轉債/折溢'
                     },
                     xAxis: {
                         type: "category"
@@ -323,7 +323,7 @@
                         }
                     },
                     title: {
-                        text: '股價/折溢'
+                        text: response.data.name + '-股價/折溢'
                     },
                     xAxis: {
                         type: "category"
@@ -384,7 +384,7 @@
                         }
                     },
                     title: {
-                        text: '可轉債/折溢/排序'
+                        text: response.data.name + '-可轉債/折溢/排序'
                     },
                     xAxis: [{
                         categories: dateOrder,
@@ -442,7 +442,7 @@
                         }
                     },
                     title: {
-                        text: '可轉債/理論'
+                        text: response.data.name + '-可轉債/理論'
                     },
                     xAxis: {
                         type: "category"
