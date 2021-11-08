@@ -431,6 +431,52 @@
                     }]
                 });
 
+                Highcharts.chart('cb-price-chat', {
+                    chart: {
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
+                    },
+                    title: {
+                        text: response.data.name + '(可轉債/個股)'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: [{
+                        title: {
+                            text: '可轉債'
+                        },
+                    }, {
+                        title: {
+                            text: '個股'
+                        },
+                        opposite: true
+                    }],
+                    annotations: [{
+                        labels: labels
+                    }],
+                    tooltip: {
+                        shared: true
+                    },
+                    series: [{
+                        name: '可轉債',
+                        type: 'line',
+                        data: cbClose,
+                        color: '#af5661'
+                    }, {
+                        name: '個股',
+                        type: 'line',
+                        data: close,
+                        color: '#2f99a3',
+                        yAxis: 1,
+                    }]
+                });
+
                 Highcharts.chart('premium-off-price-chat', {
                     chart: {
                         zoomType: 'x',
