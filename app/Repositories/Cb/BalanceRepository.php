@@ -4,6 +4,8 @@ namespace App\Repositories\Cb;
 
 use App\Models\Cb\Balance;
 use App\Models\Cb\Cb;
+use App\Models\Price;
+use Carbon\Carbon;
 
 class BalanceRepository
 {
@@ -82,6 +84,30 @@ class BalanceRepository
                     $value['balance_rate'] = round((($value->balance * 100000) / $cb->publish_total_amount) * 100);
                     return $value;
                 }),
+        ];
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return array
+     */
+    public function securitiesLendingRepay(string $code)
+    {
+        $stock = Cb::query()
+            ->select('stocks.id', 'stocks.name')
+            ->join('stocks', 'stocks.id', '=', 'cbs.stock_id')
+            ->where('cbs.code', $code)
+            ->first();
+
+        return [
+            'name' => $stock->name,
+            'data' => Price::query()
+                ->select('date', 'close', 'securities_lending_repay')
+                ->where('stock_id', $stock->id)
+                ->where('date', '>=', Carbon::now()->subYears(1)->format('Y-m-d'))
+                ->orderBy('date')
+                ->get(),
         ];
     }
 }

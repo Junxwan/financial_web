@@ -63,4 +63,14 @@ class BalanceController extends Controller
     {
         return response()->json($this->service->get($code));
     }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function securitiesLendingRepay(string $code)
+    {
+        return response()->json($this->service->securitiesLendingRepay($code));
+    }
 }

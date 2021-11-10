@@ -38,7 +38,6 @@
 
             let url = "{{ route('cb.balance', ['code' => ':code']) }}"
             axios.get(url.replace(':code', $('#code').val())).then(function (response) {
-
                 response.data.data.forEach(function (v, index) {
                     balance.push([v.year + '-' + v.month, v.balance])
                     balanceRate.push([v.year + '-' + v.month, v.balance_rate])
@@ -135,6 +134,76 @@
             }).catch(function (error) {
                 console.log(error)
                 toastr.error('查無餘額')
+                return false
+            })
+
+            url = "{{ route('cb.securitiesLendingRepay', ['code' => ':code']) }}"
+            axios.get(url.replace(':code', $('#code').val())).then(function (response) {
+                let close = []
+                let repay = []
+                response.data.data.forEach(function (v, index) {
+                    close.push([v.date, v.close])
+                    repay.push([v.date, v.securities_lending_repay])
+                })
+
+                close.reverse()
+                repay.reverse()
+
+                Highcharts.chart('securities-lending-repay-price-chat', {
+                    chart: {
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
+                    },
+                    title: {
+                        text: response.data.name + '(融劵劵償)'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: [{
+                        title: {
+                            text: '收盤'
+                        },
+                        crosshair: {
+                            width: 1,
+                            color: '#6a33a4'
+                        }
+                    }, {
+                        title: {
+                            text: '融劵劵償'
+                        },
+                        opposite: true
+                    }],
+                    tooltip: {
+                        shared: true,
+                    },
+                    series: [{
+                        name: '融劵劵償',
+                        type: 'column',
+                        yAxis: 1,
+                        data: repay,
+                        color: '#514d4d',
+                        borderColor: '#514d4d',
+                    }, {
+                        name: '收盤',
+                        type: 'line',
+                        data: close,
+                        marker: {
+                            enabled: false
+                        }
+                    }]
+                });
+
+                toastr.success('查融劵劵償成功')
+
+            }).catch(function (error) {
+                console.log(error)
+                toastr.error('查無融劵劵償')
                 return false
             })
         })
@@ -620,6 +689,7 @@
         <div class="card-body" style="display: block;">
             <div id="balance-chat" class="row"></div>
             <div id="balance-price-chat" class="row"></div>
+            <div id="securities-lending-repay-price-chat" class="row"></div>
         </div>
     </div>
     <div class="card card-default">

@@ -58,7 +58,7 @@ class PriceRepository
     public function premium(string $code)
     {
         $cb = Cb::query()
-            ->select('id', 'name')
+            ->select('id', 'name', 'conversion_price', 'start_date')
             ->where('code', $code)
             ->first();
 
@@ -67,6 +67,13 @@ class PriceRepository
             ->where('cb_id', $cb->id)
             ->orderByDesc('date')
             ->get();
+
+        if ($conversionPrice->isEmpty()) {
+            $conversionPrice->push([
+                'value' => $cb->conversion_price,
+                'date' => $cb->start_date,
+            ]);
+        }
 
         $price = CbPrice::query()->select(
             'cb_prices.date',
@@ -82,18 +89,19 @@ class PriceRepository
 
         return [
             'data' => $price->map(function ($value) use ($conversionPrice) {
-                $offPrice = round(($value->close / $conversionPrice->where('date', '<=',
-                            $value->date)->first()->value) * 100, 2);
+                $cp = $conversionPrice->where('date', '<=', $value->date)->first();
+
+                if (is_null($cp)) {
+                    $cp = $conversionPrice->last();
+                }
+
+                $offPrice = round(($value->close / $cp['value']) * 100, 2);
                 $value['premium'] = round((($value->cb_close - $offPrice) / $offPrice) * 100, 2);
                 $value['off_price'] = $offPrice;
                 return $value;
             }),
             'name' => $cb->name,
-            'conversion_prices' => ConversionPrice::query()
-                ->select('date', 'value')
-                ->where('cb_id', $cb->id)
-                ->orderBy('date')
-                ->get(),
+            'conversion_prices' => $conversionPrice->sortBy('date')->values(),
         ];
     }
 

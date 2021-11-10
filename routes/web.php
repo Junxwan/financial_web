@@ -195,6 +195,8 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
         [\App\Http\Controllers\Cb\BalanceController::class, 'list'])->name('balance.list');
     Route::get('/stock/{code}/balance',
         [\App\Http\Controllers\Cb\BalanceController::class, 'get'])->name('balance');
+    Route::get('/stock/{code}/securitiesLendingRepay',
+        [\App\Http\Controllers\Cb\BalanceController::class, 'securitiesLendingRepay'])->name('securitiesLendingRepay');
 
     # 價格
     Route::get('/price', [\App\Http\Controllers\Cb\PriceController::class, 'index'])->name('price.index');
