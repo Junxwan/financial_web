@@ -146,9 +146,6 @@
                     repay.push([v.date, v.securities_lending_repay])
                 })
 
-                close.reverse()
-                repay.reverse()
-
                 Highcharts.chart('securities-lending-repay-price-chat', {
                     chart: {
                         zoomType: 'x',
