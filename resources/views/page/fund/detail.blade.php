@@ -88,7 +88,8 @@
                         tooltip: {
                             shared: true,
                             formatter: function () {
-                                return (Math.round(this.y / 1000000) / 100) + '億'
+                                console.log(this.points)
+                                return '日期:' + this.points['0'].key + '<br> 規模: ' + (Math.round(this.y / 1000000) / 100) + '億'
                             },
                         },
                         series: [{
