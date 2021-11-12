@@ -105,7 +105,7 @@ class BalanceRepository
             'data' => Price::query()
                 ->select('date', 'close', 'securities_lending_repay')
                 ->where('stock_id', $stock->id)
-                ->where('date', '>=', Carbon::now()->subYears(1)->format('Y-m-d'))
+                ->where('date', '>=', Carbon::now()->subYears(3)->format('Y-m-d'))
                 ->orderBy('date')
                 ->get(),
         ];

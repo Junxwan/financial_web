@@ -59,11 +59,14 @@
                         title: {
                             text: '張'
                         },
+                        min: 0,
                     }, {
                         title: {
                             text: '%'
                         },
-                        opposite: true
+                        opposite: true,
+                        max: 100,
+                        min: 0,
                     }],
                     navigator: {
                         enabled: false

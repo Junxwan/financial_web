@@ -99,7 +99,7 @@ class PriceRepository
                 $value['premium'] = round((($value->cb_close - $offPrice) / $offPrice) * 100, 2);
                 $value['off_price'] = $offPrice;
                 return $value;
-            })->slice(0, 700)->values(),
+            })->slice(0, 1000)->values(),
             'name' => $cb->name,
             'conversion_prices' => $conversionPrice->sortBy('date')->values(),
         ];
