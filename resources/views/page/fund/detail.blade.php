@@ -86,6 +86,7 @@
                             }
                         },
                         tooltip: {
+                            shared: true,
                             formatter: function () {
                                 return (Math.round(this.y / 1000000) / 100) + '億'
                             },
