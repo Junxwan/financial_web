@@ -417,6 +417,11 @@
                             width: 1,
                             value: 10,
                             zIndex: 1
+                        },{
+                            color: '#356b24',
+                            width: 1,
+                            value: -10,
+                            zIndex: 1
                         }],
                     }],
                     annotations: [{
@@ -570,7 +575,13 @@
                         title: {
                             text: '理論價'
                         },
-                        opposite: true
+                        opposite: true,
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 100,
+                            zIndex: 1
+                        }],
                     }],
                     annotations: [{
                         labels: labels
