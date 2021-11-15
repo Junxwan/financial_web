@@ -74,6 +74,7 @@
                 revenues = []
                 yoys = []
                 qoqs = []
+                yearRevenueg = {}
                 response.data.forEach(function (v, index) {
                     if (index <= 12) {
                         let html =
@@ -92,11 +93,44 @@
                     revenues.push([t, v.value])
                     yoys.push([t, v.yoy])
                     qoqs.push([t, v.qoq])
+
+                    if (yearRevenueg[v.year] === undefined) {
+                        yearRevenueg[v.year] = {
+                            1: 0,
+                            2: 0,
+                            3: 0,
+                            4: 0,
+                            5: 0,
+                            6: 0,
+                            7: 0,
+                            8: 0,
+                            9: 0,
+                            10: 0,
+                            11: 0,
+                            12: 0
+                        }
+                    }
+
+                    yearRevenueg[v.year][v.month] = v.value
                 })
 
                 revenues.reverse()
                 yoys.reverse()
                 qoqs.reverse()
+
+                seriesRevenues = []
+                for (var [key, value] of Object.entries(yearRevenueg)) {
+                    v = []
+                    for (i = 1; i <= 12; i++) {
+                        v.push(value[i])
+
+                    }
+
+                    seriesRevenues.push({
+                        name: key + "年",
+                        data: v,
+                    })
+                }
 
                 Highcharts.chart('month-revenue-bar', {
                     colors: ['#45617d'],
@@ -136,6 +170,32 @@
                     series: [{
                         data: revenues,
                     }]
+                });
+
+                Highcharts.chart('month-revenue-bar2', {
+                    chart: {
+                        type: 'column',
+                    },
+                    title: {
+                        text: '月營收'
+                    },
+                    xAxis: {
+                        categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        formatter: function () {
+                            return this.series.name + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
+                        }
+                    },
+                    series: seriesRevenues
                 });
 
                 Highcharts.chart('month-revenue-yoy-bar', {
@@ -283,24 +343,34 @@
                 })
 
                 data.forEach(function (value, key) {
-                    if (value.length === 4) {
-                        years.push(key)
-                        value.forEach(function (v) {
-                            switch (v.quarterly) {
-                                case 1:
-                                    q1.push(v.revenue)
-                                    break
-                                case 2:
-                                    q2.push(v.revenue)
-                                    break
-                                case 3:
-                                    q3.push(v.revenue)
-                                    break
-                                case 4:
-                                    q4.push(v.revenue)
-                                    break
-                            }
-                        })
+                    years.push(key)
+                    value.forEach(function (v) {
+                        switch (v.quarterly) {
+                            case 1:
+                                q1.push(v.revenue)
+                                break
+                            case 2:
+                                q2.push(v.revenue)
+                                break
+                            case 3:
+                                q3.push(v.revenue)
+                                break
+                            case 4:
+                                q4.push(v.revenue)
+                                break
+                        }
+                    })
+
+                    if (q1.length !== q2.length) {
+                        q2.push(0)
+                    }
+
+                    if (q1.length !== q3.length) {
+                        q3.push(0)
+                    }
+
+                    if (q1.length !== q4.length) {
+                        q4.push(0)
                     }
                 })
 
@@ -865,6 +935,11 @@
             <div class="row">
                 <div class="col-md-12">
                     <div id="month-revenue-bar"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenue-bar2"></div>
                 </div>
             </div>
             <div class="row">
