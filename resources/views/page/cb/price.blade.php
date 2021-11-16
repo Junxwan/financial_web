@@ -16,9 +16,13 @@
             newK('cb-chat', url.replace(':code', $('#code').val()), false, [], function (data) {
                 let close = []
                 let volume = []
+                let increase = []
+
                 data.price.forEach(function (v, i) {
                     close.push([v.x, v.close])
+                    increase.push([v.x, v.increase])
                 })
+
                 data.volume.forEach(function (v, i) {
                     volume.push([v.x, v.y])
                 })
@@ -75,6 +79,60 @@
                         data: volume,
                         color: '#2f99a3',
                         yAxis: 1,
+                    }]
+                });
+
+                Highcharts.chart('stock-price-increase-chat', {
+                    chart: {
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
+                    },
+                    title: {
+                        text: data.name + '(收盤/漲幅)'
+                    },
+                    xAxis: {
+                        type: "datetime",
+                        labels: {
+                            formatter: function () {
+                                return Highcharts.dateFormat('%Y-%m-%d', this.value);
+                            }
+                        }
+                    },
+                    yAxis: [{
+                        title: {
+                            text: '收盤'
+                        },
+                    }, {
+                        title: {
+                            text: '漲幅'
+                        },
+                        opposite: true,
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 5,
+                            zIndex: 1
+                        }],
+                    }],
+                    tooltip: {
+                        shared: true,
+                        xDateFormat: '%Y-%m-%d',
+                    },
+                    series: [{
+                        name: '漲幅',
+                        type: 'column',
+                        yAxis: 1,
+                        data: increase,
+                    }, {
+                        name: '收盤',
+                        type: 'line',
+                        data: close,
+                        color: '#af5661'
                     }]
                 });
             })
@@ -748,6 +806,7 @@
             <div id="cb-chat" class="row"></div>
             <div id="stock-chat" class="row"></div>
             <div id="stock-price-volume-chat" class="row"></div>
+            <div id="stock-price-increase-chat" class="row"></div>
         </div>
         <div class="card card-default">
             <div class="card-header">
