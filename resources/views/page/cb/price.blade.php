@@ -15,8 +15,12 @@
             var url = "{{ route('cb.price', ['code' => ':code']) }}"
             newK('cb-chat', url.replace(':code', $('#code').val()), false, [], function (data) {
                 let close = []
+                let volume = []
                 data.price.forEach(function (v, i) {
                     close.push([v.x, v.close])
+                })
+                data.volume.forEach(function (v, i) {
+                    volume.push([v.x, v.y])
                 })
 
                 Highcharts.chart('stock-price-volume-chat', {
@@ -62,7 +66,7 @@
                     }, {
                         name: '成交量',
                         type: 'line',
-                        data: data.volume,
+                        data: volume,
                         color: '#2f99a3',
                         yAxis: 1,
                     }]
