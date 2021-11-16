@@ -735,12 +735,9 @@
             </div>
         </div>
         <div class="card-body" style="display: block;">
-            <div id="cb-chat" class="row">
-            </div>
-            <div id="stock-chat" class="row">
-                <div id="stock-price-volume-chat" class="row">
-                </div>
-            </div>
+            <div id="cb-chat" class="row"></div>
+            <div id="stock-chat" class="row"></div>
+            <div id="stock-price-volume-chat" class="row"></div>
         </div>
         <div class="card card-default">
             <div class="card-header">
