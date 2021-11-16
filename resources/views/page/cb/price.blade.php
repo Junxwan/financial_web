@@ -52,7 +52,13 @@
                         title: {
                             text: '成交量'
                         },
-                        opposite: true
+                        opposite: true,
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 100,
+                            zIndex: 1
+                        }],
                     }],
                     tooltip: {
                         shared: true,
