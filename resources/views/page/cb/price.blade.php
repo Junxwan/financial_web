@@ -112,6 +112,8 @@
                             text: '漲幅'
                         },
                         opposite: true,
+                        max: 10,
+                        min: -10,
                         plotLines: [{
                             color: '#70285c',
                             width: 1,
