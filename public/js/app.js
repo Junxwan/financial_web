@@ -547,7 +547,7 @@ function initK() {
     }(Highcharts.seriesTypes.column.prototype.pointAttribs));
 }
 
-function newK(select, url, volume_value = true, yPlotLines = []) {
+function newK(select, url, volume_value = true, yPlotLines = [], cellBack = null) {
     Highcharts.getJSON(url, function (data) {
         toastr.success('成功')
 
@@ -558,11 +558,11 @@ function newK(select, url, volume_value = true, yPlotLines = []) {
             })
         }
 
-        newStockChat(select, data, 550, volume_value, yPlotLines)
+        newStockChat(select, data, 550, volume_value, yPlotLines, cellBack)
     });
 }
 
-function newStockChat(select, data, height = 550, volume_value = true, yPlotLines = []) {
+function newStockChat(select, data, height = 550, volume_value = true, yPlotLines = [], cellBack = null) {
     Highcharts.stockChart(select, {
         rangeSelector: {
             buttons: [{
@@ -829,4 +829,6 @@ function newStockChat(select, data, height = 550, volume_value = true, yPlotLine
             }
         }]
     });
+
+    cellBack(data)
 }

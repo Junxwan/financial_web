@@ -13,7 +13,61 @@
 
         $('#select-cb-k-btn').click(function () {
             var url = "{{ route('cb.price', ['code' => ':code']) }}"
-            newK('cb-chat', url.replace(':code', $('#code').val()), false)
+            newK('cb-chat', url.replace(':code', $('#code').val()), false, [], function (data) {
+                let close = []
+                data.price.forEach(function (v, i) {
+                    close.push([v.x, v.close])
+                })
+                console.log(data)
+                Highcharts.chart('stock-price-volume-chat', {
+                    chart: {
+                        zoomType: 'x',
+                        resetZoomButton: {
+                            position: {
+                                x: 0,
+                                y: -40
+                            }
+                        }
+                    },
+                    title: {
+                        text: data.name + '(收盤/成交量)'
+                    },
+                    xAxis: {
+                        type: "datetime",
+                        labels: {
+                            formatter: function () {
+                                return Highcharts.dateFormat('%Y-%m-%d', this.value);
+                            }
+                        }
+                    },
+                    yAxis: [{
+                        title: {
+                            text: '收盤'
+                        },
+                    }, {
+                        title: {
+                            text: '成交量'
+                        },
+                        opposite: true
+                    }],
+                    tooltip: {
+                        shared: true,
+                        xDateFormat: '%Y-%m-%d',
+                    },
+                    series: [{
+                        name: '收盤',
+                        type: 'line',
+                        data: close,
+                        color: '#af5661'
+                    }, {
+                        name: '成交量',
+                        type: 'line',
+                        data: data.volume,
+                        color: '#2f99a3',
+                        yAxis: 1,
+                    }]
+                });
+            })
         })
 
         $('#select-k-btn').click(function () {
@@ -417,7 +471,7 @@
                             width: 1,
                             value: 10,
                             zIndex: 1
-                        },{
+                        }, {
                             color: '#356b24',
                             width: 1,
                             value: -10,
@@ -684,48 +738,49 @@
             <div id="cb-chat" class="row">
             </div>
             <div id="stock-chat" class="row">
+                <div id="stock-price-volume-chat" class="row">
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card card-default">
-        <div class="card-header">
-            <h3 class="card-title">餘額</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                        class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
-                        class="fas fa-remove"></i></button>
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">餘額</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                            class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                            class="fas fa-remove"></i></button>
+                </div>
+            </div>
+            <div class="card-body" style="display: block;">
+                <div id="balance-chat" class="row"></div>
+                <div id="balance-price-chat" class="row"></div>
+                <div id="securities-lending-repay-price-chat" class="row"></div>
             </div>
         </div>
-        <div class="card-body" style="display: block;">
-            <div id="balance-chat" class="row"></div>
-            <div id="balance-price-chat" class="row"></div>
-            <div id="securities-lending-repay-price-chat" class="row"></div>
-        </div>
-    </div>
-    <div class="card card-default">
-        <div class="card-header">
-            <h3 class="card-title">折溢</h3>
-            <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
-                        class="fas fa-minus"></i></button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
-                        class="fas fa-remove"></i></button>
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">折溢</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                            class="fas fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                            class="fas fa-remove"></i></button>
+                </div>
+            </div>
+            <div class="card-body" style="display: block;">
+                <div id="premium-chat" class="row">
+                </div>
+                <div id="premium-cb-chat" class="row">
+                </div>
+                <div id="premium-stock-chat" class="row">
+                </div>
+                <div id="premium-cb-order-chat" class="row">
+                </div>
+                <div id="cb-price-chat" class="row">
+                </div>
+                <div id="premium-off-price-chat" class="row">
+                </div>
             </div>
         </div>
-        <div class="card-body" style="display: block;">
-            <div id="premium-chat" class="row">
-            </div>
-            <div id="premium-cb-chat" class="row">
-            </div>
-            <div id="premium-stock-chat" class="row">
-            </div>
-            <div id="premium-cb-order-chat" class="row">
-            </div>
-            <div id="cb-price-chat" class="row">
-            </div>
-            <div id="premium-off-price-chat" class="row">
-            </div>
-        </div>
-    </div>
 @stop
