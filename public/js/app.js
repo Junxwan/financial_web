@@ -830,5 +830,7 @@ function newStockChat(select, data, height = 550, volume_value = true, yPlotLine
         }]
     });
 
-    cellBack(data)
+    if (cellBack !== null) {
+        cellBack(data)
+    }
 }

@@ -18,7 +18,7 @@
                 data.price.forEach(function (v, i) {
                     close.push([v.x, v.close])
                 })
-                console.log(data)
+
                 Highcharts.chart('stock-price-volume-chat', {
                     chart: {
                         zoomType: 'x',
