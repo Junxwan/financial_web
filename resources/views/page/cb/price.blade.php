@@ -400,9 +400,9 @@
                             labelsCbClose.push({
                                 point: {
                                     xAxis: 0,
-                                    yAxis: 1,
+                                    yAxis: 0,
                                     x: cIndex,
-                                    y: v.value
+                                    y: cV[1]
                                 },
                                 text: v.value.toString()
                             })
