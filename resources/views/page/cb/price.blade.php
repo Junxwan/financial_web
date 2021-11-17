@@ -364,7 +364,8 @@
                 premium.reverse()
 
                 let labels = []
-                let labelsP = []
+                let labelsClose = []
+                let labelsCbClose = []
                 response.data.conversion_prices.forEach(function (v, index) {
                     close.every(function (cV, cIndex) {
                         if (cV[0] >= v.date) {
@@ -378,7 +379,25 @@
                                 text: v.value.toString()
                             })
 
-                            labelsP.push({
+                            labelsClose.push({
+                                point: {
+                                    xAxis: 0,
+                                    yAxis: 1,
+                                    x: cIndex,
+                                    y: v.value
+                                },
+                                text: v.value.toString()
+                            })
+
+                            return false
+                        }
+
+                        return true
+                    })
+
+                    cbClose.every(function (cV, cIndex) {
+                        if (cV[0] >= v.date) {
+                            labelsCbClose.push({
                                 point: {
                                     xAxis: 0,
                                     yAxis: 1,
@@ -436,7 +455,7 @@
                         }
                     },
                     annotations: [{
-                        labels: labelsP
+                        labels: labelsClose
                     }],
                     series: [{
                         name: '折溢',
@@ -488,7 +507,7 @@
                         }],
                     }],
                     annotations: [{
-                        labels: labelsP
+                        labels: labelsCbClose
                     }],
                     tooltip: {
                         shared: true,
