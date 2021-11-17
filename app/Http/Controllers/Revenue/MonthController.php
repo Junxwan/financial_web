@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Revenue;
 
-use App\Models\Classification;
+use App\Models\Stock\Classification;
 use App\Repositories\RevenueRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class MonthRevenuesController
+class MonthController
 {
     /**
      * @var string

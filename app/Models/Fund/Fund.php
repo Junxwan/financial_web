@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Fund;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Price extends Model
+class Fund extends Model
 {
 
 }

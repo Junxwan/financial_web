@@ -2,10 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Price;
-use App\Models\Stock;
-use App\Models\StockTag;
-use App\Models\Tag;
+use App\Models\Stock\Price;
+use App\Models\Stock\Stock;
+use App\Models\Stock\Tag;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -53,7 +52,7 @@ class StockRepository extends Repository
             ->orderBy('stocks.code')
             ->get();
 
-        $tags = StockTag::query()->select(
+        $tags = Tag::query()->select(
             DB::RAW('stock_tags.stock_id'),
             DB::RAW('stock_tags.isGroup'),
             DB::RAW('stock_tags.order'),
@@ -180,7 +179,7 @@ class StockRepository extends Repository
                 ];
             }
 
-            return StockTag::insert($insert);
+            return Tag::insert($insert);
         });
     }
 
@@ -200,7 +199,7 @@ class StockRepository extends Repository
                 'market' => $data['market'],
             ]);
 
-            StockTag::query()->where('stock_id', $id)->delete();
+            Tag::query()->where('stock_id', $id)->delete();
 
             $insert = [];
             foreach ($data['tags'] as $i => $v) {
@@ -211,7 +210,7 @@ class StockRepository extends Repository
                 ];
             }
 
-            return StockTag::insert($insert);
+            return Tag::insert($insert);
         });
     }
 
@@ -224,7 +223,7 @@ class StockRepository extends Repository
     {
         return $this->transaction(function () use ($id) {
             return Stock::query()->where('id', $id)->delete() &&
-                StockTag::query()->where('stock_id', $id)->delete();
+                Tag::query()->where('stock_id', $id)->delete();
         });
     }
 
@@ -266,7 +265,7 @@ class StockRepository extends Repository
             ->where('code', $code)
             ->first();
 
-        $stocks->tags = StockTag::query()
+        $stocks->tags = Tag::query()
             ->select('tags.name')
             ->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
             ->where('stock_id', $stocks->id)
@@ -284,7 +283,7 @@ class StockRepository extends Repository
      */
     public function namesByTag(int $tag)
     {
-        $stocks = StockTag::query()
+        $stocks = Tag::query()
             ->select(
                 'stocks.id', 'stocks.code', 'stocks.name',
                 DB::RAW('classifications.name as c_name'), 'stocks.capital',
@@ -294,7 +293,7 @@ class StockRepository extends Repository
             ->where('stock_tags.tag_id', $tag)
             ->get();
 
-        $tags = StockTag::query()
+        $tags = Tag::query()
             ->select('stock_tags.stock_id', 'tags.name')
             ->join('tags', 'tags.id', '=', 'stock_tags.tag_id')
             ->whereIn('stock_id', $stocks->pluck('id'))

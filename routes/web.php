@@ -117,19 +117,19 @@ Route::get('/cash/recent/{code}/code/{year}/year/{quarterly}/quarterly',
 // 月營收
 Route::group(['prefix' => 'revenue', 'as' => 'revenue.'], function () {
     Route::get('/{code}/code/{year}/year',
-        [\App\Http\Controllers\RevenueController::class, 'year'])->name('year');
+        [\App\Http\Controllers\Revenue\RevenueController::class, 'year'])->name('year');
     Route::get('/recent/{code}/code/{year}/year/{month}/month',
-        [\App\Http\Controllers\RevenueController::class, 'recent'])->name('recent');
+        [\App\Http\Controllers\Revenue\RevenueController::class, 'recent'])->name('recent');
     Route::get('/{year}/year/{month}/month/last',
-        [\App\Http\Controllers\MonthRevenuesController::class, 'last'])->name('last');
+        [\App\Http\Controllers\Revenue\MonthController::class, 'last'])->name('last');
 
     // 排行
     Route::get('/rank/month',
-        [\App\Http\Controllers\MonthRevenuesController::class, 'index'])->name('rank.month.index');
+        [\App\Http\Controllers\Revenue\MonthController::class, 'index'])->name('rank.month.index');
     Route::get('/rank/month/list',
-        [\App\Http\Controllers\MonthRevenuesController::class, 'list'])->name('rank.month.list');
+        [\App\Http\Controllers\Revenue\MonthController::class, 'list'])->name('rank.month.list');
     Route::get('/rank/{year}/year/{month}/month/download',
-        [\App\Http\Controllers\MonthRevenuesController::class, 'download'])->name('rank.download');
+        [\App\Http\Controllers\Revenue\MonthController::class, 'download'])->name('rank.download');
 });
 
 // 投信持股

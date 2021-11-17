@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\Classification;
 use App\Models\Revenue;
 use Illuminate\Support\Facades\DB;
 

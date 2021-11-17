@@ -67,7 +67,7 @@ class Price
             ];
         }
 
-        $data['name'] = \App\Models\Stock::query()->select('name')->where('code', $code)->first()->name;
+        $data['name'] = \App\Models\Stock\Stock::query()->select('name')->where('code', $code)->first()->name;
         return $data;
     }
 }

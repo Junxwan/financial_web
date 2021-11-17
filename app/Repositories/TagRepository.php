@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
-use App\Models\Classification;
-use App\Models\Stock;
-use App\Models\StockTag;
-use App\Models\Tag;
-use App\Models\TagExponent;
+use App\Models\Stock\Classification;
+use App\Models\Stock\Stock;
+use App\Models\Stock\Tag as StockTag;
+use App\Models\Stock\Tag;
+use App\Models\Stock\TagExponent;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 

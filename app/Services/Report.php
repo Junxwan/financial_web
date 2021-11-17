@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Stock;
+use App\Models\Stock\Stock;
 use App\Repositories\ReportRepository;
 use Illuminate\Http\Request;
 

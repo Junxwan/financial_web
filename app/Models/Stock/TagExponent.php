@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Stock;
 
 use Illuminate\Database\Eloquent\Model;
 
-class StockTag extends Model
+class TagExponent extends Model
 {
     public $timestamps = false;
 }

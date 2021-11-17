@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Price;
+use App\Models\Stock\Price;
 use Illuminate\Support\Facades\DB;
 
 class CategoryRepository extends Repository

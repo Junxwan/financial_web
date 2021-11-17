@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Price;
-use App\Models\TagExponent;
+use App\Models\Stock\Price;
+use App\Models\Stock\TagExponent;
 use App\Services\Industry;
 
 class IndustryController extends Controller

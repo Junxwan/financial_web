@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Classification;
+use App\Models\Stock\Classification;
 use App\Models\Dividend;
-use App\Models\Price;
+use App\Models\Stock\Price;
 use App\Models\Profit as Model;
-use App\Models\StockTag;
+use App\Models\Stock\Tag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -311,7 +311,7 @@ class Profit
             ->limit($options['limit'])
             ->get();
 
-        $tags = StockTag::query()->select(
+        $tags = Tag::query()->select(
             DB::RAW('stock_tags.stock_id'),
             DB::RAW('tags.id'),
             DB::RAW('tags.name')

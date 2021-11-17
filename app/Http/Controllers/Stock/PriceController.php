@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Models\Price;
+use App\Models\Stock\Price;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -33,7 +33,6 @@ class PriceController
             'modal' => [],
         ]);
     }
-
 
     /**
      * @param Request $request
@@ -92,7 +91,7 @@ class PriceController
     public function date()
     {
         return response()->json([
-            'date' => \App\Models\Price::query()->select('date')->orderByDesc('date')->first()->date,
+            'date' => \App\Models\Stock\Price::query()->select('date')->orderByDesc('date')->first()->date,
         ]);
     }
 

@@ -5,7 +5,7 @@ namespace App\Repositories\Cb;
 use App\Models\Cb\Balance;
 use App\Models\Cb\Cb;
 use App\Models\Cb\Price as CbPrice;
-use App\Models\Price;
+use App\Models\Stock\Price;
 
 class IndexRepository
 {

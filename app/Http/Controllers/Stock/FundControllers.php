@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Stock;
 
-use App\Models\FundStock;
+use App\Models\Fund\Stock;
 use App\Services\Fund;
 use Illuminate\Support\Facades\DB;
 
@@ -40,7 +40,7 @@ class FundControllers
      */
     public function list(string $code, int $year)
     {
-        $data = FundStock::query()->select(
+        $data = Stock::query()->select(
             'fund_stocks.month', DB::RAW('funds.name AS fName'),
             'stocks.name', DB::RAW('ROUND(fund_stocks.ratio, 2) AS ratio')
         )->join('stocks', 'stocks.id', '=', 'fund_stocks.stock_id')

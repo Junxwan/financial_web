@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\Controller;
-use App\Models\Classification;
-use App\Models\Stock;
+use App\Models\Stock\Classification;
 use App\Repositories\StockRepository;
 use App\Repositories\TagRepository;
 use App\Services\Profit as Service;

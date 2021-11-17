@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Fund;
-use App\Models\FundDetail;
-use App\Models\FundStock;
+use App\Models\Fund\Fund;
+use App\Models\Fund\Detail;
+use App\Models\Fund\Stock;
 use Illuminate\Support\Facades\DB;
 
 class FundRepository extends Repository
@@ -27,7 +27,7 @@ class FundRepository extends Repository
      */
     public function stocks(int $year, int $id)
     {
-        return FundStock::query()->select(
+        return Stock::query()->select(
             'fund_stocks.id', 'fund_stocks.year', 'fund_stocks.month', 'funds.name', 'stocks.code',
             'stocks.name', 'fund_stocks.amount', DB::RAW('ROUND(fund_stocks.ratio, 2) AS ratio')
         )->join('stocks', 'stocks.id', '=', 'fund_stocks.stock_id')
@@ -48,7 +48,7 @@ class FundRepository extends Repository
      */
     public function stock(string $code, int $year)
     {
-        return FundStock::query()->select(
+        return Stock::query()->select(
             'fund_stocks.month', DB::RAW('funds.name AS fName'),
             'stocks.name', DB::RAW('ROUND(fund_stocks.ratio, 2) AS ratio')
         )->join('stocks', 'stocks.id', '=', 'fund_stocks.stock_id')
@@ -70,7 +70,7 @@ class FundRepository extends Repository
      */
     public function scale(int $id)
     {
-        return FundDetail::query()
+        return Detail::query()
             ->select('year', 'month', 'scale')
             ->where('fund_id', $id)
             ->orderByDesc('year')
@@ -85,7 +85,7 @@ class FundRepository extends Repository
      */
     public function value(int $id)
     {
-        return FundDetail::query()
+        return Detail::query()
             ->select('year', 'month', 'value')
             ->where('fund_id', $id)
             ->orderByDesc('year')
