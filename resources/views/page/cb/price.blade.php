@@ -119,6 +119,11 @@
                             width: 1,
                             value: 5,
                             zIndex: 1
+                        },{
+                            color: '#703628',
+                            width: 1,
+                            value: 2,
+                            zIndex: 1
                         }],
                     }],
                     tooltip: {
@@ -483,7 +488,7 @@
                         }],
                     }],
                     annotations: [{
-                        labels: labels
+                        labels: labelsP
                     }],
                     tooltip: {
                         shared: true,
