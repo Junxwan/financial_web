@@ -185,6 +185,10 @@
                     yAxis: {
                         title: {
                             text: null
+                        },
+                        crosshair: {
+                            width: 1,
+                            color: '#6a33a4'
                         }
                     },
                     legend: {
