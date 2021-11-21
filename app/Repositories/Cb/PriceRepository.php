@@ -63,7 +63,7 @@ class PriceRepository
             ->first();
 
         $conversionPrice = ConversionPrice::query()
-            ->select('value', 'date')
+            ->select('value', 'date', 'stock')
             ->where('cb_id', $cb->id)
             ->orderByDesc('date')
             ->get();
@@ -72,6 +72,7 @@ class PriceRepository
             $conversionPrice->push([
                 'value' => $cb->conversion_price,
                 'date' => $cb->start_date,
+                'stock' => 0,
             ]);
         }
 
