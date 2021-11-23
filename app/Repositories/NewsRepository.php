@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\News;
+use App\Models\News\News;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 

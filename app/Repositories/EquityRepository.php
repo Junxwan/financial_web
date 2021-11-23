@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Equity;
+use App\Models\Profit\Equity;
 
 class EquityRepository extends Repository
 {

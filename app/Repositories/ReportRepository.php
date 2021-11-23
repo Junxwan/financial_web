@@ -2,11 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Equity;
-use App\Models\Report;
+use App\Models\Profit\Report;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 
 class ReportRepository extends Repository
 {

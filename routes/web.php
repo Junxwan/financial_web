@@ -178,6 +178,8 @@ Route::group(['prefix' => 'price', 'as' => 'price.'], function () {
         [\App\Http\Controllers\PriceController::class, 'list'])->name('list');
     Route::get('/{code}/code',
         [\App\Http\Controllers\PriceController::class, 'price'])->name('code');
+    Route::get('month/{code}/code',
+        [\App\Http\Controllers\Stock\PriceController::class, 'month'])->name('month');
 });
 
 // 可轉債

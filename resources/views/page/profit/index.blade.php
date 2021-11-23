@@ -71,10 +71,12 @@
 
                 $("#month-revenue>tbody>tr").remove()
 
-                revenues = []
+                let revenues = []
                 yoys = []
                 qoqs = []
                 yearRevenueg = {}
+                monthPrice = []
+
                 response.data.forEach(function (v, index) {
                     if (index <= 12) {
                         let html =
@@ -132,115 +134,138 @@
                     })
                 }
 
-                Highcharts.chart('month-revenue-bar', {
-                    colors: ['#45617d'],
-                    chart: {
-                        type: 'column',
-                    },
-                    plotOptions: {
-                        column: {
-                            borderColor: '#45617d'
-                        }
-                    },
-                    title: {
-                        text: '月營收'
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        labels: {
-                            formatter: function () {
-                                return Highcharts.dateFormat('%Y-%m', this.value);
-                            }
-                        }
-                    },
-                    yAxis: {
-                        title: {
-                            text: null
-                        }
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        xDateFormat: '%Y-%m',
-                        formatter: function () {
-                            return Highcharts.dateFormat('%Y-%m', this.x) + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
-                        }
-                    },
-                    series: [{
-                        data: revenues,
-                    }]
-                });
+                axios.get('{{ route("price.month", ['code' => ':code']) }}'.replace(':code', $('#code').val())).then(function (response2) {
+                    response2.data.forEach(function (v, index) {
+                        let t = Date.parse(v.year + '-' + v.month + '-02')
 
-                Highcharts.chart('month-revenue-bar2', {
-                    chart: {
-                        type: 'column',
-                    },
-                    title: {
-                        text: '月營收'
-                    },
-                    xAxis: {
-                        categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-                    },
-                    yAxis: {
+                        revenues.forEach(function (r, i) {
+                            if (r[0] === t) {
+                                monthPrice.push([t, v.close])
+                            }
+                        })
+                    })
+
+                    monthPrice.reverse()
+
+                    Highcharts.chart('month-revenue-bar', {
                         title: {
-                            text: null
+                            text: '月營收'
                         },
-                        crosshair: {
-                            width: 1,
-                            color: '#6a33a4'
-                        }
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            return this.series.name + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
-                        }
-                    },
-                    series: seriesRevenues
-                });
-
-                Highcharts.chart('month-revenue-yoy-bar', {
-                    title: {
-                        text: '成長'
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        labels: {
-                            formatter: function () {
-                                return Highcharts.dateFormat('%Y-%m', this.value);
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                formatter: function () {
+                                    return Highcharts.dateFormat('%Y-%m', this.value);
+                                }
                             }
-                        }
-                    },
-                    yAxis: {
+                        },
+                        yAxis: [{
+                            title: {
+                                text: '月營收'
+                            },
+                        }, {
+                            title: {
+                                text: '月收盤'
+                            },
+                            opposite: true
+                        }],
+                        legend: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            shared: true,
+                            xDateFormat: '%Y-%m',
+                            formatter: function () {
+                                console.log(this)
+                                return Highcharts.dateFormat('%Y-%m', this.x) + '<br>營收: ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>' +
+                                    '<br>收盤: <span style="color:#7dbbd2">' + this.points[1].y
+                            }
+                        },
+                        series: [{
+                            name: '月營收',
+                            type: 'column',
+                            data: revenues,
+                            color: '#45617d',
+                            borderColor: '#45617d'
+                        }, {
+                            name: '月收盤',
+                            yAxis: 1,
+                            type: 'line',
+                            data: monthPrice,
+                        }]
+                    });
+
+                    Highcharts.chart('month-revenue-bar2', {
+                        chart: {
+                            type: 'column',
+                        },
                         title: {
-                            text: null
-                        }
-                    },
-                    navigator: {
-                        enabled: false
-                    },
+                            text: '月營收'
+                        },
+                        xAxis: {
+                            categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+                        },
+                        yAxis: {
+                            title: {
+                                text: null
+                            },
+                            crosshair: {
+                                width: 1,
+                                color: '#6a33a4'
+                            }
+                        },
+                        legend: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                return this.series.name + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
+                            }
+                        },
+                        series: seriesRevenues
+                    });
 
-                    exporting: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        crosshairs: true,
-                        shared: true,
-                        xDateFormat: '%Y-%m',
-                    },
-                    series: [{
-                        name: 'yoy',
-                        data: yoys
-                    }, {
-                        name: 'qoq',
-                        data: qoqs
-                    }]
-                });
+                    Highcharts.chart('month-revenue-yoy-bar', {
+                        title: {
+                            text: '成長'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                formatter: function () {
+                                    return Highcharts.dateFormat('%Y-%m', this.value);
+                                }
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: null
+                            }
+                        },
+                        navigator: {
+                            enabled: false
+                        },
 
-                toastr.success('月營收成功')
+                        exporting: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            crosshairs: true,
+                            shared: true,
+                            xDateFormat: '%Y-%m',
+                        },
+                        series: [{
+                            name: 'yoy',
+                            data: yoys
+                        }, {
+                            name: 'qoq',
+                            data: qoqs
+                        }]
+                    });
+
+                    toastr.success('月營收成功')
+                })
+
                 return true
             }).catch(function (error) {
                 console.log(error)
@@ -347,33 +372,42 @@
                 })
 
                 data.forEach(function (value, key) {
+                    let b1, b2, b3, b4 = false
                     years.push(key)
                     value.forEach(function (v) {
                         switch (v.quarterly) {
                             case 1:
                                 q1.push(v.revenue)
+                                b1 = true
                                 break
                             case 2:
                                 q2.push(v.revenue)
+                                b2 = true
                                 break
                             case 3:
                                 q3.push(v.revenue)
+                                b3 = true
                                 break
                             case 4:
                                 q4.push(v.revenue)
+                                b4 = true
                                 break
                         }
                     })
 
-                    if (q1.length !== q2.length) {
+                    if (!b1) {
+                        q1.push(0)
+                    }
+
+                    if (!b2) {
                         q2.push(0)
                     }
 
-                    if (q1.length !== q3.length) {
+                    if (!b3) {
                         q3.push(0)
                     }
 
-                    if (q1.length !== q4.length) {
+                    if (!b4) {
                         q4.push(0)
                     }
                 })
@@ -405,17 +439,17 @@
                         }
                     },
                     series: [{
-                        name: 'Q1',
-                        data: q1
-                    }, {
-                        name: 'Q2',
-                        data: q2
+                        name: 'Q4',
+                        data: q4
                     }, {
                         name: 'Q3',
                         data: q3
                     }, {
-                        name: 'Q4',
-                        data: q4
+                        name: 'Q2',
+                        data: q2
+                    }, {
+                        name: 'Q1',
+                        data: q1
                     }]
                 })
 

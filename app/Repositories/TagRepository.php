@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Stock\Classification;
 use App\Models\Stock\Stock;
 use App\Models\Stock\Tag as StockTag;
-use App\Models\Stock\Tag;
+use App\Models\Stock\Tags;
 use App\Models\Stock\TagExponent;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ class TagRepository extends Repository
      */
     public function all()
     {
-        return Tag::query()->get();
+        return Tags::query()->get();
     }
 
     /**
@@ -27,7 +27,7 @@ class TagRepository extends Repository
      */
     public function get(int $id)
     {
-        return Tag::query()->where('id', $id)->first();
+        return Tags::query()->where('id', $id)->first();
     }
 
     /**
@@ -63,10 +63,10 @@ class TagRepository extends Repository
      */
     public function list(array $data)
     {
-        $query = Tag::query()->select(
+        $query = Tags::query()->select(
             'tags.id', 'name', 'tag_exponents.stock_id'
         )->leftJoin('tag_exponents', 'tag_exponents.tag_id', '=', 'tags.id');
-        $queryTotal = Tag::query();
+        $queryTotal = Tags::query();
 
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
             if (isset($search['value']) && ! empty($search['value'])) {
@@ -106,7 +106,7 @@ class TagRepository extends Repository
     public function insert(array $data)
     {
         return $this->transaction(function () use ($data) {
-            $tagId = Tag::query()->insertGetId([
+            $tagId = Tags::query()->insertGetId([
                 'name' => $data['name'],
             ]);
 
@@ -146,7 +146,7 @@ class TagRepository extends Repository
     public function update(int $id, array $data)
     {
         return $this->transaction(function () use ($id, $data) {
-            $model = Tag::query()->where('id', $id)->first();
+            $model = Tags::query()->where('id', $id)->first();
 
             if (is_null($model)) {
                 return false;
@@ -177,7 +177,7 @@ class TagRepository extends Repository
      */
     public function delete(int $id)
     {
-        return (bool)Tag::query()->where('id', $id)->delete();
+        return (bool)Tags::query()->where('id', $id)->delete();
     }
 
     /**

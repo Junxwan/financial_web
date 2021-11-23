@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Cash as Model;
+use App\Models\Profit\Cash as Model;
 use Illuminate\Support\Facades\DB;
 
 class Cash

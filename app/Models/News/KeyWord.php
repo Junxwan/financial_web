@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\News;
 
 use Illuminate\Database\Eloquent\Model;
 
-class NewsKeyWord extends Model
+class KeyWord extends Model
 {
     protected $table = 'news_key_words';
 

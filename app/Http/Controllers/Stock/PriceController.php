@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Stock;
 
 use App\Models\Stock\Price;
+use App\Repositories\PriceRepository;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +94,17 @@ class PriceController
         return response()->json([
             'date' => \App\Models\Stock\Price::query()->select('date')->orderByDesc('date')->first()->date,
         ]);
+    }
+
+    /**
+     * @param string $code
+     * @param PriceRepository $price
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function month(string $code, PriceRepository $price)
+    {
+        return response()->json($price->month($code));
     }
 
     /**

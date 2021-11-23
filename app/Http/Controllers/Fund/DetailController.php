@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Fund;
 
-use App\Models\Company;
+use App\Models\Fund\Company;
 use App\Services\Fund;
 
 class DetailController

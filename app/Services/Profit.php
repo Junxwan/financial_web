@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Stock\Classification;
-use App\Models\Dividend;
+use App\Models\Profit\Dividend;
 use App\Models\Stock\Price;
-use App\Models\Profit as Model;
+use App\Models\Profit\Profit as Model;
 use App\Models\Stock\Tag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

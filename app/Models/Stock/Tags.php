@@ -4,9 +4,9 @@ namespace App\Models\Stock;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Tag extends Model
+class Tags extends Model
 {
     public $timestamps = false;
 
-    protected $table = 'stock_tags';
+    protected $table = 'tags';
 }

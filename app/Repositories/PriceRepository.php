@@ -195,6 +195,27 @@ class PriceRepository extends Repository
     }
 
     /**
+     * @param string $code
+     *
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function month(string $code)
+    {
+        return Price::query()
+            ->select(
+                DB::RAW('YEAR(date) as year'),
+                DB::RAW('MONTH(date) as month'),
+                DB::RAW('MAX(date) as date'),
+                'close'
+            )->join('stocks', 'prices.stock_id', '=', 'stocks.id')
+            ->where('code', $code)
+            ->groupBy([DB::RAW('YEAR(date)'), DB::RAW('MONTH(date)')])
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->get();
+    }
+
+    /**
      * @param Builder $query
      *
      * @return Builder

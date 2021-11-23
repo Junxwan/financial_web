@@ -75,7 +75,7 @@
                         color: '#af5661'
                     }, {
                         name: '成交量',
-                        type: 'line',
+                        type: 'column',
                         data: volume,
                         color: '#2f99a3',
                         yAxis: 1,

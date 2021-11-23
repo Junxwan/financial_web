@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Revenue;
+use App\Models\Profit\Revenue;
 use Illuminate\Support\Facades\DB;
 
 class RevenueRepository extends Repository

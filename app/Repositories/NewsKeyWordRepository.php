@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\NewsKeyWord;
+use App\Models\News\KeyWord;
 
 class NewsKeyWordRepository extends Repository
 {
@@ -13,7 +13,7 @@ class NewsKeyWordRepository extends Repository
      */
     public function list(array $data)
     {
-        $query = NewsKeyWord::query();
+        $query = KeyWord::query();
 
         return [
             'data' => $query->offset($data['start'])
@@ -30,7 +30,7 @@ class NewsKeyWordRepository extends Repository
      */
     public function create(array $data)
     {
-        return NewsKeyWord::query()->insert([
+        return KeyWord::query()->insert([
             'name' => $data['name'],
             'keys' => $data['keys'],
         ]);
@@ -44,7 +44,7 @@ class NewsKeyWordRepository extends Repository
      */
     public function update(int $id, array $data)
     {
-        return NewsKeyWord::query()->where('id', $id)->update([
+        return KeyWord::query()->where('id', $id)->update([
             'name' => $data['name'],
             'keys' => $data['keys'],
         ]);
@@ -57,6 +57,6 @@ class NewsKeyWordRepository extends Repository
      */
     public function delete(int $id)
     {
-        return NewsKeyWord::query()->where('id', $id)->delete();
+        return KeyWord::query()->where('id', $id)->delete();
     }
 }
