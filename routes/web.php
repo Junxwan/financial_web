@@ -214,3 +214,13 @@ Route::group(['prefix' => 'cb', 'as' => 'cb.'], function () {
 // 匯出
 Route::get('/export', [\App\Http\Controllers\ExportController::class, 'index'])->name('export.index');
 
+// 觀察
+Route::group(['prefix' => 'observe', 'as' => 'observe.'], function () {
+    Route::get('',
+        [\App\Http\Controllers\Observe\ViewController::class, 'index'])->name('index');
+
+    Route::get('cb/{code}/price/volume',
+        [\App\Http\Controllers\Observe\ApiController::class, 'cbPriceVolume'])->name('cb.code.price.volume');
+    Route::get('cb/price/volume',
+        [\App\Http\Controllers\Observe\ApiController::class, 'cbPriceVolumeByDate'])->name('cb.price.volume');
+});

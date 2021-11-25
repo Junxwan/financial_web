@@ -87,6 +87,11 @@ return [
         'name' => '個股股價',
     ],
     [
+        'route' => 'observe.index',
+        'icon' => 'fas fa-list',
+        'name' => '策略觀察',
+    ],
+    [
         'route' => 'cb.index',
         'icon' => 'fas fa-list',
         'name' => '可轉債',
