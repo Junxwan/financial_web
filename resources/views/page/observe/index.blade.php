@@ -113,7 +113,9 @@
                         opposite: true
                     }],
                     tooltip: {
-                        shared: true
+                        crosshairs: true,
+                        shared: true,
+                        xDateFormat: '%Y-%m-%d',
                     },
                     series: [{
                         name: '成交量',
@@ -124,7 +126,7 @@
                         borderColor: '#514d4d',
                     }, {
                         name: '收盤',
-                        type: 'line',
+                        type: 'spline',
                         data: close,
                     }]
                 });
