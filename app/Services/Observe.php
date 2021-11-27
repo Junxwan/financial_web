@@ -98,8 +98,8 @@ class Observe
      */
     private function getCbPriceVolume($price, $value, $index)
     {
-        $data5 = $price->slice($index - 5, 5);
-        $data10 = $price->slice($index - 10, 10);
+        $data5 = $price->slice($index - 4, 5);
+        $data10 = $price->slice($index - 9, 10);
 
         $avg5Volume = round($data5->avg('volume'));
 
@@ -128,7 +128,7 @@ class Observe
             return null;
         }
 
-        $weakIncrease = round((($value->close / $price->slice($index - 5, 1)->first()->close) - 1) * 100, 2);
+        $weakIncrease = round((($value->close / $price->slice($index - 4, 1)->first()->close) - 1) * 100, 2);
 
         // 週漲幅達2%
         if ($weakIncrease < 2) {
