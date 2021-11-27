@@ -97,7 +97,7 @@
                 })
             }
 
-            NewTable({
+            var table = NewTable({
                 name: '#list',
                 url: "{{ route('news.list') }}",
                 columns: [
@@ -145,16 +145,21 @@
                 edit: edit,
                 delete: del,
                 update: update,
-                pageLength: 10,
+                pageLength: 20,
             })
 
             $('.right').html(
                 '<div id="example_filter" class="dataTables_filter">' +
+                '<input type="number" id="page" value="" size="5">' +
                 '<input type="date" id="start-date" value="">' +
                 '<input type="date" id="end-date" value="">' +
                 '<input type="search" id="search-input">' +
                 '</div>'
             )
+
+            $('#page').on('change', function () {
+                table.page(parseInt($(this).val())).draw('page');
+            })
 
             ClassicEditor
                 .create(document.querySelector('.modal-textarea'), {
