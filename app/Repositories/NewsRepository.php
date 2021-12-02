@@ -16,30 +16,24 @@ class NewsRepository extends Repository
     public function list(array $data)
     {
         $query = news::query()->select('id', 'title', 'publish_time', 'url', 'remark');
-        $queryTotal = news::query();
 
         if (isset($data['search'])) {
             $search = $data['search'];
             if (isset($search['value']) && ! empty($search['value'])) {
                 $query = $this->whereLike($query, $search);
-                $queryTotal = $this->whereLike($queryTotal, $search);
             }
 
             $query = $this->whereDate($query, $search);
-            $queryTotal = $this->whereDate($queryTotal, $search);
         }
 
-        $query->offset($data['start'])
-            ->limit($data['limit'])
-            ->orderByDesc('publish_time')
-            ->get();
+        $total = $query->count();
 
         return [
             'data' => $query->offset($data['start'])
                 ->limit($data['limit'])
                 ->orderByDesc('publish_time')
                 ->get(),
-            'total' => $queryTotal->count(),
+            'total' => $total,
         ];
     }
 
@@ -97,8 +91,8 @@ class NewsRepository extends Repository
      */
     private function whereLike(Builder $query, array $data)
     {
-        return $query->where('context', 'like', "%{$data['value']}%")
-            ->where('title', 'like', "%{$data['value']}%");
+        return $query->where('title', 'like', "%{$data['value']}%");
+
     }
 
     /**
