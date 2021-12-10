@@ -1,6 +1,11 @@
 @extends('page')
 
+@section('css')
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-select.min.css') }}">
+@stop
+
 @section('js')
+    <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/highcharts.js') }}"></script>
     <script src="{{ asset('js/highstock/themes/dark-unica.js') }}"></script>
     <script src="{{ asset('js/axios.min.js') }}"></script>
@@ -32,7 +37,7 @@
 
         $('#tag-btn').click(function () {
             let url = "{{ route('stock.names.tag', ['tag' => ':tag']) }}"
-            axios.get(url.replace(':tag', $('#tag').val())).then(function (response) {
+            axios.get(url.replace(':tag', $('#select-tag').val())).then(function (response) {
                 response.data.forEach(function (v) {
                     let tagsTd = []
                     v.tags.forEach(function (n) {
@@ -224,7 +229,10 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">標籤</span>
                             </div>
-                            <select class="custom-select" id="tag">
+                            <select multiple class="selectpicker form-control" size="10" id="select-tag"
+                                    data-container="body" data-live-search="true" title="Select"
+                                    data-hide-disabled="true"
+                                    data-actions-box="true" data-virtual-scroll="false">
                                 @foreach($tags as $v)
                                     <option value="{{ $v->id }}">{{ $v->name }}</option>
                                 @endforeach
