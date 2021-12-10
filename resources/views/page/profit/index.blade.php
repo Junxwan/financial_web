@@ -263,6 +263,109 @@
                         }]
                     });
 
+                    Highcharts.chart('month-revenue-yoy-bar2', {
+                        title: {
+                            text: 'yoy'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                formatter: function () {
+                                    return Highcharts.dateFormat('%Y-%m', this.value);
+                                }
+                            }
+                        },
+                        yAxis: [{
+                            title: {
+                                text: 'yoy'
+                            },
+                            plotLines: [{
+                                color: '#70285c',
+                                width: 1,
+                                value: 20,
+                                zIndex: 0
+                            }],
+                        }, {
+                            title: {
+                                text: '月收盤'
+                            },
+                            opposite: true
+                        }],
+                        navigator: {
+                            enabled: false
+                        },
+
+                        exporting: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            crosshairs: true,
+                            shared: true,
+                            xDateFormat: '%Y-%m',
+                        },
+                        series: [{
+                            name: 'yoy',
+                            data: yoys,
+                            type: 'column',
+                        }, {
+                            name: '月收盤',
+                            yAxis: 1,
+                            type: 'line',
+                            data: monthPrice,
+                        }]
+                    });
+
+                    Highcharts.chart('month-revenue-qoq-bar', {
+                        title: {
+                            text: 'qoq'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                formatter: function () {
+                                    return Highcharts.dateFormat('%Y-%m', this.value);
+                                }
+                            }
+                        },
+                        yAxis: [{
+                            title: {
+                                text: 'qoq'
+                            },
+                            plotLines: [{
+                                color: '#70285c',
+                                width: 1,
+                                value: 20,
+                                zIndex: 0
+                            }],
+                        }, {
+                            title: {
+                                text: '月收盤'
+                            },
+                            opposite: true
+                        }],
+                        navigator: {
+                            enabled: false
+                        },
+                        exporting: {
+                            enabled: false
+                        },
+                        tooltip: {
+                            crosshairs: true,
+                            shared: true,
+                            xDateFormat: '%Y-%m',
+                        },
+                        series: [{
+                            name: 'qoq',
+                            data: qoqs,
+                            type: 'column',
+                        }, {
+                            name: '月收盤',
+                            yAxis: 1,
+                            type: 'line',
+                            data: monthPrice,
+                        }]
+                    });
+
                     toastr.success('月營收成功')
                 })
 
@@ -985,6 +1088,16 @@
             <div class="row">
                 <div class="col-md-12">
                     <div id="month-revenue-yoy-bar"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenue-yoy-bar2"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenue-qoq-bar"></div>
                 </div>
             </div>
         </div>
