@@ -78,7 +78,7 @@
                 monthPrice = []
 
                 response.data.forEach(function (v, index) {
-                    if (index <= 12) {
+                    if (index <= 48) {
                         let html =
                             "<tr>" +
                             "<td>" + v.year + "-" + v.month + "</td>" +
@@ -956,8 +956,8 @@
         </div>
         <div class="card-body" style="display: block;">
             <div class="row">
-                <div class="col-md-12">
-                    <table id="month-revenue" class="table table-dark">
+                <div class="col-md-12 card-body table-responsive p-0" style="height: 700px;">
+                    <table id="month-revenue" class="table table-dark table-head-fixed text-nowrap">
                         <thead>
                         <tr>
                             <th scope="col">年月</th>
