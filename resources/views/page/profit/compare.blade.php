@@ -15,9 +15,9 @@
                     tagsTd.push('<span class="badge badge-pill badge-dark">' + v + '</span>')
                 })
 
-                $("#stocks-table>tbody").append("<tr>" +
+                $("#stocks-table>tbody").append("<tr class='stock'>" +
                     "<td class='code'>" + data.code + "</td>" +
-                    "<td>" + data.name + "</td>" +
+                    "<td class='name'>" + data.name + "</td>" +
                     "<td>" + amountText(data.capital) + "</td>" +
                     "<td>" + data.c_name + "</td>" +
                     "<td>" + tagsTd.join(' ') + "</td>" +
@@ -39,9 +39,9 @@
                         tagsTd.push('<span class="badge badge-pill badge-dark">' + n + '</span>')
                     })
 
-                    $("#stocks-table>tbody").append("<tr>" +
+                    $("#stocks-table>tbody").append("<tr class='stock'>" +
                         "<td class='code'>" + v.code + "</td>" +
-                        "<td>" + v.name + "</td>" +
+                        "<td class='name'>" + v.name + "</td>" +
                         "<td>" + amountText(v.capital) + "</td>" +
                         "<td>" + v.c_name + "</td>" +
                         "<td>" + tagsTd.join(' ') + "</td>" +
@@ -115,12 +115,64 @@
             })
         })
 
+        $('#month-revenues-btn').click(function () {
+            let url = "{{ route('revenue.recents', ['year' => ':year', 'month' => ':month']) }}"
+            url = url.replace(':year', $('#year').val()).replace(':month', $('#month').val())
+            url += '?code=' + codes().join(',')
+
+            // 月營收
+            axios.get(url).then(function (response) {
+                $("#month-revenues-table>thead>tr>th").remove()
+                $("#month-revenues-table>tbody>tr").remove()
+
+                let stock = stocks()
+
+                $("#month-revenues-table>thead>tr").append('<th scope="col">年月</th>')
+
+                response.data[0].forEach(function (v) {
+                    $("#month-revenues-table>thead>tr").append('<th scope="col">' + stock[v.code] + '</th>')
+                })
+
+                response.data.forEach(function (value) {
+                    let html = "<td>" + value[0].year + '-' + value[0].month + "</td>"
+
+                    value.forEach(function (v) {
+                        html += "<td>" + amountText(v.value) + ' (' + textR(v.yoy, 10) + ')' + '(' + textR(v.qoq, 0) + ')' + "</td>"
+                    })
+
+                    $("#month-revenues-table>tbody").append("<tr>" + html + "</tr>")
+                })
+
+                toastr.success('查詢成功')
+            }).catch(function (error) {
+                console.log(error)
+                toastr.error('查無資料')
+            })
+
+        })
+
         function codes() {
             let codes = []
             $('.code').each(function (index, e) {
                 codes.push(e.innerHTML)
             })
             return codes
+        }
+
+        function names() {
+            let names = []
+            $('.name').each(function (index, e) {
+                names.push(e.innerHTML)
+            })
+            return names
+        }
+
+        function stocks() {
+            let stock = {}
+            $('.stock').each(function (index, e) {
+                stock[$(this).find('.code')[0].innerHTML] = $(this).find('.name')[0].innerHTML
+            })
+            return stock
         }
 
         function textR(value, r) {
@@ -243,6 +295,12 @@
                         查
                     </button>
                 </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
+                            id="month-revenues-btn">
+                        全營查
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -334,6 +392,32 @@
                             <th scope="col">稅前淨利率</th>
                             <th scope="col">稅後淨利率</th>
                             <th scope="col">eps</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">近4年月營收(百萬)</h3>
+            <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                        class="fas fa-minus"></i></button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove"><i
+                        class="fas fa-remove"></i></button>
+            </div>
+        </div>
+        <div class="card-body" style="display: block;">
+            <div class="row">
+                <div class="col-md-12 card-body table-responsive p-0" style="height: 700px;">
+                    <table id="month-revenues-table" class="table table-dark table-head-fixed text-nowrap">
+                        <thead>
+                        <tr>
+                            <th scope="col">年月</th>
                         </tr>
                         </thead>
                         <tbody>

@@ -15,11 +15,9 @@ class MonthController
     private $view = 'page.month_revenues';
 
     /**
-     * @param Request $request
-     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index()
     {
         $now = Carbon::now();
         return view($this->view, [

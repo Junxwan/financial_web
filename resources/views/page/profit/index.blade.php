@@ -946,7 +946,7 @@
     </div>
     <div class="card card-default" id="revenue-title">
         <div class="card-header">
-            <h3 class="card-title">近12個月營收(百萬)</h3>
+            <h3 class="card-title">近4年月營收(百萬)</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
                         class="fas fa-minus"></i></button>

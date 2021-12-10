@@ -120,6 +120,8 @@ Route::group(['prefix' => 'revenue', 'as' => 'revenue.'], function () {
         [\App\Http\Controllers\Revenue\RevenueController::class, 'year'])->name('year');
     Route::get('/recent/{code}/code/{year}/year/{month}/month',
         [\App\Http\Controllers\Revenue\RevenueController::class, 'recent'])->name('recent');
+    Route::get('/recent/codes/{year}/year/{month}/month',
+        [\App\Http\Controllers\Revenue\RevenueController::class, 'recents'])->name('recents');
     Route::get('/{year}/year/{month}/month/last',
         [\App\Http\Controllers\Revenue\MonthController::class, 'last'])->name('last');
 

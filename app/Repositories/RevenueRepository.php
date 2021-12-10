@@ -91,6 +91,46 @@ class RevenueRepository extends Repository
     }
 
     /**
+     * @param array $codes
+     * @param int $year
+     * @param int $month
+     *
+     * @return array
+     */
+    public function recents(array $codes, int $year, int $month)
+    {
+        $revenues = Revenue::query()
+            ->select(
+                DB::RAW('`stocks`.`code`'),
+                DB::RAW('`revenues`.`year`'),
+                DB::RAW('`revenues`.`month`'),
+                DB::RAW('`revenues`.`value`'),
+            )->join('stocks', 'stocks.id', '=', 'revenues.stock_id')
+            ->whereIn('stocks.code', $codes)
+            ->where('revenues.year', '<=', $year)
+            ->where('revenues.year', '>=', $year - 5)
+            ->orderByDesc('revenues.year')
+            ->orderByDesc('revenues.month')
+            ->get();
+
+        return $revenues->groupBy('code')->map(function ($revenue, $code) {
+            $revenue->map(function ($v, $i) use ($revenue) {
+                $ye = $revenue->where('year', $v->year - 1)
+                    ->where('month', $v->month)
+                    ->first();
+
+                $v->yoy = is_null($ye) ? 0 : round((($v->value / $ye->value) - 1) * 100, 2);
+                $v->qoq = isset($revenue[$i + 1]) ? round((($v->value / $revenue[$i + 1]->value) - 1) * 100, 2) : 0;
+
+                return $v;
+            });
+
+            return $revenue;
+        });
+    }
+
+
+    /**
      * @param int $year
      * @param int $month
      *

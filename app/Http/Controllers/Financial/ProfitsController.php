@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Financial;
 
 use App\Http\Controllers\Controller;
-use App\Models\Tag;
+use App\Models\Stock\Tags;
 use App\Repositories\ProfitRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -37,7 +37,7 @@ class ProfitsController extends Controller
             'year' => $now->year,
             'month' => $now->month - 1,
             'quarterly' => $quarterly,
-            'tags' => Tag::query()->get(),
+            'tags' => Tags::query()->get(),
         ];
     }
 
