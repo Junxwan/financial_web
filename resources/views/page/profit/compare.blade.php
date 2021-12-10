@@ -131,22 +131,78 @@
                 $("#month-revenues-table>tbody>tr").remove()
 
                 let stock = stocks()
+                let chat = {}
 
                 $("#month-revenues-table>thead>tr").append('<th scope="col">年月</th>')
 
                 response.data[0].forEach(function (v) {
                     $("#month-revenues-table>thead>tr").append('<th scope="col">' + stock[v.code] + '</th>')
+                    chat[v.code] = []
                 })
 
                 response.data.forEach(function (value) {
+                    let t = Date.parse(value[0].year + '-' + value[0].month + '-02')
                     let html = "<td>" + value[0].year + '-' + value[0].month + "</td>"
 
                     value.forEach(function (v) {
                         html += "<td>" + amountText(v.value) + ' (' + textR(v.yoy, 10) + ')' + '(' + textR(v.qoq, 0) + ')' + "</td>"
+
+                        chat[v.code].push([t, v.yoy])
                     })
 
                     $("#month-revenues-table>tbody").append("<tr>" + html + "</tr>")
                 })
+
+                let series = []
+                for (const [code, value] of Object.entries(chat)) {
+                    value.reverse()
+
+                    series.push({
+                        name: stock[code],
+                        data: value,
+                        type: 'line'
+                    })
+                }
+
+                console.log(series)
+
+                Highcharts.chart('month-revenues-yoy-chat', {
+                    title: {
+                        text: 'yoy'
+                    },
+                    xAxis: {
+                        type: 'datetime',
+                        labels: {
+                            formatter: function () {
+                                return Highcharts.dateFormat('%Y-%m', this.value);
+                            }
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        },
+                        plotLines: [{
+                            color: '#70285c',
+                            width: 1,
+                            value: 20,
+                            zIndex: 0
+                        }],
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+                    exporting: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                        xDateFormat: '%Y-%m',
+                    },
+                    series: series,
+                });
 
                 toastr.success('查詢成功')
             }).catch(function (error) {
@@ -431,6 +487,11 @@
                         <tbody>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenues-yoy-chat"></div>
                 </div>
             </div>
         </div>
