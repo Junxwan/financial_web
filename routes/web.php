@@ -93,6 +93,8 @@ Route::group(['prefix' => 'profit', 'as' => 'profit.'], function () {
         [\App\Http\Controllers\Financial\ProfitController::class, 'recent'])->name('recent');
     Route::get('/eps/{code}/code',
         [\App\Http\Controllers\Financial\ProfitController::class, 'eps'])->name('eps');
+    Route::get('/eps/{code}/pe',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'pe'])->name('pe');
     Route::get('/dividend/{code}/code',
         [\App\Http\Controllers\Financial\ProfitController::class, 'dividend'])->name('dividend');
     Route::get('/rank',

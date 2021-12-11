@@ -227,6 +227,18 @@ class ProfitController
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    public function pe(string $code)
+    {
+        return response()->json(
+            $this->profit->pe($code)
+        );
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function dividend(string $code)
     {
         return response()->json(

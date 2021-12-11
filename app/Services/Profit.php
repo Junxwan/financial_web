@@ -222,7 +222,8 @@ class Profit
             ->where('stocks.code', $code)
             ->where('profits.year', '>=', Carbon::now()->year - 8)
             ->orderByDesc('profits.year')
-            ->get()->groupBy('year');
+            ->get()
+            ->groupBy('year');
 
         $eps = [];
         foreach ($data as $year => $value) {
@@ -251,6 +252,96 @@ class Profit
         }
 
         return $eps;
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return array
+     */
+    public function pe(string $code)
+    {
+        $data = Model::query()->select(
+            DB::RAW('profits.year'),
+            DB::RAW('profits.quarterly'),
+            DB::RAW('profits.eps')
+        )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+            ->where('stocks.code', $code)
+            ->where('profits.year', '>=', Carbon::now()->year - 4)
+            ->orderByDesc('profits.year')
+            ->orderByDesc('profits.quarterly')
+            ->get();
+
+        $eps = $data->map(function ($v) use ($data) {
+            if ($v->quarterly == 4) {
+                $v->eps = round(
+                    $v->eps - $data->where('year', $v->year)->where('quarterly', '<=', 3)->sum('eps'),
+                    2
+                );
+            }
+            return $v;
+        });
+
+        $prices = Price::query()->select(
+            DB::RAW('YEAR(date) as year'),
+            DB::RAW('MONTH(date) as month'),
+            DB::RAW('MAX(close) as max'),
+            DB::RAW('MIN(close) as min'),
+            DB::RAW('AVG(close) as avg'),
+        )->join('stocks', 'stocks.id', '=', 'prices.stock_id')
+            ->where('stocks.code', $code)
+            ->where('date', '>=', Carbon::now()->year - 5 . '-01-01')
+            ->groupBy([DB::RAW('YEAR(date)'), DB::RAW('MONTH(date)')])
+            ->get();
+
+        $pe = [];
+        for ($i = 0; $i < count($eps); $i++) {
+            $p = $prices->where('year', $eps[$i]->year);
+            $e = $eps->slice($i, 4);
+
+            if ($e->count() != 4) {
+                break;
+            }
+
+            $e4 = $e->sum('eps');
+
+            switch ($eps[$i]->quarterly) {
+                case 1:
+                    $p = $p->whereBetween('month', [1, 3]);
+                    break;
+                case 2:
+                    $p = $p->whereBetween('month', [4, 6]);
+                    break;
+                case 3:
+                    $p = $p->whereBetween('month', [7, 9]);
+                    break;
+                case 4:
+                    $p = $p->whereBetween('month', [10, 12]);
+                    break;
+            }
+
+            $max = $p->max('max');
+            $min = $p->min('min');
+            $avg = round($p->avg('avg'), 2);
+
+            $pe[] = [
+                'year' => $eps[$i]->year,
+                'quarterly' => $eps[$i]->quarterly,
+                'eps' => $e4,
+                'pes' => [
+                    'max' => round($max / $e4, 1),
+                    'min' => round($min / $e4, 1),
+                    'avg' => round($avg / $e4, 1),
+                ],
+                'prices' => [
+                    'max' => $max,
+                    'min' => $min,
+                    'avg' => $avg,
+                ],
+            ];
+        }
+
+        return $pe;
     }
 
     /**

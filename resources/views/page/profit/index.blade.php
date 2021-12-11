@@ -785,7 +785,7 @@
                     }]
                 });
 
-                Highcharts.chart('eps-year-bar', {
+                Highcharts.chart('eps-bar', {
                     colors: ['#45617d'],
                     chart: {
                         type: 'column'
@@ -819,6 +819,7 @@
                     }]
                 });
 
+                pe(code)
                 dividend(code, response.data)
 
                 toastr.success('查EPS成功')
@@ -932,6 +933,67 @@
             }).catch(function (error) {
                 console.log(error)
                 toastr.error('查股利無資料')
+                return false
+            })
+        }
+
+        // 本益比
+        function pe(code) {
+            var url = '{{ route("profit.pe", ['code' => ':code']) }}'
+            return axios.get(url.replace(':code', code)).then(function (response) {
+                let max = []
+                let min = []
+                let avg = []
+
+                response.data.forEach(function (v) {
+                    max.push([v.year + '-Q' + v.quarterly, v.pes['max']])
+                    min.push([v.year + '-Q' + v.quarterly, v.pes['min']])
+                    avg.push([v.year + '-Q' + v.quarterly, v.pes['avg']])
+                })
+
+                max.reverse()
+                min.reverse()
+                avg.reverse()
+
+                Highcharts.chart('pe-chat', {
+                    title: {
+                        text: 'PE'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        id: 'max',
+                        name: '最大',
+                        data: max
+                    }, {
+                        id: 'min',
+                        name: '最低',
+                        data: min
+                    }, {
+                        id: 'avg',
+                        name: '平均',
+                        data: avg,
+                    }]
+                });
+
+                toastr.success('查pe成功')
+                return true
+            }).catch(function (error) {
+                console.log(error)
+                toastr.error('查pe無資料')
                 return false
             })
         }
@@ -1260,7 +1322,12 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="eps-year-bar"></div>
+                    <div id="eps-bar"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="pe-chat"></div>
                 </div>
             </div>
         </div>
