@@ -476,6 +476,10 @@
                 q2o = []
                 q3o = []
                 q4o = []
+                q1f = []
+                q2f = []
+                q3f = []
+                q4f = []
                 years = []
                 data = []
                 response.data.forEach(function (v) {
@@ -496,6 +500,7 @@
                                 q1g.push(v.gross_ratio)
                                 q1p.push(v.profit_ratio)
                                 q1o.push(v.outside)
+                                q1f.push(v.fee_ratio)
                                 b1 = true
                                 break
                             case 2:
@@ -503,6 +508,7 @@
                                 q2g.push(v.gross_ratio)
                                 q2p.push(v.profit_ratio)
                                 q2o.push(v.outside)
+                                q2f.push(v.fee_ratio)
                                 b2 = true
                                 break
                             case 3:
@@ -510,6 +516,7 @@
                                 q3g.push(v.gross_ratio)
                                 q3p.push(v.profit_ratio)
                                 q3o.push(v.outside)
+                                q3f.push(v.fee_ratio)
                                 b3 = true
                                 break
                             case 4:
@@ -517,6 +524,7 @@
                                 q4g.push(v.gross_ratio)
                                 q4p.push(v.profit_ratio)
                                 q4o.push(v.outside)
+                                q4f.push(v.fee_ratio)
                                 b4 = true
                                 break
                         }
@@ -527,6 +535,7 @@
                         q1g.push(0)
                         q1p.push(0)
                         q1o.push(0)
+                        q1f.push(0)
                     }
 
                     if (!b2) {
@@ -534,6 +543,7 @@
                         q2g.push(0)
                         q2p.push(0)
                         q2o.push(0)
+                        q2f.push(0)
                     }
 
                     if (!b3) {
@@ -541,6 +551,7 @@
                         q3g.push(0)
                         q3p.push(0)
                         q3o.push(0)
+                        q3f.push(0)
                     }
 
                     if (!b4) {
@@ -548,6 +559,7 @@
                         q4g.push(0)
                         q4p.push(0)
                         q4o.push(0)
+                        q4f.push(0)
                     }
                 })
 
@@ -736,6 +748,35 @@
                     }, {
                         name: 'Q4',
                         data: q4g
+                    }]
+                });
+
+                Highcharts.chart('fee-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '費用'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1f
+                    }, {
+                        name: 'Q2',
+                        data: q2f
+                    }, {
+                        name: 'Q3',
+                        data: q3f
+                    }, {
+                        name: 'Q4',
+                        data: q4f
                     }]
                 });
 
@@ -1699,6 +1740,11 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div id="profit-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="fee-chat"></div>
                     </div>
                 </div>
                 <div class="row">

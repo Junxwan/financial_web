@@ -155,6 +155,7 @@ class Profit
             DB::RAW('profits.gross'),
             DB::RAW('profits.gross_ratio'),
             DB::RAW('profits.fee'),
+            DB::RAW('profits.fee_ratio'),
             DB::RAW('profits.outside'),
             DB::RAW('profits.other'),
             DB::RAW('profits.profit'),
