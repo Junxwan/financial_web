@@ -464,6 +464,18 @@
                 q2 = []
                 q3 = []
                 q4 = []
+                q1g = []
+                q2g = []
+                q3g = []
+                q4g = []
+                q1p = []
+                q2p = []
+                q3p = []
+                q4p = []
+                q1o = []
+                q2o = []
+                q3o = []
+                q4o = []
                 years = []
                 data = []
                 response.data.forEach(function (v) {
@@ -481,18 +493,30 @@
                         switch (v.quarterly) {
                             case 1:
                                 q1.push(v.revenue)
+                                q1g.push(v.gross_ratio)
+                                q1p.push(v.profit_ratio)
+                                q1o.push(v.outside)
                                 b1 = true
                                 break
                             case 2:
                                 q2.push(v.revenue)
+                                q2g.push(v.gross_ratio)
+                                q2p.push(v.profit_ratio)
+                                q2o.push(v.outside)
                                 b2 = true
                                 break
                             case 3:
                                 q3.push(v.revenue)
+                                q3g.push(v.gross_ratio)
+                                q3p.push(v.profit_ratio)
+                                q3o.push(v.outside)
                                 b3 = true
                                 break
                             case 4:
                                 q4.push(v.revenue)
+                                q4g.push(v.gross_ratio)
+                                q4p.push(v.profit_ratio)
+                                q4o.push(v.outside)
                                 b4 = true
                                 break
                         }
@@ -500,18 +524,30 @@
 
                     if (!b1) {
                         q1.push(0)
+                        q1g.push(0)
+                        q1p.push(0)
+                        q1o.push(0)
                     }
 
                     if (!b2) {
                         q2.push(0)
+                        q2g.push(0)
+                        q2p.push(0)
+                        q2o.push(0)
                     }
 
                     if (!b3) {
                         q3.push(0)
+                        q3g.push(0)
+                        q3p.push(0)
+                        q3o.push(0)
                     }
 
                     if (!b4) {
                         q4.push(0)
+                        q4g.push(0)
+                        q4p.push(0)
+                        q4o.push(0)
                     }
                 })
 
@@ -630,7 +666,7 @@
                     }
                 })
 
-                Highcharts.chart('profit-bar', {
+                Highcharts.chart('profits-chat', {
                     title: {
                         text: '經營'
                     },
@@ -665,6 +701,93 @@
                         id: 'profit_after',
                         name: '稅後',
                         data: profit_after,
+                    }]
+                });
+
+                Highcharts.chart('gross-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '毛利'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1g
+                    }, {
+                        name: 'Q2',
+                        data: q2g
+                    }, {
+                        name: 'Q3',
+                        data: q3g
+                    }, {
+                        name: 'Q4',
+                        data: q4g
+                    }]
+                });
+
+                Highcharts.chart('profit-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '利益'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1p
+                    }, {
+                        name: 'Q2',
+                        data: q2p
+                    }, {
+                        name: 'Q3',
+                        data: q3p
+                    }, {
+                        name: 'Q4',
+                        data: q4p
+                    }]
+                });
+
+                Highcharts.chart('outside-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '業外'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1o
+                    }, {
+                        name: 'Q2',
+                        data: q2o
+                    }, {
+                        name: 'Q3',
+                        data: q3o
+                    }, {
+                        name: 'Q4',
+                        data: q4o
                     }]
                 });
 
@@ -1557,7 +1680,22 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <div id="profit-bar"></div>
+                        <div id="profits-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="gross-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="profit-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="outside-chat"></div>
                     </div>
                 </div>
             </div>
