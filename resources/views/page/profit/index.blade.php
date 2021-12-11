@@ -642,17 +642,23 @@
 
                             switch (name) {
                                 case 'year':
-                                    value = v.year + "Q" + v.quarterly
+                                    value = (v.year - 2000) + "Q" + v.quarterly
                                     break
                                 case 'eps':
                                     value = Math.round(v[name] * 100) / 100
                                     break
                                 case 'non_eps':
-                                    value = Math.round((v.outside / v.profit_main) * v.eps * 100) / 100
+                                    if (v.profit < 0 && v.outside > 0) {
+                                        value = v.eps
+                                    } else {
+                                        value = Math.round((v.eps * Math.round((v.outside / v.profit_pre) * 10000) / 100)) / 100
+                                    }
                                     break
                                 case 'this':
-                                    if (v.eps > 0) {
-                                        value = Math.round(100 - (Math.round((v.outside / v.profit_main) * v.eps * 100) / 100) / v.eps * 100);
+                                    if (v.profit < 0) {
+                                        value = 0
+                                    } else if (v.eps > 0) {
+                                        value = Math.round((Math.round((v.profit / v.profit_pre) * 10000) / 100))
                                     } else {
                                         value = 0
                                     }
@@ -1647,7 +1653,6 @@
                                 <input type="text" class="form-control input-width-1" value="業" readonly>
                                 <input type="text" class="form-control input-width-1" value="其" readonly>
                                 <input type="text" class="form-control input-width-1" value="利" readonly>
-                                <input type="text" class="form-control input-width-1" value="稅前" readonly>
                                 <input type="text" class="form-control input-width-1" value="稅後" readonly>
                                 <input type="text" class="form-control input-width-1" value="所得" readonly>
                                 <input type="text" class="form-control input-width-1" value="非" readonly>
@@ -1666,8 +1671,6 @@
                                     <input type="text" class="form-control input-width-1" data-name="outside" readonly>
                                     <input type="text" class="form-control input-width-1" data-name="other" readonly>
                                     <input type="text" class="form-control input-width-1" data-name="profit" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="profit_pre"
-                                           readonly>
                                     <input type="text" class="form-control input-width-1" data-name="profit_after"
                                            readonly>
                                     <input type="text" class="form-control input-width-1" data-name="tax" readonly>
