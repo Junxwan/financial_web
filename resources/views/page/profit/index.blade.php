@@ -1067,7 +1067,8 @@
                 let max = []
                 let min = []
                 let avg = []
-                let price = []
+                let price_max = []
+                let price_min = []
                 let eps = []
                 let gross = []
 
@@ -1075,7 +1076,8 @@
                     max.push([v.year + '-Q' + v.quarterly, v.pes['max']])
                     min.push([v.year + '-Q' + v.quarterly, v.pes['min']])
                     avg.push([v.year + '-Q' + v.quarterly, v.pes['avg']])
-                    price.push([v.year + '-Q' + v.quarterly, v.prices['avg']])
+                    price_max.push([v.year + '-Q' + v.quarterly, v.prices['max']])
+                    price_min.push([v.year + '-Q' + v.quarterly, v.prices['min']])
                     eps.push([v.year + '-Q' + v.quarterly, v.eps])
                     gross.push([v.year + '-Q' + v.quarterly, v.gross])
                 })
@@ -1084,7 +1086,8 @@
                 min.reverse()
                 avg.reverse()
                 eps.reverse()
-                price.reverse()
+                price_max.reverse()
+                price_min.reverse()
                 gross.reverse()
 
                 Highcharts.chart('pe-price-chat', {
@@ -1104,9 +1107,6 @@
                         },
                         opposite: true
                     }],
-                    legend: {
-                        enabled: false
-                    },
                     tooltip: {
                         crosshairs: true,
                         shared: true,
@@ -1124,12 +1124,19 @@
                         name: '平均',
                         data: avg,
                     }, {
-                        id: 'price',
-                        name: '月均價',
+                        id: 'price_max',
+                        name: '月max',
                         yAxis: 1,
                         type: 'line',
-                        data: price,
+                        data: price_max,
                         color: '#47474c',
+                    }, {
+                        id: 'price_min',
+                        name: '月min',
+                        yAxis: 1,
+                        type: 'line',
+                        data: price_min,
+                        color: '#6a6a73',
                     }]
                 });
 
@@ -1150,9 +1157,6 @@
                         },
                         opposite: true
                     }],
-                    legend: {
-                        enabled: false
-                    },
                     tooltip: {
                         crosshairs: true,
                         shared: true,
@@ -1196,9 +1200,6 @@
                         },
                         opposite: true
                     }],
-                    legend: {
-                        enabled: false
-                    },
                     tooltip: {
                         crosshairs: true,
                         shared: true,
@@ -1242,18 +1243,22 @@
                         },
                         opposite: true
                     }],
-                    legend: {
-                        enabled: false
-                    },
                     tooltip: {
                         crosshairs: true,
                         shared: true,
                     },
                     series: [{
-                        id: 'price',
-                        name: '月均價',
+                        id: 'price_max',
+                        name: '月max',
                         type: 'line',
-                        data: price,
+                        data: price_max,
+                        color: '#47474c',
+                    }, {
+                        id: 'price_min',
+                        name: '月min',
+                        type: 'line',
+                        data: price_min,
+                        color: '#6a6a73',
                     }, {
                         id: 'eps',
                         name: 'eps',
