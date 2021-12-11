@@ -944,29 +944,43 @@
                 let max = []
                 let min = []
                 let avg = []
+                let price = []
+                let eps = []
+                let gross = []
 
                 response.data.forEach(function (v) {
                     max.push([v.year + '-Q' + v.quarterly, v.pes['max']])
                     min.push([v.year + '-Q' + v.quarterly, v.pes['min']])
                     avg.push([v.year + '-Q' + v.quarterly, v.pes['avg']])
+                    price.push([v.year + '-Q' + v.quarterly, v.prices['avg']])
+                    eps.push([v.year + '-Q' + v.quarterly, v.eps])
+                    gross.push([v.year + '-Q' + v.quarterly, v.gross])
                 })
 
                 max.reverse()
                 min.reverse()
                 avg.reverse()
+                eps.reverse()
+                price.reverse()
+                gross.reverse()
 
-                Highcharts.chart('pe-chat', {
+                Highcharts.chart('pe-price-chat', {
                     title: {
-                        text: 'PE'
+                        text: 'PE-price'
                     },
                     xAxis: {
                         type: 'category'
                     },
-                    yAxis: {
+                    yAxis: [{
                         title: {
-                            text: null
-                        }
-                    },
+                            text: 'pe'
+                        },
+                    }, {
+                        title: {
+                            text: '月均'
+                        },
+                        opposite: true
+                    }],
                     legend: {
                         enabled: false
                     },
@@ -986,6 +1000,143 @@
                         id: 'avg',
                         name: '平均',
                         data: avg,
+                    }, {
+                        id: 'price',
+                        name: '月均價',
+                        yAxis: 1,
+                        type: 'line',
+                        data: price,
+                        color: '#47474c',
+                    }]
+                });
+
+                Highcharts.chart('pe-eps-chat', {
+                    title: {
+                        text: 'PE-eps'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: [{
+                        title: {
+                            text: 'pe'
+                        },
+                    }, {
+                        title: {
+                            text: 'EPS'
+                        },
+                        opposite: true
+                    }],
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        id: 'max',
+                        name: '最大',
+                        data: max
+                    }, {
+                        id: 'min',
+                        name: '最低',
+                        data: min
+                    }, {
+                        id: 'avg',
+                        name: '平均',
+                        data: avg,
+                    }, {
+                        id: 'eps',
+                        name: 'eps',
+                        yAxis: 1,
+                        type: 'line',
+                        data: eps,
+                        color: '#47474c',
+                    }]
+                });
+
+                Highcharts.chart('pe-gross-chat', {
+                    title: {
+                        text: 'PE-gross'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: [{
+                        title: {
+                            text: 'pe'
+                        },
+                    }, {
+                        title: {
+                            text: '毛利'
+                        },
+                        opposite: true
+                    }],
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        id: 'max',
+                        name: '最大',
+                        data: max
+                    }, {
+                        id: 'min',
+                        name: '最低',
+                        data: min
+                    }, {
+                        id: 'avg',
+                        name: '平均',
+                        data: avg,
+                    }, {
+                        id: 'gross',
+                        name: '毛利',
+                        yAxis: 1,
+                        type: 'line',
+                        data: gross,
+                        color: '#47474c',
+                    }]
+                });
+
+                Highcharts.chart('price-eps-chat', {
+                    title: {
+                        text: 'price-eps'
+                    },
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: [{
+                        title: {
+                            text: 'price'
+                        },
+                    }, {
+                        title: {
+                            text: 'eps'
+                        },
+                        opposite: true
+                    }],
+                    legend: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        id: 'price',
+                        name: '月均價',
+                        type: 'line',
+                        data: price,
+                    }, {
+                        id: 'eps',
+                        name: 'eps',
+                        yAxis: 1,
+                        type: 'line',
+                        data: eps,
                     }]
                 });
 
@@ -1327,7 +1478,22 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="pe-chat"></div>
+                    <div id="pe-price-chat"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="pe-eps-chat"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="pe-gross-chat"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="price-eps-chat"></div>
                 </div>
             </div>
         </div>

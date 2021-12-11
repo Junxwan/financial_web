@@ -264,7 +264,8 @@ class Profit
         $data = Model::query()->select(
             DB::RAW('profits.year'),
             DB::RAW('profits.quarterly'),
-            DB::RAW('profits.eps')
+            DB::RAW('profits.eps'),
+            DB::RAW('profits.gross_ratio as gross')
         )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
             ->where('stocks.code', $code)
             ->where('profits.year', '>=', Carbon::now()->year - 4)
@@ -303,7 +304,7 @@ class Profit
                 break;
             }
 
-            $e4 = $e->sum('eps');
+            $e4 = round($e->sum('eps'), 2);
 
             switch ($eps[$i]->quarterly) {
                 case 1:
@@ -328,6 +329,7 @@ class Profit
                 'year' => $eps[$i]->year,
                 'quarterly' => $eps[$i]->quarterly,
                 'eps' => $e4,
+                'gross' => $eps[$i]->gross,
                 'pes' => [
                     'max' => round($max / $e4, 1),
                     'min' => round($min / $e4, 1),
