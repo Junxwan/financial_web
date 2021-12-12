@@ -670,7 +670,7 @@
                                     if (v.profit < 0) {
                                         value = 0
                                     } else if (v.eps > 0) {
-                                        value = Math.round((Math.round((v.profit / v.profit_main) * 10000) / 100))
+                                        value = (1 - Math.round(((Math.round((v.eps * Math.round((v.outside / v.profit_main) * 10000) / 100)) / 100) / v.eps) * 100) / 100) * 100
                                     } else {
                                         value = 0
                                     }
