@@ -85,7 +85,7 @@ Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
 // 綜合損益表
 Route::group(['prefix' => 'profit', 'as' => 'profit.'], function () {
     Route::get('/', [\App\Http\Controllers\Financial\ProfitController::class, 'index'])->name('index');
-    Route::get('/{code}/code/{year}/year/{season}/season',
+    Route::get('/{code}/code/{year}/year/{quarterly}/quarterly',
         [\App\Http\Controllers\Financial\ProfitController::class, 'get'])->name('get');
     Route::get('/{code}/code/{year}/year',
         [\App\Http\Controllers\Financial\ProfitController::class, 'year'])->name('year');
@@ -105,6 +105,9 @@ Route::group(['prefix' => 'profit', 'as' => 'profit.'], function () {
         [\App\Http\Controllers\Financial\ProfitController::class, 'download'])->name('download');
     Route::get('code/{year}/year/{quarterly}/quarterly',
         [\App\Http\Controllers\Financial\ProfitsController::class, 'quarterly'])->name('codes');
+
+    Route::get('forecast',
+        [\App\Http\Controllers\Financial\ForecastController::class, 'index'])->name('forecast.index');
 });
 
 // 損益比較

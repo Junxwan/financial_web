@@ -125,6 +125,18 @@ class ProfitController
     }
 
     /**
+     * @param string $code
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get(string $code, int $year, int $quarterly)
+    {
+        return response()->json($this->profit->get($code, $year, $quarterly));
+    }
+
+    /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function rankIndex()

@@ -37,6 +37,11 @@ return [
         'name' => '損益比較',
     ],
     [
+        'route' => 'profit.forecast.index',
+        'icon' => 'fas fa-chart-bar',
+        'name' => '損益試算',
+    ],
+    [
         'route' => 'revenue.rank.month.index',
         'icon' => 'fas fa-signal',
         'name' => '月營收',

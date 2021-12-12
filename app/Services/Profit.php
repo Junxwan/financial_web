@@ -6,12 +6,77 @@ use App\Models\Stock\Classification;
 use App\Models\Profit\Dividend;
 use App\Models\Stock\Price;
 use App\Models\Profit\Profit as Model;
+use App\Models\Profit\Equity;
 use App\Models\Stock\Tag;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class Profit
 {
+    /**
+     * @param string $code
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return array
+     */
+    public function get(string $code, int $year, int $quarterly)
+    {
+        $profit = Model::query()
+            ->select(DB::RAW('profits.*'))
+            ->join('stocks', 'stocks.id', '=', 'profits.stock_id')
+            ->where('code', $code)
+            ->where('year', $year)
+            ->get();
+
+        $data = [];
+        $q123 = $profit->where('quarterly', '!=', 4);
+        foreach ($profit->where('quarterly', $quarterly)->first()->toArray() as $k => $v) {
+            switch ($k) {
+                case 'revenue':
+                case 'cost':
+                case 'eps':
+                    if ($quarterly == 4) {
+                        $data[$k] = round($v - $q123->sum($k), 2);
+                    } else {
+                        $data[$k] = $v;
+                    }
+
+                    break;
+                case 'gross':
+                case 'fee':
+                case 'profit':
+                case 'outside':
+                case 'other':
+                case 'profit_pre':
+                case 'profit_after':
+                case 'profit_main':
+                case 'profit_non':
+                    if ($quarterly == 4) {
+                        $data[$k] = $v - $q123->sum($k);
+                    } else {
+                        $data[$k] = $v;
+                    }
+
+                    $data[$k . '_ratio'] = round(($data[$k] / $data['revenue']) * 100, 2);
+                    break;
+                case 'tax':
+                    if ($quarterly == 4) {
+                        $data[$k] = $v - $q123->sum($k);
+                    } else {
+                        $data[$k] = $v;
+                    }
+
+                    $data[$k . '_ratio'] = round(($data[$k] / $data['profit_pre']) * 100, 2);
+                    break;
+            }
+        }
+
+        $data['value'] = '';
+
+        return $data;
+    }
+
     /**
      * @param string $code
      * @param int $year
