@@ -663,14 +663,14 @@
                                     if (v.profit < 0 && v.outside > 0) {
                                         value = v.eps
                                     } else {
-                                        value = Math.round((v.eps * Math.round((v.outside / v.profit_pre) * 10000) / 100)) / 100
+                                        value = Math.round((v.eps * Math.round((v.outside / v.profit_main) * 10000) / 100)) / 100
                                     }
                                     break
                                 case 'this':
                                     if (v.profit < 0) {
                                         value = 0
                                     } else if (v.eps > 0) {
-                                        value = Math.round((Math.round((v.profit / v.profit_pre) * 10000) / 100))
+                                        value = Math.round((Math.round((v.profit / v.profit_main) * 10000) / 100))
                                     } else {
                                         value = 0
                                     }
