@@ -397,6 +397,8 @@
 
                 revenues = []
                 gross = []
+                fee = []
+                grossSubFee = []
                 profits = []
                 profit_after = []
                 datas = []
@@ -414,15 +416,22 @@
                         $("#quarterly-revenue>tbody").append(html)
                     }
 
+                    let g = Math.round((v.gross / v.revenue) * 10000) / 100
+                    let f = Math.round((v.fee / v.revenue) * 10000) / 100
+
                     datas.push(date)
                     revenues.push([date, v.revenue])
-                    gross.push([date, Math.round((v.gross / v.revenue) * 10000) / 100])
+                    gross.push([date, g])
+                    fee.push([date, f])
+                    grossSubFee.push([date, Math.round((g - f) * 100) / 100])
                     profits.push([date, Math.round((v.profit / v.revenue) * 10000) / 100])
                     profit_after.push([date, Math.round((v.profit_after / v.revenue) * 10000) / 100])
                 })
 
                 revenues.reverse()
                 gross.reverse()
+                fee.reverse()
+                grossSubFee.reverse()
                 profits.reverse()
                 profit_after.reverse()
 
@@ -719,6 +728,72 @@
                         id: 'profit_after',
                         name: '稅後',
                         data: profit_after,
+                    }]
+                });
+
+                Highcharts.chart('gross-fee-chat', {
+                    title: {
+                        text: '毛利/費用'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+                    exporting: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        id: 'gross',
+                        name: '毛利',
+                        data: gross
+                    }, {
+                        id: 'fee',
+                        name: '費用',
+                        data: fee
+                    }]
+                });
+
+                Highcharts.chart('gross-sub-fee-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '毛利與費用差距'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+
+                    exporting: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: '差距',
+                        data: grossSubFee
                     }]
                 });
 
@@ -1730,6 +1805,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div id="profits-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="gross-fee-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="gross-sub-fee-chat"></div>
                     </div>
                 </div>
                 <div class="row">
