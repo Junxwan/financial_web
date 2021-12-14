@@ -660,4 +660,74 @@ class Profit
             ];
         });
     }
+
+    public function downloadAll(string $code)
+    {
+        $column = [
+            'revenue',
+            'cost',
+            'gross',
+            'gross_ratio',
+            'fee',
+            'fee_ratio',
+            'profit',
+            'profit_ratio',
+            'outside',
+            'other',
+            'profit_pre',
+            'profit_after',
+            'profit_main',
+            'profit_non',
+            'tax',
+            'eps',
+        ];
+
+        $profit = Model::query()->select(array_merge(['year', 'quarterly'], $column),)
+            ->join('stocks', 'profits.stock_id', '=', 'stocks.id')
+            ->where('code', $code)
+            ->where('year', '>=', date('Y') - 4)
+            ->orderByDesc('year')
+            ->orderByDesc('quarterly')
+            ->get();
+
+        $profit = $profit->map(function ($v) use ($profit) {
+            if ($v->quarterly == 4) {
+                $p = $profit->where('year', $v->year)->where('quarterly', '<=', 3);
+                $v->revenue -= $p->sum('revenue');
+                $v->cost -= $p->sum('cost');
+                $v->gross -= $p->sum('gross');
+                $v->gross_ratio = round(($v->gross / $v->revenue) * 100, 2);
+                $v->fee -= $p->sum('fee');
+                $v->fee_ratio = round(($v->fee / $v->revenue) * 100, 2);
+                $v->profit -= $p->sum('profit');
+                $v->profit_ratio = round(($v->profit / $v->revenue) * 100, 2);
+                $v->outside -= $p->sum('outside');
+                $v->other -= $p->sum('other');
+                $v->profit_pre -= $p->sum('profit_pre');
+                $v->profit_after -= $p->sum('profit_after');
+                $v->profit_main -= $p->sum('profit_main');
+                $v->profit_non -= $p->sum('profit_non');
+                $v->tax -= $p->sum('tax');
+                $v->eps -= $p->sum('eps');
+                $v->eps = round($v->eps, 2);
+            }
+
+            return $v;
+        });
+
+        $data = [];
+        foreach ($column as $value) {
+            $data[] = array_merge([$value], $profit->pluck($value)->toArray());
+        }
+
+        $column = ['欄位'];
+        foreach ($profit as $value) {
+            $column[] = $value->year . '-Q' . $value->quarterly;
+        }
+
+        return [
+            'column' => $column,
+            'data' => $data,
+        ];
+    }
 }

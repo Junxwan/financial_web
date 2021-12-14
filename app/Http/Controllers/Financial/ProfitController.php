@@ -285,4 +285,31 @@ class ProfitController
             "Expires" => "0",
         ]);
     }
+
+    /**
+     * @param string $code
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function downloadAll(string $code)
+    {
+        return response()->stream(function () use ($code) {
+            $data = $this->profit->downloadAll($code);
+
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $data['column']);
+
+            foreach ($data['data'] as $v) {
+                fputcsv($file, $v);
+            }
+
+            fclose($file);
+        }, 200, [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=test.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0",
+        ]);
+    }
 }

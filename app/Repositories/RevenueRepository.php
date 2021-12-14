@@ -163,6 +163,21 @@ class RevenueRepository extends Repository
     }
 
     /**
+     * @param string $code
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function all(string $code)
+    {
+        return Revenue::query()->select(DB::RAW('revenues.*'))->join('stocks', 'revenues.stock_id', '=', 'stocks.id')
+            ->where('code', $code)
+            ->where('year', '>=', date('Y') - 4)
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->get();
+    }
+
+    /**
      * @param int $year
      * @param int $month
      * @param array $codes

@@ -35,6 +35,38 @@
                 toastr.error('下載失敗')
             })
         })
+
+        $('#all-profit-btn').click(function () {
+            var url = "{{ route('profit.download.all', ['code' => ':code']) }}"
+            axios.get(url.replace(':code', $('#code').val())).then(function (response) {
+                var hiddenElement = document.createElement('a')
+                var blob = new Blob(["\ufeff" + response.data], {type: 'text/csv;charset=utf-8;'})
+                hiddenElement.href = URL.createObjectURL(blob)
+                hiddenElement.target = '_blank'
+                hiddenElement.download = $('#code').val() + '-損益.csv'
+                hiddenElement.click()
+
+                toastr.success('下載成功')
+            }).catch(function (error) {
+                toastr.error('下載失敗')
+            })
+        })
+
+        $('#all-month-revenue-btn').click(function () {
+            var url = "{{ route('revenue.download.all', ['code' => ':code']) }}"
+            axios.get(url.replace(':code', $('#code').val())).then(function (response) {
+                var hiddenElement = document.createElement('a')
+                var blob = new Blob(["\ufeff" + response.data], {type: 'text/csv;charset=utf-8;'})
+                hiddenElement.href = URL.createObjectURL(blob)
+                hiddenElement.target = '_blank'
+                hiddenElement.download = $('#code').val() + '-月營收.csv'
+                hiddenElement.click()
+
+                toastr.success('下載成功')
+            }).catch(function (error) {
+                toastr.error('下載失敗')
+            })
+        })
     </script>
 @stop
 
@@ -103,6 +135,30 @@
                     <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
                             id="month-revenue-btn">
                         月營收
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">代號</span>
+                            </div>
+                            <input type="text" class="form-control" id="code">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
+                            id="all-profit-btn">
+                        全財
+                    </button>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-block bg-gradient-secondary btn-lg"
+                            id="all-month-revenue-btn">
+                        全月營
                     </button>
                 </div>
             </div>

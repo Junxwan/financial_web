@@ -105,6 +105,8 @@ Route::group(['prefix' => 'profit', 'as' => 'profit.'], function () {
         [\App\Http\Controllers\Financial\ProfitController::class, 'download'])->name('download');
     Route::get('code/{year}/year/{quarterly}/quarterly',
         [\App\Http\Controllers\Financial\ProfitsController::class, 'quarterly'])->name('codes');
+    Route::get('{code}/code/download/all',
+        [\App\Http\Controllers\Financial\ProfitController::class, 'downloadAll'])->name('download.all');
 
     Route::get('forecast',
         [\App\Http\Controllers\Financial\ForecastController::class, 'index'])->name('forecast.index');
@@ -129,6 +131,8 @@ Route::group(['prefix' => 'revenue', 'as' => 'revenue.'], function () {
         [\App\Http\Controllers\Revenue\RevenueController::class, 'recents'])->name('recents');
     Route::get('/{year}/year/{month}/month/last',
         [\App\Http\Controllers\Revenue\MonthController::class, 'last'])->name('last');
+    Route::get('{code}/code/download/all',
+        [\App\Http\Controllers\Revenue\MonthController::class, 'downloadAll'])->name('download.all');
 
     // 排行
     Route::get('/rank/month',

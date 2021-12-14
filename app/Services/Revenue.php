@@ -99,4 +99,19 @@ class Revenue
 
         return $revenues;
     }
+
+    /**
+     * @param string $code
+     *
+     * @return array
+     */
+    public function downloadAll(string $code)
+    {
+        $data = [];
+        foreach ($this->repo->all($code) as $value) {
+            $data[] = [$value->year . $value->month, $value->value, $value->yoy, $value->qoq];
+        }
+
+        return $data;
+    }
 }

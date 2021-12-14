@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Revenue;
 
 use App\Models\Stock\Classification;
 use App\Repositories\RevenueRepository;
+use App\Services\Revenue;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -84,5 +85,32 @@ class MonthController
         return response()->json(
             $revenue->last($year, $month, explode(',', $request->get('code')))
         );
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function downloadAll(Revenue $revenue, string $code)
+    {
+        return response()->stream(function () use ($code, $revenue) {
+            $data = $revenue->downloadAll($code);
+
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['年月', '營收', 'yoy', 'qoq']);
+
+            foreach ($data as $v) {
+                fputcsv($file, $v);
+            }
+
+            fclose($file);
+        }, 200, [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=test.csv",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0",
+        ]);
     }
 }
