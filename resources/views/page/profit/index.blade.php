@@ -489,12 +489,20 @@
                 q2f = []
                 q3f = []
                 q4f = []
+                q1gsf = []
+                q2gsf = []
+                q3gsf = []
+                q4gsf = []
                 years = []
                 data = []
                 response.data.forEach(function (v) {
                     if (!data.hasOwnProperty(v.year)) {
                         data[v.year] = []
                     }
+
+                    let g = Math.round((v.gross / v.revenue) * 10000) / 100
+                    let f = Math.round((v.fee / v.revenue) * 10000) / 100
+                    v['gross_sub_fee'] = Math.round((g - f) * 100) / 100
 
                     data[v.year].push(v)
                 })
@@ -510,6 +518,7 @@
                                 q1p.push(v.profit_ratio)
                                 q1o.push(v.outside)
                                 q1f.push(v.fee_ratio)
+                                q1gsf.push(v.gross_sub_fee)
                                 b1 = true
                                 break
                             case 2:
@@ -518,6 +527,7 @@
                                 q2p.push(v.profit_ratio)
                                 q2o.push(v.outside)
                                 q2f.push(v.fee_ratio)
+                                q2gsf.push(v.gross_sub_fee)
                                 b2 = true
                                 break
                             case 3:
@@ -526,6 +536,7 @@
                                 q3p.push(v.profit_ratio)
                                 q3o.push(v.outside)
                                 q3f.push(v.fee_ratio)
+                                q3gsf.push(v.gross_sub_fee)
                                 b3 = true
                                 break
                             case 4:
@@ -534,6 +545,7 @@
                                 q4p.push(v.profit_ratio)
                                 q4o.push(v.outside)
                                 q4f.push(v.fee_ratio)
+                                q4gsf.push(v.gross_sub_fee)
                                 b4 = true
                                 break
                         }
@@ -545,6 +557,7 @@
                         q1p.push(0)
                         q1o.push(0)
                         q1f.push(0)
+                        q1gsf.push(0)
                     }
 
                     if (!b2) {
@@ -553,6 +566,7 @@
                         q2p.push(0)
                         q2o.push(0)
                         q2f.push(0)
+                        q2gsf.push(0)
                     }
 
                     if (!b3) {
@@ -561,6 +575,7 @@
                         q3p.push(0)
                         q3o.push(0)
                         q3f.push(0)
+                        q3gsf.push(0)
                     }
 
                     if (!b4) {
@@ -569,6 +584,7 @@
                         q4p.push(0)
                         q4o.push(0)
                         q4f.push(0)
+                        q4gsf.push(0)
                     }
                 })
 
@@ -773,7 +789,7 @@
                         text: '毛利與費用差距'
                     },
                     xAxis: {
-                        type: "category"
+                        categories: years
                     },
                     yAxis: {
                         title: {
@@ -792,8 +808,17 @@
                         shared: true,
                     },
                     series: [{
-                        name: '差距',
-                        data: grossSubFee
+                        name: 'Q1',
+                        data: q1gsf
+                    }, {
+                        name: 'Q2',
+                        data: q2gsf
+                    }, {
+                        name: 'Q3',
+                        data: q3gsf
+                    }, {
+                        name: 'Q4',
+                        data: q4gsf
                     }]
                 });
 
