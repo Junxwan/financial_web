@@ -402,6 +402,12 @@
                 profits = []
                 profit_after = []
                 datas = []
+                let fees = []
+                let research = []
+                let depreciation = []
+                let quarterlys = []
+                let revenueqs = []
+                let feeqs = []
                 response.data.forEach(function (v, index) {
                     date = v.year + "-Q" + v.quarterly
                     if (index <= 12) {
@@ -419,13 +425,20 @@
                     let g = Math.round((v.gross / v.revenue) * 10000) / 100
                     let f = Math.round((v.fee / v.revenue) * 10000) / 100
 
+                    quarterlys.push(date)
                     datas.push(date)
                     revenues.push([date, v.revenue])
                     gross.push([date, g])
                     fee.push([date, f])
+                    fees.push([date, v.fee])
+                    research.push([date, v.research])
+                    depreciation.push([date, v.depreciation])
                     grossSubFee.push([date, Math.round((g - f) * 100) / 100])
                     profits.push([date, Math.round((v.profit / v.revenue) * 10000) / 100])
                     profit_after.push([date, Math.round((v.profit_after / v.revenue) * 10000) / 100])
+
+                    revenueqs.push(v.revenue)
+                    feeqs.push(v.fee)
                 })
 
                 revenues.reverse()
@@ -434,6 +447,13 @@
                 grossSubFee.reverse()
                 profits.reverse()
                 profit_after.reverse()
+
+                quarterlys.reverse()
+                revenueqs.reverse()
+                feeqs.reverse()
+                fees.reverse()
+                research.reverse()
+                depreciation.reverse()
 
                 Highcharts.chart('quarterly-revenue-bar', {
                     colors: ['#45617d'],
@@ -489,6 +509,18 @@
                 q2f = []
                 q3f = []
                 q4f = []
+                q1fnrd = []
+                q2fnrd = []
+                q3fnrd = []
+                q4fnrd = []
+                q1r = []
+                q2r = []
+                q3r = []
+                q4r = []
+                q1d = []
+                q2d = []
+                q3d = []
+                q4d = []
                 q1gsf = []
                 q2gsf = []
                 q3gsf = []
@@ -519,6 +551,9 @@
                                 q1o.push(v.outside)
                                 q1f.push(v.fee_ratio)
                                 q1gsf.push(v.gross_sub_fee)
+                                q1r.push(v.research)
+                                q1d.push(v.depreciation)
+                                q1fnrd.push(v.fee - (v.research + v.depreciation))
                                 b1 = true
                                 break
                             case 2:
@@ -528,6 +563,9 @@
                                 q2o.push(v.outside)
                                 q2f.push(v.fee_ratio)
                                 q2gsf.push(v.gross_sub_fee)
+                                q2r.push(v.research)
+                                q2d.push(v.depreciation)
+                                q2fnrd.push(v.fee - (v.research + v.depreciation))
                                 b2 = true
                                 break
                             case 3:
@@ -537,6 +575,9 @@
                                 q3o.push(v.outside)
                                 q3f.push(v.fee_ratio)
                                 q3gsf.push(v.gross_sub_fee)
+                                q3r.push(v.research)
+                                q3d.push(v.depreciation)
+                                q3fnrd.push(v.fee - (v.research + v.depreciation))
                                 b3 = true
                                 break
                             case 4:
@@ -546,6 +587,9 @@
                                 q4o.push(v.outside)
                                 q4f.push(v.fee_ratio)
                                 q4gsf.push(v.gross_sub_fee)
+                                q4r.push(v.research)
+                                q4d.push(v.depreciation)
+                                q4fnrd.push(v.fee - (v.research + v.depreciation))
                                 b4 = true
                                 break
                         }
@@ -557,7 +601,10 @@
                         q1p.push(0)
                         q1o.push(0)
                         q1f.push(0)
+                        q1r.push(0)
+                        q1d.push(0)
                         q1gsf.push(0)
+                        q1fnrd.push(0)
                     }
 
                     if (!b2) {
@@ -566,7 +613,10 @@
                         q2p.push(0)
                         q2o.push(0)
                         q2f.push(0)
+                        q2r.push(0)
+                        q2d.push(0)
                         q2gsf.push(0)
+                        q2fnrd.push(0)
                     }
 
                     if (!b3) {
@@ -575,7 +625,10 @@
                         q3p.push(0)
                         q3o.push(0)
                         q3f.push(0)
+                        q3r.push(0)
+                        q3d.push(0)
                         q3gsf.push(0)
+                        q3fnrd.push(0)
                     }
 
                     if (!b4) {
@@ -584,7 +637,10 @@
                         q4p.push(0)
                         q4o.push(0)
                         q4f.push(0)
+                        q4r.push(0)
+                        q4d.push(0)
                         q4gsf.push(0)
+                        q4fnrd.push(0)
                     }
                 })
 
@@ -880,6 +936,116 @@
                     }]
                 });
 
+                Highcharts.chart('fee-detail-chat', {
+                    title: {
+                        text: '費用(結構)'
+                    },
+                    xAxis: {
+                        type: "category"
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: '費用',
+                        data: fees
+                    }, {
+                        name: '研發',
+                        data: research
+                    }, {
+                        name: '折舊',
+                        data: depreciation
+                    }]
+                });
+
+                Highcharts.chart('research-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '研發'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1r
+                    }, {
+                        name: 'Q2',
+                        data: q2r
+                    }, {
+                        name: 'Q3',
+                        data: q3r
+                    }, {
+                        name: 'Q4',
+                        data: q4r
+                    }]
+                });
+
+                Highcharts.chart('depreciation-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '折舊'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1d
+                    }, {
+                        name: 'Q2',
+                        data: q2d
+                    }, {
+                        name: 'Q3',
+                        data: q3d
+                    }, {
+                        name: 'Q4',
+                        data: q4d
+                    }]
+                });
+
+                Highcharts.chart('fee-n-research-depreciation-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '費用(非研發跟折舊)'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1fnrd
+                    }, {
+                        name: 'Q2',
+                        data: q2fnrd
+                    }, {
+                        name: 'Q3',
+                        data: q3fnrd
+                    }, {
+                        name: 'Q4',
+                        data: q4fnrd
+                    }]
+                });
+
                 Highcharts.chart('profit-chat', {
                     chart: {
                         type: 'column'
@@ -906,6 +1072,40 @@
                     }, {
                         name: 'Q4',
                         data: q4p
+                    }]
+                });
+
+                Highcharts.chart('revenues-fee-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '營收/費用'
+                    },
+                    xAxis: {
+                        categories: quarterlys
+                    },
+                    yAxis: {
+                        title: {
+                            text: null
+                        }
+                    },
+                    navigator: {
+                        enabled: false
+                    },
+                    exporting: {
+                        enabled: false
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: '營收',
+                        data: revenueqs
+                    }, {
+                        name: '費用',
+                        data: feeqs
                     }]
                 });
 
@@ -1855,6 +2055,31 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div id="fee-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="fee-detail-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="fee-n-research-depreciation-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="research-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="depreciation-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="revenues-fee-chat"></div>
                     </div>
                 </div>
                 <div class="row">
