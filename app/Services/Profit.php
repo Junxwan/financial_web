@@ -241,22 +241,32 @@ class Profit
                 return ($year == $v->year) ? $v->quarterly <= $quarterly : true;
             });
 
-        $profit = q4r($profit, [
-            'eps',
-            'revenue',
-            'cost',
-            'gross',
-            'fee',
-            'outside',
-            'other',
-            'profit',
-            'tax',
-            'profit_pre',
-            'profit_after',
-            'profit_main',
-            'profit_non',
-            'research',
-        ]);
+        $profit = $profit->map(function ($v) use ($profit) {
+            if ($v->quarterly == 4) {
+                $p = $profit->where('year', $v->year)->where('quarterly', '<=', 3);
+                $v->revenue -= $p->sum('revenue');
+                $v->cost -= $p->sum('cost');
+                $v->gross -= $p->sum('gross');
+                $v->gross_ratio = round(($v->gross / $v->revenue) * 100, 2);
+                $v->fee -= $p->sum('fee');
+                $v->fee_ratio = round(($v->fee / $v->revenue) * 100, 2);
+                $v->profit -= $p->sum('profit');
+                $v->profit_ratio = round(($v->profit / $v->revenue) * 100, 2);
+                $v->outside -= $p->sum('outside');
+                $v->other -= $p->sum('other');
+                $v->profit_pre -= $p->sum('profit_pre');
+                $v->profit_after -= $p->sum('profit_after');
+                $v->profit_main -= $p->sum('profit_main');
+                $v->profit_non -= $p->sum('profit_non');
+                $v->tax -= $p->sum('tax');
+                $v->research -= $p->sum('research');
+                $v->eps -= $p->sum('eps');
+                $v->eps = round($v->eps, 2);
+            }
+
+            return $v;
+        });
+
 
         return $profit->map(function ($v) use ($profit) {
             $ye = $profit->where('year', $v->year - 1)
