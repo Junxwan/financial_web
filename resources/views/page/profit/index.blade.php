@@ -521,6 +521,10 @@
                 q2d = []
                 q3d = []
                 q4d = []
+                q1c = []
+                q2c = []
+                q3c = []
+                q4c = []
                 q1gsf = []
                 q2gsf = []
                 q3gsf = []
@@ -547,6 +551,7 @@
                             case 1:
                                 q1.push(v.revenue)
                                 q1g.push(v.gross_ratio)
+                                q1c.push(v.cost)
                                 q1p.push(v.profit_ratio)
                                 q1o.push(v.outside)
                                 q1f.push(v.fee_ratio)
@@ -559,6 +564,7 @@
                             case 2:
                                 q2.push(v.revenue)
                                 q2g.push(v.gross_ratio)
+                                q2c.push(v.cost)
                                 q2p.push(v.profit_ratio)
                                 q2o.push(v.outside)
                                 q2f.push(v.fee_ratio)
@@ -571,6 +577,7 @@
                             case 3:
                                 q3.push(v.revenue)
                                 q3g.push(v.gross_ratio)
+                                q3c.push(v.cost)
                                 q3p.push(v.profit_ratio)
                                 q3o.push(v.outside)
                                 q3f.push(v.fee_ratio)
@@ -583,6 +590,7 @@
                             case 4:
                                 q4.push(v.revenue)
                                 q4g.push(v.gross_ratio)
+                                q4c.push(v.cost)
                                 q4p.push(v.profit_ratio)
                                 q4o.push(v.outside)
                                 q4f.push(v.fee_ratio)
@@ -597,6 +605,7 @@
 
                     if (!b1) {
                         q1.push(0)
+                        q1c.push(0)
                         q1g.push(0)
                         q1p.push(0)
                         q1o.push(0)
@@ -609,6 +618,7 @@
 
                     if (!b2) {
                         q2.push(0)
+                        q2c.push(0)
                         q2g.push(0)
                         q2p.push(0)
                         q2o.push(0)
@@ -621,6 +631,7 @@
 
                     if (!b3) {
                         q3.push(0)
+                        q3c.push(0)
                         q3g.push(0)
                         q3p.push(0)
                         q3o.push(0)
@@ -633,6 +644,7 @@
 
                     if (!b4) {
                         q4.push(0)
+                        q4c.push(0)
                         q4g.push(0)
                         q4p.push(0)
                         q4o.push(0)
@@ -800,6 +812,35 @@
                         id: 'profit_after',
                         name: '稅後',
                         data: profit_after,
+                    }]
+                });
+
+                Highcharts.chart('cost-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '成本'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1c
+                    }, {
+                        name: 'Q2',
+                        data: q2c
+                    }, {
+                        name: 'Q3',
+                        data: q3c
+                    }, {
+                        name: 'Q4',
+                        data: q4c
                     }]
                 });
 
@@ -2030,6 +2071,11 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div id="profits-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="cost-chat"></div>
                     </div>
                 </div>
                 <div class="row">
