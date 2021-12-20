@@ -529,6 +529,10 @@
                 q2gsf = []
                 q3gsf = []
                 q4gsf = []
+                q1fa = []
+                q2fa = []
+                q3fa = []
+                q4fa = []
                 years = []
                 data = []
                 response.data.forEach(function (v) {
@@ -552,6 +556,7 @@
                                 q1.push(v.revenue)
                                 q1g.push(v.gross_ratio)
                                 q1c.push(v.cost)
+                                q1fa.push(v.fee)
                                 q1p.push(v.profit_ratio)
                                 q1o.push(v.outside)
                                 q1f.push(v.fee_ratio)
@@ -565,6 +570,7 @@
                                 q2.push(v.revenue)
                                 q2g.push(v.gross_ratio)
                                 q2c.push(v.cost)
+                                q2fa.push(v.fee)
                                 q2p.push(v.profit_ratio)
                                 q2o.push(v.outside)
                                 q2f.push(v.fee_ratio)
@@ -578,6 +584,7 @@
                                 q3.push(v.revenue)
                                 q3g.push(v.gross_ratio)
                                 q3c.push(v.cost)
+                                q3fa.push(v.fee)
                                 q3p.push(v.profit_ratio)
                                 q3o.push(v.outside)
                                 q3f.push(v.fee_ratio)
@@ -591,6 +598,7 @@
                                 q4.push(v.revenue)
                                 q4g.push(v.gross_ratio)
                                 q4c.push(v.cost)
+                                q4fa.push(v.fee)
                                 q4p.push(v.profit_ratio)
                                 q4o.push(v.outside)
                                 q4f.push(v.fee_ratio)
@@ -614,6 +622,7 @@
                         q1d.push(0)
                         q1gsf.push(0)
                         q1fnrd.push(0)
+                        q1fa.push(0)
                     }
 
                     if (!b2) {
@@ -627,6 +636,7 @@
                         q2d.push(0)
                         q2gsf.push(0)
                         q2fnrd.push(0)
+                        q2fa.push(0)
                     }
 
                     if (!b3) {
@@ -640,6 +650,7 @@
                         q3d.push(0)
                         q3gsf.push(0)
                         q3fnrd.push(0)
+                        q3fa.push(0)
                     }
 
                     if (!b4) {
@@ -653,6 +664,7 @@
                         q4d.push(0)
                         q4gsf.push(0)
                         q4fnrd.push(0)
+                        q4fa.push(0)
                     }
                 })
 
@@ -974,6 +986,35 @@
                     }, {
                         name: 'Q4',
                         data: q4f
+                    }]
+                });
+
+                Highcharts.chart('fee-amount-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: '費用(金額)'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1fa
+                    }, {
+                        name: 'Q2',
+                        data: q2fa
+                    }, {
+                        name: 'Q3',
+                        data: q3fa
+                    }, {
+                        name: 'Q4',
+                        data: q4fa
                     }]
                 });
 
@@ -2101,6 +2142,11 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div id="fee-chat"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="fee-amount-chat"></div>
                     </div>
                 </div>
                 <div class="row">
