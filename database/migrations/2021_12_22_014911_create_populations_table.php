@@ -22,6 +22,9 @@ class CreatePopulationsTable extends Migration
         Schema::create($this->table, function (Blueprint $table) {
             $table->id();
             $table->string('name', 20)->unique()->comment('名稱');
+            $table->unsignedBigInteger('stock_id')->comment('stocks.id');
+
+            $table->foreign('stock_id')->references('id')->on('stocks');
         });
 
         DB::statement("ALTER TABLE `{$this->table}` COMMENT = '族群'");

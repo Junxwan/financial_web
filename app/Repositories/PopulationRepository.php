@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Models\Stock\Classification;
 use App\Models\Stock\Populations;
+use App\Models\Stock\Stock;
 
-class PopulationRepository
+class PopulationRepository extends Repository
 {
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
@@ -46,7 +48,18 @@ class PopulationRepository
      */
     public function insert(array $data)
     {
-        return Populations::query()->insert(['name' => $data['name']]);
+        return $this->transaction(function () use ($data) {
+            $id = Stock::query()->insertGetId([
+                'code' => random_int(100000, 999999),
+                'name' => $data['name'],
+                'classification_id' => Classification::query()->where('name', '族群')->first()->id,
+            ]);
+
+            return Populations::query()->insert([
+                'name' => $data['name'],
+                'stock_id' => $id,
+            ]);
+        });
     }
 
     /**
