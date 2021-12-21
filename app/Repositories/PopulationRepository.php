@@ -2,10 +2,18 @@
 
 namespace App\Repositories;
 
-use App\Models\Stock\Population;
+use App\Models\Stock\Populations;
 
 class PopulationRepository
 {
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function all()
+    {
+        return Populations::query()->get();
+    }
+
     /**
      * @param array $data
      *
@@ -13,7 +21,7 @@ class PopulationRepository
      */
     public function list(array $data)
     {
-        $query = Population::query()->select('id', 'name');
+        $query = Populations::query()->select('id', 'name');
 
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
             if (isset($search['value']) && ! empty($search['value'])) {
@@ -38,7 +46,7 @@ class PopulationRepository
      */
     public function insert(array $data)
     {
-        return Population::query()->insert(['name' => $data['name']]);
+        return Populations::query()->insert(['name' => $data['name']]);
     }
 
     /**
@@ -49,7 +57,7 @@ class PopulationRepository
      */
     public function update(int $id, array $data)
     {
-        return Population::query()->where('id', $id)->update([
+        return Populations::query()->where('id', $id)->update([
             'name' => $data['name'],
         ]);
     }
@@ -61,6 +69,6 @@ class PopulationRepository
      */
     public function delete(int $id)
     {
-        return (bool)Population::query()->where('id', $id)->delete();
+        return (bool)Populations::query()->where('id', $id)->delete();
     }
 }

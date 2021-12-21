@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\Stock\Populations;
+use App\Models\Stock\Population;
 use App\Models\Stock\Price;
 use App\Models\Stock\Stock;
 use App\Models\Stock\Tag;
@@ -63,8 +65,16 @@ class StockRepository extends Repository
             ->orderBy('stock_tags.order')
             ->get();
 
+        $populations = Population::query()->select(
+            DB::RAW('stock_populations.stock_id'),
+            DB::RAW('populations.id'),
+            DB::RAW('populations.name')
+        )->join('populations', 'populations.id', '=', 'stock_populations.population_id')
+            ->whereIn('stock_populations.stock_id', $data->pluck('id'))
+            ->get();
+
         return [
-            'data' => $data->map(function ($value) use ($tags) {
+            'data' => $data->map(function ($value) use ($tags, $populations) {
                 $t = [];
                 foreach ($tags as $v) {
                     if ($value->id == $v->stock_id) {
@@ -75,7 +85,18 @@ class StockRepository extends Repository
                     }
                 }
 
+                $p = [];
+                foreach ($populations as $v) {
+                    if ($value->id == $v->stock_id) {
+                        $t[] = [
+                            'id' => $v->id,
+                            'name' => $v->name,
+                        ];
+                    }
+                }
+
                 $value->tags = $t;
+                $value->populations = $p;
                 return $value;
             }),
             'total' => $query->count(),
@@ -161,7 +182,7 @@ class StockRepository extends Repository
     public function create(array $data)
     {
         return $this->transaction(function () use ($data) {
-            if (! $id = Stock::insertGetId([
+            if (! $id = Stock::query()->insertGetId([
                 'code' => $data['code'],
                 'name' => $data['name'],
                 'classification_id' => $data['classification_id'],
@@ -170,16 +191,24 @@ class StockRepository extends Repository
                 return false;
             }
 
-            $insert = [];
+            $tInsert = [];
             foreach ($data['tags'] as $i => $v) {
-                $insert[] = [
+                $tInsert[] = [
                     'stock_id' => $id,
                     'tag_id' => $v,
                     'order' => $i,
                 ];
             }
 
-            return Tag::insert($insert);
+            $pInsert = [];
+            foreach ($data['populations'] as $i => $v) {
+                $pInsert[] = [
+                    'stock_id' => $id,
+                    'population_id' => $v,
+                ];
+            }
+
+            return Tag::query()->insert($tInsert) && Population::query()->insert($pInsert);
         });
     }
 
@@ -200,17 +229,26 @@ class StockRepository extends Repository
             ]);
 
             Tag::query()->where('stock_id', $id)->delete();
+            Population::query()->where('stock_id', $id)->delete();
 
-            $insert = [];
+            $tInsert = [];
             foreach ($data['tags'] as $i => $v) {
-                $insert[] = [
+                $tInsert[] = [
                     'stock_id' => $id,
                     'tag_id' => $v,
                     'order' => $i,
                 ];
             }
 
-            return Tag::insert($insert);
+            $pInsert = [];
+            foreach ($data['populations'] as $i => $v) {
+                $pInsert[] = [
+                    'stock_id' => $id,
+                    'population_id' => $v,
+                ];
+            }
+
+            return Tag::query()->insert($tInsert) && Population::query()->insert($pInsert);
         });
     }
 
@@ -223,7 +261,8 @@ class StockRepository extends Repository
     {
         return $this->transaction(function () use ($id) {
             return Stock::query()->where('id', $id)->delete() &&
-                Tag::query()->where('stock_id', $id)->delete();
+                Tag::query()->where('stock_id', $id)->delete() &&
+                Population::query()->where('stock_id', $id)->delete();
         });
     }
 

@@ -26,7 +26,15 @@
                     tag_Name.push(v.name)
                 })
 
+                population_id = []
+                population_name = []
+                data.populations.forEach(function (v) {
+                    population_id.push(v.id)
+                    population_name.push(v.name)
+                })
+
                 $('#modal-edit-tag').selectpicker('val', tag_id);
+                $('#modal-population-tag').selectpicker('val', population_id);
             }
 
             var del = function (data) {
@@ -74,7 +82,8 @@
                     name: name,
                     classification_id: classification_id,
                     market: market,
-                    tags: tag_id
+                    tags: tag_id,
+                    populations: population_id
                 }).then(function (response) {
                     if (response.data.result) {
                         toastr.success('新增成功')
@@ -120,7 +129,8 @@
                     name: name,
                     classification_id: classification,
                     market: market,
-                    tags: tag_id
+                    tags: tag_id,
+                    populations: population_id
                 }).then(function (response) {
                     if (response.data.result) {
                         table.row($('#modal-id').val()).remove().draw(false)

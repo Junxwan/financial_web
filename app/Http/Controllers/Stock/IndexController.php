@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\Controller;
 use App\Models\Stock\Classification;
+use App\Repositories\PopulationRepository;
 use App\Repositories\StockRepository;
 use App\Repositories\TagRepository;
 use App\Services\Profit as Service;
@@ -50,6 +51,7 @@ class IndexController extends Controller
     {
         $ct = Classification::query()->select(DB::raw('id as value'), 'name')->get();
         $tags = app(TagRepository::class)->all();
+        $populations = app(PopulationRepository::class)->all();
         $o = new \stdClass();
         $o->name = '上櫃';
         $o->value = 2;
@@ -61,6 +63,7 @@ class IndexController extends Controller
         return [
             'classification' => $ct,
             'tags' => $tags,
+            'populations' => $populations,
             'market' => [$t, $o],
         ];
     }
@@ -100,6 +103,12 @@ class IndexController extends Controller
                 'type' => 'duallistbox',
                 'name' => '標籤',
                 'value' => $data['tags'],
+            ],
+            [
+                'id' => 'population',
+                'type' => 'duallistbox',
+                'name' => '族群',
+                'value' => $data['populations'],
             ],
         ];
     }

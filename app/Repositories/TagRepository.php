@@ -2,12 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Stock\Classification;
-use App\Models\Stock\Stock;
 use App\Models\Stock\Tag as StockTag;
 use App\Models\Stock\Tags;
 use App\Models\Stock\TagExponent;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class TagRepository extends Repository

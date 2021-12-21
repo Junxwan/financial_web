@@ -4,9 +4,9 @@ namespace App\Models\Stock;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Population extends Model
+class Populations extends Model
 {
-    protected $table = 'stock_populations';
+    protected $table = 'populations';
 
     public $timestamps = false;
 }
