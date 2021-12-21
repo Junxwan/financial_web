@@ -63,21 +63,21 @@ class TagRepository extends Repository
      */
     public function list(array $data)
     {
-        $query = Tags::query()->select('tags.id', 'name');
-        $queryTotal = Tags::query();
+        $query = Tags::query()->select('id', 'name');
 
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
             if (isset($search['value']) && ! empty($search['value'])) {
-                $query = $this->whereLike($query->getQuery(), $search);
-                $queryTotal = $this->whereLike($queryTotal->getQuery(), $search);
+                $query = $query->where('name', 'like', "%{$data['value']}%");
             }
         }
+
+        $total = $query->count();
 
         return [
             'data' => $query->offset($data['start'])
                 ->limit($data['limit'])
                 ->get(),
-            'total' => $queryTotal->count(),
+            'total' => $total,
         ];
     }
 
@@ -103,32 +103,7 @@ class TagRepository extends Repository
      */
     public function insert(array $data)
     {
-        return $this->transaction(function () use ($data) {
-            $tagId = Tags::query()->insertGetId([
-                'name' => $data['name'],
-            ]);
-
-            return $this->insertTagExponent($tagId, $data['name']);
-        });
-    }
-
-    /**
-     * @param int $tagId
-     * @param string $name
-     *
-     * @return bool
-     */
-    private function insertTagExponent(int $tagId, string $name)
-    {
-        $id = str_pad(TagExponent::query()->count(), 3, "0", STR_PAD_LEFT);
-        return TagExponent::query()->insert([
-            'stock_id' => Stock::query()->insertGetId([
-                'code' => "TE{$id}",
-                'name' => $name,
-                'classification_id' => Classification::query()->where('name', '產業指數')->first()->id,
-            ]),
-            'tag_id' => $tagId,
-        ]);
+        return Tags::query()->insert(['name' => $data['name']]);
     }
 
     /**
@@ -139,16 +114,9 @@ class TagRepository extends Repository
      */
     public function update(int $id, array $data)
     {
-        return $this->transaction(function () use ($id, $data) {
-            $model = Tags::query()->where('id', $id)->first();
-
-            if (is_null($model)) {
-                return false;
-            }
-
-            $model->name = $data['name'];
-            return $model->save();
-        });
+        return Tags::query()->where('id', $id)->update([
+            'name' => $data['name'],
+        ]);
     }
 
     /**
@@ -159,16 +127,5 @@ class TagRepository extends Repository
     public function delete(int $id)
     {
         return (bool)Tags::query()->where('id', $id)->delete();
-    }
-
-    /**
-     * @param Builder $query
-     * @param array $data
-     *
-     * @return Builder
-     */
-    private function whereLike(Builder $query, array $data)
-    {
-        return $query->where('tags.name', 'like', "%{$data['value']}%");
     }
 }

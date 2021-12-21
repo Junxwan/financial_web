@@ -9,7 +9,7 @@
             };
 
             var del = function (data) {
-                var url = '{{ route("tag.delete", ":id") }}';
+                var url = '{{ route("population.delete", ":id") }}';
                 axios.delete(url.replace(':id', data.id), data).then(function (response) {
                     if (response.data.result) {
                         toastr.success('刪除成功')
@@ -35,7 +35,7 @@
                     return
                 }
 
-                axios.post('{{ route("tag.create") }}', {
+                axios.post('{{ route("population.create") }}', {
                     name: name,
                 }).then(function (response) {
                     if (response.data.result) {
@@ -62,7 +62,7 @@
                     return
                 }
 
-                var url = '{{ route("tag.update", ":id") }}';
+                var url = '{{ route("population.update", ":id") }}';
                 axios.put(url.replace(':id', $('#modal-id').val()), {
                     name: name,
                 }).then(function (response) {
@@ -85,7 +85,7 @@
 
             NewTable({
                 name: '#list',
-                url: "{{ route('tag.list') }}",
+                url: "{{ route('population.list') }}",
                 columns: [
                     {data: 'name', width: '70%'},
                     editorEditBtn, editorDelete

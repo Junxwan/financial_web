@@ -22,6 +22,11 @@ return [
         'name' => '標籤',
     ],
     [
+        'route' => 'population.index',
+        'icon' => 'fas fa-tag',
+        'name' => '族群',
+    ],
+    [
         'route' => 'report.index',
         'icon' => 'fas fa-chart-bar',
         'name' => '投資報告',

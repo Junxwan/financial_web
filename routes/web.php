@@ -71,6 +71,15 @@ Route::group(['prefix' => 'tag', 'as' => 'tag.'], function () {
     Route::put('/{id}', [\App\Http\Controllers\Stock\TagController::class, 'update'])->name('update');
 });
 
+// 族群
+Route::group(['prefix' => 'population', 'as' => 'population.'], function () {
+    Route::get('/', [\App\Http\Controllers\Stock\PopulationController::class, 'index'])->name('index');
+    Route::get('/list', [\App\Http\Controllers\Stock\PopulationController::class, 'list'])->name('list');
+    Route::post('/', [\App\Http\Controllers\Stock\PopulationController::class, 'create'])->name('create');
+    Route::delete('/{id}', [\App\Http\Controllers\Stock\PopulationController::class, 'delete'])->name('delete');
+    Route::put('/{id}', [\App\Http\Controllers\Stock\PopulationController::class, 'update'])->name('update');
+});
+
 // 投資報告
 Route::group(['prefix' => 'report', 'as' => 'report.'], function () {
     Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
