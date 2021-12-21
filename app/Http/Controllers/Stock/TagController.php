@@ -30,7 +30,6 @@ class TagController
         return view('page.stock.tag', [
             'header' => [
                 '名稱',
-                '指數',
                 '編輯',
                 '刪除',
             ],
@@ -45,11 +44,6 @@ class TagController
                             'type' => 'text',
                             'name' => '名稱',
                         ],
-                        [
-                            'id' => 'isExponent',
-                            'type' => 'checkbox',
-                            'name' => '指數',
-                        ],
                     ],
                 ],
                 [
@@ -61,11 +55,6 @@ class TagController
                             'id' => 'name',
                             'type' => 'text',
                             'name' => '名稱',
-                        ],
-                        [
-                            'id' => 'isExponent',
-                            'type' => 'checkbox',
-                            'name' => '指數',
                         ],
                     ],
                 ],

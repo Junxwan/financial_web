@@ -63,9 +63,7 @@ class TagRepository extends Repository
      */
     public function list(array $data)
     {
-        $query = Tags::query()->select(
-            'tags.id', 'name', 'tag_exponents.stock_id'
-        )->leftJoin('tag_exponents', 'tag_exponents.tag_id', '=', 'tags.id');
+        $query = Tags::query()->select('tags.id', 'name');
         $queryTotal = Tags::query();
 
         if (isset($data['search']) && ! is_null($search = $data['search'])) {
@@ -110,10 +108,6 @@ class TagRepository extends Repository
                 'name' => $data['name'],
             ]);
 
-            if (! $data['isExponent']) {
-                return $tagId > 0;
-            }
-
             return $this->insertTagExponent($tagId, $data['name']);
         });
     }
@@ -153,20 +147,7 @@ class TagRepository extends Repository
             }
 
             $model->name = $data['name'];
-
-            if (! $model->save()) {
-                return false;
-            }
-
-            if ($data['isExponent']) {
-                $model = TagExponent::query()->where('tag_id', $id)->first();
-
-                if (is_null($model)) {
-                    return $this->insertTagExponent($id, $data['name']);
-                }
-            }
-
-            return true;
+            return $model->save();
         });
     }
 
