@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Stock\Population;
 use App\Models\Stock\Price;
 use App\Models\Stock\TagExponent;
 use App\Services\Industry;
@@ -17,7 +18,6 @@ class IndustryController extends Controller
      * @var string[]
      */
     protected $header = [
-        '代碼',
         '名稱',
         '漲幅',
         '成交值',
@@ -42,7 +42,7 @@ class IndustryController extends Controller
         return response()->json([
             'date' => Price::query()
                 ->select('date')
-                ->where('stock_id', TagExponent::query()->select('stock_id')->limit(1)->first()->stock_id)
+                ->where('stock_id', Population::query()->select('stock_id')->limit(1)->first()->stock_id)
                 ->orderByDesc('date')
                 ->limit(1)
                 ->first()

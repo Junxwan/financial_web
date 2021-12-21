@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\PriceRepository;
-use App\Repositories\TagRepository;
+use App\Repositories\PopulationRepository;
 
 class Industry
 {
@@ -13,17 +13,17 @@ class Industry
     private PriceRepository $price;
 
     /**
-     * @var TagRepository
+     * @var PopulationRepository
      */
-    private TagRepository $tag;
+    private PopulationRepository $tag;
 
     /**
      * Industry constructor.
      *
      * @param PriceRepository $price
-     * @param TagRepository $tag
+     * @param PopulationRepository $tag
      */
-    public function __construct(PriceRepository $price, TagRepository $tag)
+    public function __construct(PriceRepository $price, PopulationRepository $tag)
     {
         $this->price = $price;
         $this->tag = $tag;
@@ -37,7 +37,7 @@ class Industry
     public function list(array $select)
     {
         $date = null;
-        $tag = $this->tag->exponents();
+        $tag = $this->tag->all();
 
         if (isset($select['search'])) {
             $search = $select['search'];

@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Models\Stock\Classification;
 use App\Models\Stock\Populations;
+use App\Models\Stock\Population;
 use App\Models\Stock\Stock;
+use Illuminate\Support\Facades\DB;
 
 class PopulationRepository extends Repository
 {
@@ -84,4 +86,19 @@ class PopulationRepository extends Repository
     {
         return (bool)Populations::query()->where('id', $id)->delete();
     }
+
+    /**
+     * @param array $ids
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function count(array $ids)
+    {
+        return Population::query()
+            ->select(DB::RAW('population_id AS id'))
+            ->whereIn('population_id', $ids)
+            ->get()
+            ->countBy('id');
+    }
+
 }

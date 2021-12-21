@@ -40,20 +40,6 @@ class TagRepository extends Repository
     }
 
     /**
-     * @param array $ids
-     *
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function count(array $ids)
-    {
-        return StockTag::query()
-            ->select(DB::RAW('tag_id AS id'))
-            ->whereIn('tag_id', $ids)
-            ->get()
-            ->countBy('id');
-    }
-
-    /**
      * @param array $data
      *
      * @return array
