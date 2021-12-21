@@ -8,8 +8,11 @@
     <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script>
         var tags = @json($tags);
+        var populations = @json($populations);
         var tag_id = []
         var tag_Name = []
+        var population_id = []
+        var population_name = []
 
         $(document).ready(function () {
             var edit = function (data) {
@@ -34,7 +37,7 @@
                 })
 
                 $('#modal-edit-tag').selectpicker('val', tag_id);
-                $('#modal-population-tag').selectpicker('val', population_id);
+                $('#modal-edit-population').selectpicker('val', population_id);
             }
 
             var del = function (data) {
@@ -244,6 +247,25 @@
             }
 
             $('*[data-id="' + $(this).attr('id') + '"] .filter-option-inner-inner').html(tag_Name.join(','))
+        });
+
+        $('#modal-edit-population, #modal-create-population').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            if (isSelected === null) {
+                return
+            }
+
+            if (isSelected) {
+                population_id.push(populations[clickedIndex].id)
+                population_Name.push(populations[clickedIndex].name)
+            } else {
+                index = population_id.indexOf(populations[clickedIndex].id)
+                if (index !== -1) {
+                    population_id.splice(index, 1);
+                    population_Name.splice(index, 1);
+                }
+            }
+
+            $('*[data-id="' + $(this).attr('id') + '"] .filter-option-inner-inner').html(population_Name.join(','))
         });
 
     </script>

@@ -88,7 +88,7 @@ class StockRepository extends Repository
                 $p = [];
                 foreach ($populations as $v) {
                     if ($value->id == $v->stock_id) {
-                        $t[] = [
+                        $p[] = [
                             'id' => $v->id,
                             'name' => $v->name,
                         ];
