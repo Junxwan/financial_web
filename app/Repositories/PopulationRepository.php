@@ -11,6 +11,32 @@ use Illuminate\Support\Facades\DB;
 class PopulationRepository extends Repository
 {
     /**
+     * @param int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     */
+    public function get(int $id)
+    {
+        return Population::query()->where('id', $id)->first();
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function stock(int $id)
+    {
+        return Population::query()
+            ->select('stocks.code', 'stocks.name')
+            ->join('stocks', 'stock_populations.stock_id', '=', 'stocks.id')
+            ->where('population_id', $id)
+            ->orderBy('code')
+            ->get();
+    }
+
+    /**
+     *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
     public function all()

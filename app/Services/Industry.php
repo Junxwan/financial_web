@@ -48,7 +48,7 @@ class Industry
 
         $ids = $tag->pluck('id')->toArray();
         $count = $this->tag->count($ids);
-        $price = $this->price->getByTag($ids, $date);
+        $price = $this->price->getByPopulation($ids, $date);
 
         $data = $tag->map(function ($item) use ($price, $count) {
             $item->increase = 0;
@@ -57,7 +57,7 @@ class Industry
             $increase = [];
             $value = [];
             foreach ($price as $v) {
-                if (in_array($item->id, $v->tag_id)) {
+                if (in_array($item->id, $v->population_id)) {
                     $increase[] = $v->increase;
                     $value[] = $v->value;
                 }

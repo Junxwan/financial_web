@@ -35,7 +35,7 @@ class ExponentController extends Controller
     protected function initView(Request $request)
     {
         return [
-            'tags' => $this->exponent->tags(),
+            'tags' => $this->exponent->populations(),
             'year' => date('Y'),
         ];
     }

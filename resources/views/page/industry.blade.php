@@ -49,7 +49,7 @@
                         data: "name",
                         width: '10%',
                         render: function (data, t, row, meta) {
-                            return '<a href="' + "{{ route('exponent.index') }}?tag=" + row.id + '" target="_blank">' + data + '</a>'
+                            return '<a href="' + "{{ route('exponent.index') }}?population=" + row.id + '" target="_blank">' + data + '</a>'
                         },
                     },
                     {

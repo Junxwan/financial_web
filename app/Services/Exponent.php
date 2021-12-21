@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Repositories\PopulationRepository;
 use App\Repositories\PriceRepository;
 use App\Repositories\ProfitRepository;
 use App\Repositories\StockRepository;
@@ -30,31 +31,39 @@ class Exponent
     private StockRepository $stock;
 
     /**
+     * @var PopulationRepository
+     */
+    private PopulationRepository $population;
+
+    /**
      * Exponent constructor.
      *
      * @param StockRepository $stock
      * @param ProfitRepository $profit
      * @param PriceRepository $price
      * @param TagRepository $tag
+     * @param PopulationRepository $population
      */
     public function __construct(
         StockRepository $stock,
         ProfitRepository $profit,
         PriceRepository $price,
-        TagRepository $tag
+        TagRepository $tag,
+        PopulationRepository $population
     ) {
         $this->tag = $tag;
         $this->price = $price;
         $this->profit = $profit;
         $this->stock = $stock;
+        $this->population = $population;
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function tags()
+    public function populations()
     {
-        return $this->tag->exponents();
+        return $this->population->all();
     }
 
     /**
@@ -65,7 +74,7 @@ class Exponent
      */
     public function tag(int $id, int $year)
     {
-        $exponent = $this->price->exponentByTag($id, $year);
+        $exponent = $this->price->population($id, $year);
         $data = [
             'price' => [],
             'volume' => [],
@@ -82,8 +91,8 @@ class Exponent
             ];
         }
 
-        $data['name'] = $this->tag->get($id)->name;
-        $data['stock'] = $this->tag->stockByTag($id);
+        $data['name'] = $this->population->get($id)->name;
+        $data['stock'] = $this->population->stock($id);
         return $data;
     }
 

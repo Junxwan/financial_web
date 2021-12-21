@@ -65,21 +65,6 @@ class TagRepository extends Repository
     }
 
     /**
-     * @param int $id
-     *
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function stockByTag(int $id)
-    {
-        return StockTag::query()
-            ->select('stocks.code', 'stocks.name')
-            ->join('stocks', 'stock_tags.stock_id', '=', 'stocks.id')
-            ->where('stock_tags.tag_id', $id)
-            ->orderBy('code')
-            ->get();
-    }
-
-    /**
      * @param array $data
      *
      * @return bool

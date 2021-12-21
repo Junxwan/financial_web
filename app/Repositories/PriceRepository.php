@@ -104,18 +104,18 @@ class PriceRepository extends Repository
     }
 
     /**
-     * @param array $tags
+     * @param array $ids
      * @param null $date
      *
      * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getByTag(array $tags, $date = null)
+    public function getByPopulation(array $ids, $date = null)
     {
         $query = Price::query()->select(
             'prices.stock_id', 'increase', 'value',
-            DB::RAW('GROUP_CONCAT(stock_tags.tag_id) as tag_id'))
-            ->join('stock_tags', 'stock_tags.stock_id', '=', 'prices.stock_id')
-            ->whereIn('stock_tags.tag_id', $tags);
+            DB::RAW('GROUP_CONCAT(stock_populations.population_id) as population_id'))
+            ->join('stock_populations', 'stock_populations.stock_id', '=', 'prices.stock_id')
+            ->whereIn('stock_populations.population_id', $ids);
 
         if (is_null($date)) {
             $query = $query->where('date', function ($query) {
@@ -126,26 +126,26 @@ class PriceRepository extends Repository
         }
 
         return $query->groupBy(['stock_id'])->get()->map(function ($value) {
-            $value->tag_id = explode(',', $value->tag_id);
+            $value->population_id = explode(',', $value->population_id);
             return $value;
         });
     }
 
     /**
-     * @param int $tag
+     * @param int $id
      * @param int $year
      *
      * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function exponentByTag(int $tag, int $year)
+    public function population(int $id, int $year)
     {
         $year -= 1;
         $m = date('m');
         $d = date('d');
         return Price::query()->select(
             'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high', 'low'
-        )->join('tag_exponents', 'tag_exponents.stock_id', '=', 'prices.stock_id')
-            ->where('tag_exponents.tag_id', $tag)
+        )->join('populations', 'populations.stock_id', '=', 'prices.stock_id')
+            ->where('populations.id', $id)
             ->where('prices.date', '>=', "{$year}-{$m}-{$d}")
             ->orderBy('prices.date')
             ->get();
