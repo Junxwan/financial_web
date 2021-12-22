@@ -211,9 +211,6 @@
                                 color: '#6a33a4'
                             }
                         },
-                        legend: {
-                            enabled: false
-                        },
                         tooltip: {
                             formatter: function () {
                                 return this.series.name + ': ' + '<span style="color:#7dbbd2">' + amountText(this.y) + '</span>'
