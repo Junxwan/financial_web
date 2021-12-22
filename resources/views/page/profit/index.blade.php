@@ -493,6 +493,10 @@
                 q2 = []
                 q3 = []
                 q4 = []
+                q1e = []
+                q2e = []
+                q3e = []
+                q4e = []
                 q1g = []
                 q2g = []
                 q3g = []
@@ -554,6 +558,7 @@
                         switch (v.quarterly) {
                             case 1:
                                 q1.push(v.revenue)
+                                q1e.push(v.eps)
                                 q1g.push(v.gross_ratio)
                                 q1c.push(v.cost)
                                 q1fa.push(v.fee)
@@ -568,6 +573,7 @@
                                 break
                             case 2:
                                 q2.push(v.revenue)
+                                q2e.push(v.eps)
                                 q2g.push(v.gross_ratio)
                                 q2c.push(v.cost)
                                 q2fa.push(v.fee)
@@ -582,6 +588,7 @@
                                 break
                             case 3:
                                 q3.push(v.revenue)
+                                q3e.push(v.eps)
                                 q3g.push(v.gross_ratio)
                                 q3c.push(v.cost)
                                 q3fa.push(v.fee)
@@ -596,6 +603,7 @@
                                 break
                             case 4:
                                 q4.push(v.revenue)
+                                q4e.push(v.eps)
                                 q4g.push(v.gross_ratio)
                                 q4c.push(v.cost)
                                 q4fa.push(v.fee)
@@ -613,6 +621,7 @@
 
                     if (!b1) {
                         q1.push(0)
+                        q1e.push(0)
                         q1c.push(0)
                         q1g.push(0)
                         q1p.push(0)
@@ -627,6 +636,7 @@
 
                     if (!b2) {
                         q2.push(0)
+                        q2e.push(0)
                         q2c.push(0)
                         q2g.push(0)
                         q2p.push(0)
@@ -641,6 +651,7 @@
 
                     if (!b3) {
                         q3.push(0)
+                        q3e.push(0)
                         q3c.push(0)
                         q3g.push(0)
                         q3p.push(0)
@@ -655,6 +666,7 @@
 
                     if (!b4) {
                         q4.push(0)
+                        q4e.push(0)
                         q4c.push(0)
                         q4g.push(0)
                         q4p.push(0)
@@ -824,6 +836,35 @@
                         id: 'profit_after',
                         name: '稅後',
                         data: profit_after,
+                    }]
+                });
+
+                Highcharts.chart('eps-chat', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'EPS'
+                    },
+                    xAxis: {
+                        categories: years
+                    },
+                    tooltip: {
+                        crosshairs: true,
+                        shared: true,
+                    },
+                    series: [{
+                        name: 'Q1',
+                        data: q1e
+                    }, {
+                        name: 'Q2',
+                        data: q2e
+                    }, {
+                        name: 'Q3',
+                        data: q3e
+                    }, {
+                        name: 'Q4',
+                        data: q4e
                     }]
                 });
 
@@ -1334,40 +1375,6 @@
                     },
                     series: [{
                         data: eps,
-                    }]
-                });
-
-                Highcharts.chart('eps-bar', {
-                    colors: ['#45617d'],
-                    chart: {
-                        type: 'column'
-                    },
-                    plotOptions: {
-                        column: {
-                            borderColor: '#45617d'
-                        }
-                    },
-                    title: {
-                        text: 'EPS'
-                    },
-                    xAxis: {
-                        type: 'category'
-                    },
-                    yAxis: {
-                        title: {
-                            text: null
-                        }
-                    },
-                    legend: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        formatter: function () {
-                            return this.key + ': ' + this.y + '</span>'
-                        }
-                    },
-                    series: [{
-                        data: epsq,
                     }]
                 });
 
@@ -2030,7 +2037,7 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="eps-bar"></div>
+                    <div id="eps-chat"></div>
                 </div>
             </div>
             <div class="row">
