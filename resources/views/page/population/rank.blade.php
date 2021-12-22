@@ -34,7 +34,7 @@
 
 @section('table_js')
     <script>
-        axios.get("{{ route('industry.last.date') }}").then(function (response) {
+        axios.get("{{ route('population.rank.last.date') }}").then(function (response) {
             $('.container-fluid>h1').html(response.data.date)
         }).catch(function (error) {
             console.log(error)
@@ -43,13 +43,13 @@
         $(document).ready(function () {
             NewTable({
                 name: '#list',
-                url: "{{ route('industry.list') }}",
+                url: "{{ route('population.rank.list') }}",
                 columns: [
                     {
                         data: "name",
                         width: '10%',
                         render: function (data, t, row, meta) {
-                            return '<a href="' + "{{ route('exponent.index') }}?population=" + row.id + '" target="_blank">' + data + '</a>'
+                            return '<a href="' + "{{ route('population.index') }}?population=" + row.id + '" target="_blank">' + data + '</a>'
                         },
                     },
                     {

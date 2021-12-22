@@ -2,10 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Stock\Tag as StockTag;
 use App\Models\Stock\Tags;
-use App\Models\Stock\TagExponent;
-use Illuminate\Support\Facades\DB;
 
 class TagRepository extends Repository
 {
@@ -25,18 +22,6 @@ class TagRepository extends Repository
     public function get(int $id)
     {
         return Tags::query()->where('id', $id)->first();
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function exponents()
-    {
-        return TagExponent::query()
-            ->select('tags.id', 'tags.name', 'stocks.code')
-            ->join('tags', 'tags.id', '=', 'tag_exponents.tag_id')
-            ->join('stocks', 'stocks.id', '=', 'tag_exponents.stock_id')
-            ->get();
     }
 
     /**

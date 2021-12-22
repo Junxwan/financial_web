@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Population;
 
+use App\Http\Controllers\Controller;
 use App\Services\Exponent;
 use Illuminate\Http\Request;
 
-class ExponentController extends Controller
+class IndexController extends Controller
 {
     /**
      * @var string
      */
-    protected $view = 'page.exponent';
+    protected $view = 'page.population.index';
 
     /**
      * @var Exponent

@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Population;
 
+use App\Http\Controllers\Controller;
 use App\Models\Stock\Population;
 use App\Models\Stock\Price;
 use App\Services\Industry;
 
-class IndustryController extends Controller
+class RankController extends Controller
 {
     /**
      * @var string
      */
-    protected $view = 'page.industry';
+    protected $view = 'page.population.rank';
 
     /**
      * @var string[]

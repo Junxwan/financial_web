@@ -17,7 +17,7 @@ class PopulationRepository extends Repository
      */
     public function get(int $id)
     {
-        return Population::query()->where('id', $id)->first();
+        return Populations::query()->where('id', $id)->first();
     }
 
     /**

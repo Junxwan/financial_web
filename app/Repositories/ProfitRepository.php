@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\DB;
 class ProfitRepository extends Repository
 {
     /**
-     * @param int $tag
+     * @param int $id
      * @param int $year
      * @param int $quarterly
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function codeByTag(int $tag, int $year, int $quarterly)
+    public function codeByPopulation(int $id, int $year, int $quarterly)
     {
         return Profit::query()->select(
             DB::RAW('stocks.code'),
@@ -32,8 +32,8 @@ class ProfitRepository extends Repository
             DB::RAW('profits.profit_main'),
             DB::RAW('profits.eps'),
         )->join('stocks', 'stocks.id', '=', 'profits.stock_id')
-            ->join('stock_tags', 'stock_tags.stock_id', '=', 'stocks.id')
-            ->where('stock_tags.tag_id', $tag)
+            ->join('stock_populations', 'stock_populations.stock_id', '=', 'stocks.id')
+            ->where('stock_populations.population_id', $id)
             ->whereBetween('profits.year', [$year - 1, $year])
             ->orderByDesc('profits.year')
             ->orderByDesc('profits.quarterly')

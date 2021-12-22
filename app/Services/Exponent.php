@@ -72,7 +72,7 @@ class Exponent
      *
      * @return array[]
      */
-    public function tag(int $id, int $year)
+    public function k(int $id, int $year)
     {
         $exponent = $this->price->population($id, $year);
         $data = [
@@ -102,9 +102,9 @@ class Exponent
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
      */
-    public function stockK(int $id, int $year)
+    public function stockKs(int $id, int $year)
     {
-        $data = $this->price->stockByTag($id, $year);
+        $data = $this->price->stockByPopulation($id, $year);
         return $this->stock->gets($data->keys()->toArray())->map(function ($value) use ($data) {
             $price = [];
             $volume = [];
@@ -129,14 +129,14 @@ class Exponent
     }
 
     /**
-     * @param int $tag
+     * @param int $id
      * @param int $year
      * @param int $quarterly
      *
      * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function tagProfit(int $tag, int $year, int $quarterly)
+    public function profit(int $id, int $year, int $quarterly)
     {
-        return $this->profit->codeByTag($tag, $year, $quarterly);
+        return $this->profit->codeByPopulation($id, $year, $quarterly);
     }
 }

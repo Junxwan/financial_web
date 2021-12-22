@@ -152,12 +152,12 @@ class PriceRepository extends Repository
     }
 
     /**
-     * @param int $tag
+     * @param int $id
      * @param int $year
      *
      * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function stockByTag(int $tag, int $year)
+    public function stockByPopulation(int $id, int $year)
     {
         $year -= 1;
         $m = date('m');
@@ -165,8 +165,8 @@ class PriceRepository extends Repository
         return Price::query()->select(
             'prices.stock_id', 'open', 'close', DB::RAW('ROUND(increase, 2) AS increase'), 'volume', 'date', 'high',
             'low'
-        )->join('stock_tags', 'stock_tags.stock_id', '=', 'prices.stock_id')
-            ->where('stock_tags.tag_id', $tag)
+        )->join('stock_populations', 'stock_populations.stock_id', '=', 'prices.stock_id')
+            ->where('stock_populations.population_id', $id)
             ->where('prices.date', '>=', "{$year}-{$m}-{$d}")
             ->orderBy('prices.date')
             ->get()

@@ -77,14 +77,14 @@ return [
     //        'name' => '類股',
     //    ],
     [
-        'route' => 'industry.index',
+        'route' => 'population.rank.index',
         'icon' => 'fas fa-list',
-        'name' => '產業',
+        'name' => '族群漲幅',
     ],
     [
-        'route' => 'exponent.index',
+        'route' => 'population.exponent.index',
         'icon' => 'fas fa-list',
-        'name' => '產業指數',
+        'name' => '族群指數',
     ],
     [
         'route' => 'price.index',

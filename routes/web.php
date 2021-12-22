@@ -171,24 +171,21 @@ Route::group(['prefix' => 'category', 'as' => 'category.'], function () {
         [\App\Http\Controllers\Stock\CategoryController::class, 'list'])->name('list');
 });
 
-// 產業
-Route::group(['prefix' => 'industry', 'as' => 'industry.'], function () {
-    Route::get('/', [\App\Http\Controllers\IndustryController::class, 'index'])->name('index');
-    Route::get('/list',
-        [\App\Http\Controllers\IndustryController::class, 'list'])->name('list');
-    Route::get('/last/date',
-        [\App\Http\Controllers\IndustryController::class, 'date'])->name('last.date');
-});
+// 族群
+Route::group(['prefix' => 'population', 'as' => 'population.'], function () {
+    Route::get('/exponent/', [\App\Http\Controllers\Population\IndexController::class, 'index'])->name('exponent.index');
+    Route::get('/exponent/{id}/year/{year}',
+        [\App\Http\Controllers\Population\IndexController::class, 'exponent'])->name('exponent.k');
+    Route::get('/exponent/{id}/profit/year/{year}/quarterly/{quarterly}',
+        [\App\Http\Controllers\Population\IndexController::class, 'profit'])->name('exponent.profit');
+    Route::get('/exponent/{id}/k/year/{year}',
+        [\App\Http\Controllers\Population\IndexController::class, 'stockKs'])->name('exponent.stock.k');
 
-// 產業指數
-Route::group(['prefix' => 'exponent', 'as' => 'exponent.'], function () {
-    Route::get('/', [\App\Http\Controllers\ExponentController::class, 'index'])->name('index');
-    Route::get('/tag/{id}/year/{year}',
-        [\App\Http\Controllers\ExponentController::class, 'tag'])->name('tag.k');
-    Route::get('/profit/tag/{id}/year/{year}/quarterly/{quarterly}',
-        [\App\Http\Controllers\ExponentController::class, 'tagProfit'])->name('tag.profit');
-    Route::get('/k/tag/{id}/year/{year}',
-        [\App\Http\Controllers\ExponentController::class, 'stockK'])->name('tag.stock.k');
+    Route::get('/rank', [\App\Http\Controllers\Population\RankController::class, 'index'])->name('rank.index');
+    Route::get('/rank/list',
+        [\App\Http\Controllers\Population\RankController::class, 'list'])->name('rank.list');
+    Route::get('/rank/last/date',
+        [\App\Http\Controllers\Population\RankController::class, 'date'])->name('rank.last.date');
 });
 
 // 股價
