@@ -169,9 +169,6 @@
                             },
                             opposite: true
                         }],
-                        legend: {
-                            enabled: false
-                        },
                         tooltip: {
                             shared: true,
                             xDateFormat: '%Y-%m',
