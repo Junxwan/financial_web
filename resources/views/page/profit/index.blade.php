@@ -380,10 +380,12 @@
                             "<td>" + v.gross_ratio + "</td>" +
                             "<td>" + v.fee_ratio + "</td>" +
                             "<td>" + v.profit_ratio + "</td>" +
+                            "<td>" + v.eps + "</td>" +
                             "<td>" + spanColor(v.revenue_yoy) + "</td>" +
                             "<td>" + spanColor(v.y_gross_ratio) + "</td>" +
                             "<td>" + spanColor(v.y_fee_ratio) + "</td>" +
                             "<td>" + spanColor(v.y_profit_ratio) + "</td>" +
+                            "<td>" + spanColor(v.y_eps_ratio) + "</td>" +
                             "</tr>"
 
                         $("#profit-table>tbody").append(html)
@@ -2049,10 +2051,12 @@
                                 <th scope="col">毛利率</th>
                                 <th scope="col">費用率</th>
                                 <th scope="col">利益率</th>
+                                <th scope="col">EPS</th>
                                 <th scope="col">營收年增</th>
                                 <th scope="col">毛利年增</th>
                                 <th scope="col">費用年增</th>
                                 <th scope="col">利益年增</th>
+                                <th scope="col">EPS年增</th>
                             </tr>
                             </thead>
                             <tbody>

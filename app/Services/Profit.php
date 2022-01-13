@@ -278,7 +278,20 @@ class Profit
                 $v->revenue_yoy = round((($v->revenue / $ye->revenue) - 1) * 100, 2);
                 $v->y_gross_ratio = round((($v->gross_ratio / $ye->gross_ratio) - 1) * 100, 2);
                 $v->y_fee_ratio = round((($v->fee_ratio / $ye->fee_ratio) - 1) * 100, 2);
-                $v->y_profit_ratio = round((($v->profit_ratio / $ye->profit_ratio) - 1) * 100, 2);
+
+                if ($ye->profit_ratio < 0 && $v->profit_ratio > 0) {
+                    $v->y_profit_ratio = round((((((-$ye->profit_ratio) * 2) + $v->profit_ratio) / (-$ye->profit_ratio)) - 1) * 100,
+                        2);
+                } else {
+                    $v->y_profit_ratio = round((($v->profit_ratio / $ye->profit_ratio) - 1) * 100, 2);
+                }
+
+                if ($ye->eps < 0 && $v->eps > 0) {
+                    $v->y_eps_ratio = round((((((-$ye->eps) * 2) + $v->eps) / (-$ye->eps)) - 1) * 100,
+                        2);
+                } else {
+                    $v->y_eps_ratio = round((($v->eps / $ye->eps) - 1) * 100, 2);
+                }
             }
 
             $v->eps = round($v->eps, 2);
