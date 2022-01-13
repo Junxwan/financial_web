@@ -267,7 +267,7 @@ class ProfitController
     public function download(int $year, int $quarterly)
     {
         return response()->stream(function () use ($year, $quarterly) {
-            $data = $this->profit->download($year, $quarterly);
+            $data = $this->profit->downloadV2($year, $quarterly);
 
             $file = fopen('php://output', 'w');
             fputcsv($file, array_keys($data->first()));

@@ -686,6 +686,120 @@ class Profit
         });
     }
 
+    public function downloadV2(int $year, int $quarterly)
+    {
+        $classification = [];
+        foreach (Classification::query()->get() as $value) {
+            $classification[$value->id] = $value->name;
+        }
+
+        $all = Model::query()->select(
+            'stocks.code',
+            'stocks.name',
+            'stocks.classification_id',
+            'profits.year',
+            'profits.quarterly',
+            'profits.revenue',
+            'profits.cost',
+            'profits.gross',
+            'profits.gross_ratio',
+            'profits.fee',
+            'profits.fee_ratio',
+            'profits.profit',
+            'profits.profit_ratio',
+            'profits.outside',
+            'profits.other',
+            'profits.profit_pre',
+            'profits.profit_after',
+            'profits.tax',
+            'profits.eps',
+        )->join('stocks', 'profits.stock_id', '=', 'stocks.id')
+            ->whereIn('year', [$year, $year - 1])
+            ->orderByDesc('year')
+            ->orderByDesc('quarterly')
+            ->get();
+
+        $data = $all->groupBy('year');
+        $now = $data[$year];
+        $ye = $data[$year - 1];
+
+        $data = [];
+        foreach ($now->where('quarterly', $quarterly) as $value) {
+            $grossRatio = $value->gross_ratio;
+            $feeRatio = $value->fee_ratio;
+            $profitRatio = $value->profit_ratio;
+            $eps = $value->eps;
+            $revenueYoy = 0;
+            $grossYoy = 0;
+            $feeYoy = 0;
+            $profitYoy = 0;
+            $epsYoy = 0;
+
+            if ($quarterly == 4) {
+                $p = $now->where('code', $value->code)->where('quarterly', '<=', 3);
+                $value->revenue -= $p->sum('revenue');
+                $value->gross -= $p->sum('gross');
+                $value->fee -= $p->sum('fee');
+                $value->profit -= $p->sum('profit');
+                $value->eps -= $p->sum('eps');
+
+                $grossRatio = round(($value->gross / $value->revenue) * 100, 2);
+                $feeRatio = round(($value->fee / $value->revenue) * 100, 2);
+                $profitRatio = round(($value->profit / $value->revenue) * 100, 2);
+
+
+                $v = $ye->where('code', $value->code)->where('quarterly', $quarterly)->first();
+                $p = $ye->where('code', $value->code)->where('quarterly', '<=', 3);
+
+                if (! is_null($v)) {
+                    $v->revenue -= $p->sum('revenue');
+                    $v->gross -= $p->sum('gross');
+                    $v->fee -= $p->sum('fee');
+                    $v->profit -= $p->sum('profit');
+                    $v->eps -= $p->sum('eps');
+
+                    $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
+                    $grossYoy = round((($grossRatio / round(($v->gross / $v->revenue) * 100, 2)) - 1) * 100, 2);
+                    $feeYoy = round((($feeRatio / round(($v->fee / $v->revenue) * 100, 2)) - 1) * 100, 2);
+                    $profitYoy = round((($profitRatio / round(($v->profit / $v->revenue) * 100, 2)) - 1) * 100, 2);
+                    $epsYoy = round((($value->eps / $v->eps) - 1) * 100, 2);
+                }
+            } else {
+                $v = $ye->where('code', $value->code)->where('quarterly', $quarterly)->first();
+
+                if (! is_null($v)) {
+                    $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
+                    $grossYoy = round((($value->gross_ratio / $v->gross_ratio) - 1) * 100, 2);
+                    $feeYoy = round((($value->fee_ratio / $v->fee_ratio) - 1) * 100, 2);
+                    $profitYoy = round((($value->profit_ratio / $v->profit_ratio) - 1) * 100, 2);
+                    $epsYoy = round((($value->eps / $v->eps) - 1) * 100, 2);
+                }
+            }
+
+            $data[] = [
+                'code' => $value->code,
+                'name' => $value->name,
+                '毛利率' => $grossRatio,
+                '費用率' => $feeRatio,
+                '利益率' => $profitRatio,
+                'eps' => $eps,
+                '營收年增' => $revenueYoy,
+                '毛利年增' => $grossYoy,
+                '費用年增' => $feeYoy,
+                '利益年增' => $profitYoy,
+                'eps年增' => $epsYoy,
+                '產業分類' => $classification[$value['classification_id']],
+            ];
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return array
+     */
     public function downloadAll(string $code)
     {
         $column = [
