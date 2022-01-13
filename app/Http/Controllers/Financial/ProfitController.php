@@ -270,7 +270,7 @@ class ProfitController
             $data = $this->profit->downloadV2($year, $quarterly);
 
             $file = fopen('php://output', 'w');
-            fputcsv($file, array_keys($data->first()));
+            fputcsv($file, array_keys($data[0]));
 
             foreach ($data as $v) {
                 fputcsv($file, array_values($v));

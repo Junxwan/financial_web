@@ -686,6 +686,12 @@ class Profit
         });
     }
 
+    /**
+     * @param int $year
+     * @param int $quarterly
+     *
+     * @return array
+     */
     public function downloadV2(int $year, int $quarterly)
     {
         $classification = [];
@@ -720,96 +726,125 @@ class Profit
             ->get();
 
         $data = $all->groupBy('year');
-        $now = $data[$year];
-        $ye = $data[$year - 1];
+        $now = $data[$year]->groupBy('code');
+        $ye = $data[$year - 1]->groupBy('code');
 
         $data = [];
-        foreach ($now->where('quarterly', $quarterly) as $value) {
-            $grossRatio = $value->gross_ratio;
-            $feeRatio = $value->fee_ratio;
-            $profitRatio = $value->profit_ratio;
-            $eps = $value->eps;
-            $revenueYoy = 0;
-            $grossYoy = 0;
-            $feeYoy = 0;
-            $profitYoy = 0;
+        foreach ($now as $code => $value) {
+            try {
+                $value = $value->where('quarterly', $quarterly)->first();
 
-            if ($quarterly == 4) {
-                $p = $now->where('code', $value->code)->where('quarterly', '<=', 3);
-                $value->revenue -= $p->sum('revenue');
-                $value->gross -= $p->sum('gross');
-                $value->fee -= $p->sum('fee');
-                $value->profit -= $p->sum('profit');
-                $value->eps -= $p->sum('eps');
+                if (is_null($value)) {
+                    continue;
+                }
 
-                $grossRatio = round(($value->gross / $value->revenue) * 100, 2);
-                $feeRatio = round(($value->fee / $value->revenue) * 100, 2);
-                $profitRatio = round(($value->profit / $value->revenue) * 100, 2);
+                $grossRatio = $value->gross_ratio;
+                $feeRatio = $value->fee_ratio;
+                $profitRatio = $value->profit_ratio;
+                $eps = $value->eps;
+                $revenueYoy = 0;
+                $grossYoy = 0;
+                $feeYoy = 0;
+                $profitYoy = 0;
 
-                $v = $ye->where('code', $value->code)->where('quarterly', $quarterly)->first();
-                $p = $ye->where('code', $value->code)->where('quarterly', '<=', 3);
+                if ($value->revenue == 0) {
+                    continue;
+                }
 
-                if (! is_null($v)) {
-                    $v->revenue -= $p->sum('revenue');
-                    $v->gross -= $p->sum('gross');
-                    $v->fee -= $p->sum('fee');
-                    $v->profit -= $p->sum('profit');
-                    $v->eps -= $p->sum('eps');
+                if ($quarterly == 4) {
+                    $p = $now[$code]->where('quarterly', '<=', 3);
+                    $value->revenue -= $p->sum('revenue');
+                    $value->gross -= $p->sum('gross');
+                    $value->fee -= $p->sum('fee');
+                    $value->profit -= $p->sum('profit');
+                    $value->eps -= $p->sum('eps');
 
-                    $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
-                    $grossYoy = round((($grossRatio / round(($v->gross / $v->revenue) * 100, 2)) - 1) * 100, 2);
-                    $feeYoy = round((($feeRatio / round(($v->fee / $v->revenue) * 100, 2)) - 1) * 100, 2);
+                    $grossRatio = round(($value->gross / $value->revenue) * 100, 2);
+                    $feeRatio = round(($value->fee / $value->revenue) * 100, 2);
+                    $profitRatio = round(($value->profit / $value->revenue) * 100, 2);
 
-                    $pr = round(($v->profit / $v->revenue) * 100, 2);
-                    if ($pr < 0) {
-                        $profitYoy = round((($profitRatio + (-$pr) * 2 / (-$pr)) - 1) * 100, 2);
-                    } else {
-                        $profitYoy = round((($profitRatio / $pr) - 1) * 100, 2);
+                    $v = $ye[$code]->where('quarterly', $quarterly)->first();
+                    $p = $ye[$code]->where('quarterly', '<=', 3);
+
+                    if (! is_null($v)) {
+                        $v->revenue -= $p->sum('revenue');
+                        $v->gross -= $p->sum('gross');
+                        $v->fee -= $p->sum('fee');
+                        $v->profit -= $p->sum('profit');
+                        $v->eps -= $p->sum('eps');
+
+                        $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
+                        $grossYoy = round((($grossRatio / round(($v->gross / $v->revenue) * 100, 2)) - 1) * 100, 2);
+                        $feeYoy = round((($feeRatio / round(($v->fee / $v->revenue) * 100, 2)) - 1) * 100, 2);
+
+                        $pr = round(($v->profit / $v->revenue) * 100, 2);
+                        if ($pr < 0) {
+                            $profitYoy = round((($profitRatio + (-$pr) * 2 / (-$pr)) - 1) * 100, 2);
+                        } else {
+                            $profitYoy = round((($profitRatio / $pr) - 1) * 100, 2);
+                        }
+                    }
+                } else {
+                    $v = $ye[$code]->where('quarterly', $quarterly)->first();
+
+                    if (! is_null($v)) {
+                        $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
+                        $grossYoy = round((($value->gross_ratio / $v->gross_ratio) - 1) * 100, 2);
+                        $feeYoy = round((($value->fee_ratio / $v->fee_ratio) - 1) * 100, 2);
+
+                        if ($v->profit_ratio < 0) {
+                            $profitYoy = round((($value->profit_ratio + (-$v->profit_ratio) * 2 / (-$v->profit_ratio)) - 1) * 100,
+                                2);
+                        } elseif ($v->profit_ratio == 0) {
+                            $profitYoy = $value->profit_ratio * 100;
+                        } else {
+                            $profitYoy = round((($value->profit_ratio / $v->profit_ratio) - 1) * 100, 2);
+                        }
                     }
                 }
-            } else {
-                $v = $ye->where('code', $value->code)->where('quarterly', $quarterly)->first();
 
-                if (! is_null($v)) {
-                    $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
-                    $grossYoy = round((($value->gross_ratio / $v->gross_ratio) - 1) * 100, 2);
-                    $feeYoy = round((($value->fee_ratio / $v->fee_ratio) - 1) * 100, 2);
-
-                    if ($v->profit_ratio < 0) {
-                        $profitYoy = round((($value->profit_ratio + (-$v->profit_ratio) * 2 / (-$v->profit_ratio)) - 1) * 100,
-                            2);
-                    } else {
-                        $profitYoy = round((($value->profit_ratio / $v->profit_ratio) - 1) * 100, 2);
-                    }
+                if ($v->eps == 0) {
+                    $epsYoy = $value->eps * 100;
+                } elseif ($value->eps > 0 && $v->eps < 0) {
+                    $epsYoy = round(((($value->eps + (-$v->eps) * 2) / (-$v->eps)) - 1) * 100, 2);
+                } elseif ($value->eps < 0 && $v->eps < 0) {
+                    $epsYoy = -round((($value->eps / $v->eps) - 1) * 100, 2);
+                } elseif ($value->eps < 0 && $v->eps > 0) {
+                    $epsYoy = -round(((((-$value->eps) + $v->eps * 2) / $v->eps) - 1) * 100, 2);
+                } else {
+                    $epsYoy = round((($value->eps / $v->eps) - 1) * 100, 2);
                 }
-            }
 
-            if ($v->eps == 0) {
-                $epsYoy = $value->eps * 100;
-            } elseif ($value->eps > 0 && $v->eps < 0) {
-                $epsYoy = round(((($value->eps + (-$v->eps) * 2) / (-$v->eps)) - 1) * 100, 2);
-            } elseif ($value->eps < 0 && $v->eps < 0) {
-                $epsYoy = -round((($value->eps / $v->eps) - 1) * 100, 2);
-            } elseif ($value->eps < 0 && $v->eps > 0) {
-                $epsYoy = -round(((((-$value->eps) + $v->eps * 2) / $v->eps) - 1) * 100, 2);
-            } else {
-                $epsYoy = round((($value->eps / $v->eps) - 1) * 100, 2);
+                $data[] = [
+                    'code' => $value->code,
+                    'name' => $value->name,
+                    '毛利率' => $grossRatio,
+                    '費用率' => $feeRatio,
+                    '利益率' => $profitRatio,
+                    'eps' => $eps,
+                    '營收年增' => $revenueYoy,
+                    '毛利年增' => $grossYoy,
+                    '費用年增' => $feeYoy,
+                    '利益年增' => $profitYoy,
+                    'eps年增' => $epsYoy,
+                    '產業分類' => $classification[$value['classification_id']],
+                ];
+            } catch (\ErrorException $e) {
+                $data[] = [
+                    'code' => $value->code,
+                    'name' => $value->name,
+                    '毛利率' => $grossRatio,
+                    '費用率' => $feeRatio,
+                    '利益率' => $profitRatio,
+                    'eps' => $eps,
+                    '營收年增' => $revenueYoy,
+                    '毛利年增' => $grossYoy,
+                    '費用年增' => $feeYoy,
+                    '利益年增' => $profitYoy,
+                    'eps年增' => $epsYoy,
+                    '產業分類' => $classification[$value['classification_id']],
+                ];
             }
-
-            $data[] = [
-                'code' => $value->code,
-                'name' => $value->name,
-                '毛利率' => $grossRatio,
-                '費用率' => $feeRatio,
-                '利益率' => $profitRatio,
-                'eps' => $eps,
-                '營收年增' => $revenueYoy,
-                '毛利年增' => $grossYoy,
-                '費用年增' => $feeYoy,
-                '利益年增' => $profitYoy,
-                'eps年增' => $epsYoy,
-                '產業分類' => $classification[$value['classification_id']],
-            ];
         }
 
         return $data;
