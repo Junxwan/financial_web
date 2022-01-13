@@ -72,27 +72,32 @@
                 $("#month-revenue>tbody>tr").remove()
 
                 let revenues = []
+                let total_increase = []
                 yoys = []
                 qoqs = []
                 yearRevenueg = {}
                 monthPrice = []
 
-                response.data.forEach(function (v, index) {
-                    if (index <= 48) {
-                        let html =
-                            "<tr>" +
-                            "<td>" + v.year + "-" + v.month + "</td>" +
-                            "<td>" + amountText(v.value) + "</td>" +
-                            "<td>" + spanColor(v.yoy) + "</td>" +
-                            "<td>" + spanColor(v.qoq) + "</td>" +
-                            "<td>" + v.value + "</td>" +
-                            "</tr>"
+                var formatter = new Intl.NumberFormat()
 
-                        $("#month-revenue>tbody").append(html)
-                    }
+                response.data.forEach(function (v, index) {
+                    let html =
+                        "<tr>" +
+                        "<td>" + v.year + "-" + v.month + "</td>" +
+                        "<td>" + amountText(v.value) + "</td>" +
+                        "<td>" + spanColor(v.yoy) + "</td>" +
+                        "<td>" + spanColor(v.qoq) + "</td>" +
+                        "<td>" + formatter.format(v.value) + "</td>" +
+                        "<td>" + formatter.format(v.total) + "</td>" +
+                        "<td>" + formatter.format(v.y_total) + "</td>" +
+                        "<td>" + spanColor(v.total_increase) + "</td>" +
+                        "</tr>"
+
+                    $("#month-revenue>tbody").append(html)
 
                     let t = Date.parse(v.year + '-' + v.month + '-02')
                     revenues.push([t, v.value])
+                    total_increase.push([t, v.total_increase])
                     yoys.push([t, v.yoy])
                     qoqs.push([t, v.qoq])
 
@@ -117,6 +122,7 @@
                 })
 
                 revenues.reverse()
+                total_increase.reverse()
                 yoys.reverse()
                 qoqs.reverse()
 
@@ -219,47 +225,9 @@
                         series: seriesRevenues
                     });
 
-                    Highcharts.chart('month-revenue-yoy-bar', {
+                    Highcharts.chart('month-revenue-bar3', {
                         title: {
-                            text: '成長'
-                        },
-                        xAxis: {
-                            type: 'datetime',
-                            labels: {
-                                formatter: function () {
-                                    return Highcharts.dateFormat('%Y-%m', this.value);
-                                }
-                            }
-                        },
-                        yAxis: {
-                            title: {
-                                text: null
-                            }
-                        },
-                        navigator: {
-                            enabled: false
-                        },
-
-                        exporting: {
-                            enabled: false
-                        },
-                        tooltip: {
-                            crosshairs: true,
-                            shared: true,
-                            xDateFormat: '%Y-%m',
-                        },
-                        series: [{
-                            name: 'yoy',
-                            data: yoys
-                        }, {
-                            name: 'qoq',
-                            data: qoqs
-                        }]
-                    });
-
-                    Highcharts.chart('month-revenue-yoy-bar2', {
-                        title: {
-                            text: 'yoy'
+                            text: '累績年增/月收盤'
                         },
                         xAxis: {
                             type: 'datetime',
@@ -271,36 +239,29 @@
                         },
                         yAxis: [{
                             title: {
-                                text: 'yoy'
+                                text: '累績年增'
                             },
-                            plotLines: [{
-                                color: '#70285c',
-                                width: 1,
-                                value: 20,
-                                zIndex: 0
-                            }],
                         }, {
                             title: {
                                 text: '月收盤'
                             },
                             opposite: true
                         }],
-                        navigator: {
-                            enabled: false
-                        },
-
-                        exporting: {
-                            enabled: false
-                        },
                         tooltip: {
-                            crosshairs: true,
                             shared: true,
                             xDateFormat: '%Y-%m',
+                            formatter: function () {
+                                console.log(this)
+                                return Highcharts.dateFormat('%Y-%m', this.x) + '<br>累績年增: ' + '<span style="color:#7dbbd2">' + this.y + '</span>' +
+                                    '<br>收盤: <span style="color:#7dbbd2">' + this.points[1].y
+                            }
                         },
                         series: [{
-                            name: 'yoy',
-                            data: yoys,
+                            name: '累積年增',
                             type: 'column',
+                            data: total_increase,
+                            color: '#45617d',
+                            borderColor: '#45617d'
                         }, {
                             name: '月收盤',
                             yAxis: 1,
@@ -309,9 +270,9 @@
                         }]
                     });
 
-                    Highcharts.chart('month-revenue-qoq-bar', {
+                    Highcharts.chart('month-revenue-bar4', {
                         title: {
-                            text: 'qoq'
+                            text: 'qoq/月收盤'
                         },
                         xAxis: {
                             type: 'datetime',
@@ -325,33 +286,27 @@
                             title: {
                                 text: 'qoq'
                             },
-                            plotLines: [{
-                                color: '#70285c',
-                                width: 1,
-                                value: 20,
-                                zIndex: 0
-                            }],
                         }, {
                             title: {
                                 text: '月收盤'
                             },
                             opposite: true
                         }],
-                        navigator: {
-                            enabled: false
-                        },
-                        exporting: {
-                            enabled: false
-                        },
                         tooltip: {
-                            crosshairs: true,
                             shared: true,
                             xDateFormat: '%Y-%m',
+                            formatter: function () {
+                                console.log(this)
+                                return Highcharts.dateFormat('%Y-%m', this.x) + '<br>累績年增: ' + '<span style="color:#7dbbd2">' + this.y + '</span>' +
+                                    '<br>收盤: <span style="color:#7dbbd2">' + this.points[1].y
+                            }
                         },
                         series: [{
                             name: 'qoq',
-                            data: qoqs,
                             type: 'column',
+                            data: qoqs,
+                            color: '#45617d',
+                            borderColor: '#45617d'
                         }, {
                             name: '月收盤',
                             yAxis: 1,
@@ -385,6 +340,9 @@
         function profit(code, year, quarterly) {
             var url = '{{ route("profit.recent", ['code' => ':code', 'year' => ':year', 'quarterly' => ':quarterly']) }}'
             return axios.get(url.replace(':code', code).replace(':year', year).replace(':quarterly', quarterly)).then(function (response) {
+                $("#quarterly-revenue>tbody>tr").remove()
+                $("#profit-table>tbody>tr").remove()
+
                 $('#quarterly').val(
                     response.data[0].year + '-Q' + response.data[0].quarterly
                 )
@@ -404,7 +362,8 @@
                 let feeqs = []
                 response.data.forEach(function (v, index) {
                     date = v.year + "-Q" + v.quarterly
-                    if (index <= 12) {
+
+                    if (index <= 24) {
                         let html =
                             "<tr>" +
                             "<td>" + date + "</td>" +
@@ -414,6 +373,20 @@
                             "</tr>"
 
                         $("#quarterly-revenue>tbody").append(html)
+
+                        html =
+                            "<tr>" +
+                            "<td>" + date + "</td>" +
+                            "<td>" + v.gross_ratio + "</td>" +
+                            "<td>" + v.fee_ratio + "</td>" +
+                            "<td>" + v.profit_ratio + "</td>" +
+                            "<td>" + spanColor(v.revenue_yoy) + "</td>" +
+                            "<td>" + spanColor(v.y_gross_ratio) + "</td>" +
+                            "<td>" + spanColor(v.y_fee_ratio) + "</td>" +
+                            "<td>" + spanColor(v.y_profit_ratio) + "</td>" +
+                            "</tr>"
+
+                        $("#profit-table>tbody").append(html)
                     }
 
                     let g = Math.round((v.gross / v.revenue) * 10000) / 100
@@ -922,47 +895,6 @@
                         id: 'fee',
                         name: '費用',
                         data: fee
-                    }]
-                });
-
-                Highcharts.chart('gross-sub-fee-chat', {
-                    chart: {
-                        type: 'column'
-                    },
-                    title: {
-                        text: '毛利與費用差距'
-                    },
-                    xAxis: {
-                        categories: years
-                    },
-                    yAxis: {
-                        title: {
-                            text: null
-                        }
-                    },
-                    navigator: {
-                        enabled: false
-                    },
-
-                    exporting: {
-                        enabled: false
-                    },
-                    tooltip: {
-                        crosshairs: true,
-                        shared: true,
-                    },
-                    series: [{
-                        name: 'Q1',
-                        data: q1gsf
-                    }, {
-                        name: 'Q2',
-                        data: q2gsf
-                    }, {
-                        name: 'Q3',
-                        data: q3gsf
-                    }, {
-                        name: 'Q4',
-                        data: q4gsf
                     }]
                 });
 
@@ -1820,7 +1752,7 @@
     </div>
     <div class="card card-default" id="revenue-title">
         <div class="card-header">
-            <h3 class="card-title">近4年月營收(百萬)</h3>
+            <h3 class="card-title">近5年月營收(百萬)</h3>
             <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
                         class="fas fa-minus"></i></button>
@@ -1839,6 +1771,9 @@
                             <th scope="col">yoy</th>
                             <th scope="col">qoq</th>
                             <th scope="col">營收(千)</th>
+                            <th scope="col">累積營收(千)</th>
+                            <th scope="col">去年累積營收(千)</th>
+                            <th scope="col">累積營收年增</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -1858,17 +1793,12 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="month-revenue-yoy-bar"></div>
+                    <div id="month-revenue-bar3"></div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <div id="month-revenue-yoy-bar2"></div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="month-revenue-qoq-bar"></div>
+                    <div id="month-revenue-bar4"></div>
                 </div>
             </div>
         </div>
@@ -2111,6 +2041,26 @@
                     </div>
                 </div>
                 <div class="row">
+                    <div class="col-md-12 card-body table-responsive p-0" style="height: 400px;">
+                        <table id="profit-table" class="table table-dark table-head-fixed text-nowrap">
+                            <thead>
+                            <tr>
+                                <th scope="col">季</th>
+                                <th scope="col">毛利率</th>
+                                <th scope="col">費用率</th>
+                                <th scope="col">利益率</th>
+                                <th scope="col">營收年增</th>
+                                <th scope="col">毛利年增</th>
+                                <th scope="col">費用年增</th>
+                                <th scope="col">利益年增</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-12">
                         <div id="profits-chat"></div>
                     </div>
@@ -2123,11 +2073,6 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div id="gross-fee-chat"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="gross-sub-fee-chat"></div>
                     </div>
                 </div>
                 <div class="row">

@@ -61,11 +61,16 @@ class RevenueRepository extends Repository
      */
     public function recent(string $code, int $year, int $month)
     {
-        $revenue = Revenue::query()
+        return Revenue::query()
             ->select(
                 DB::RAW('`revenues`.`year`'),
                 DB::RAW('`revenues`.`month`'),
+                DB::RAW('ROUND(revenues.yoy, 2) as yoy'),
+                DB::RAW('ROUND(revenues.qoq, 2) as qoq'),
                 DB::RAW('`revenues`.`value`'),
+                DB::RAW('`revenues`.`total`'),
+                DB::RAW('`revenues`.`y_total`'),
+                DB::RAW('ROUND(revenues.total_increase, 2) as total_increase'),
             )->join('stocks', 'stocks.id', '=', 'revenues.stock_id')
             ->where('stocks.code', $code)
             ->where('revenues.year', '<=', $year)
@@ -74,20 +79,7 @@ class RevenueRepository extends Repository
             ->limit(72)
             ->get()->filter(function ($v) use ($year, $month) {
                 return ($year == $v->year) ? $v->month <= $month : true;
-            })->slice(0, 60)->values();
-
-        return $revenue->values()->map(function ($v, $i) use ($revenue) {
-            $ye = $revenue->where('year', $v->year - 1)
-                ->where('month', $v->month)
-                ->first();
-
-            $v->yoy = is_null($ye) ? 0 : round((($v->value / $ye->value) - 1) * 100, 2);
-            $v->qoq = isset($revenue[$i + 1]) ? round((($v->value / $revenue[$i + 1]->value) - 1) * 100, 2) : 0;
-
-            return $v;
-        })->filter(function ($value) {
-            return $value->yoy != 0;
-        })->values()->toArray();
+            })->values();
     }
 
     /**

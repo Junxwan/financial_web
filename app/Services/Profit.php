@@ -218,13 +218,13 @@ class Profit
             DB::RAW('profits.revenue'),
             DB::RAW('profits.cost'),
             DB::RAW('profits.gross'),
-            DB::RAW('profits.gross_ratio'),
+            DB::RAW('round(profits.gross_ratio, 2) as gross_ratio'),
             DB::RAW('profits.fee'),
-            DB::RAW('profits.fee_ratio'),
+            DB::RAW('round(profits.fee_ratio, 2) as fee_ratio'),
             DB::RAW('profits.outside'),
             DB::RAW('profits.other'),
             DB::RAW('profits.profit'),
-            DB::RAW('profits.profit_ratio'),
+            DB::RAW('round(profits.profit_ratio, 2) as profit_ratio'),
             DB::RAW('profits.tax'),
             DB::RAW('profits.profit_pre'),
             DB::RAW('profits.profit_after'),
@@ -267,7 +267,6 @@ class Profit
             return $v;
         });
 
-
         return $profit->map(function ($v) use ($profit) {
             $ye = $profit->where('year', $v->year - 1)
                 ->where('quarterly', $v->quarterly)
@@ -277,6 +276,9 @@ class Profit
                 $v->revenue_yoy = 0;
             } else {
                 $v->revenue_yoy = round((($v->revenue / $ye->revenue) - 1) * 100, 2);
+                $v->y_gross_ratio = round((($v->gross_ratio / $ye->gross_ratio) - 1) * 100, 2);
+                $v->y_fee_ratio = round((($v->fee_ratio / $ye->fee_ratio) - 1) * 100, 2);
+                $v->y_profit_ratio = round((($v->profit_ratio / $ye->profit_ratio) - 1) * 100, 2);
             }
 
             $v->eps = round($v->eps, 2);
