@@ -741,7 +741,6 @@ class Profit
                 $grossRatio = $value->gross_ratio;
                 $feeRatio = $value->fee_ratio;
                 $profitRatio = $value->profit_ratio;
-                $eps = $value->eps;
                 $revenueYoy = 0;
                 $grossYoy = 0;
                 $feeYoy = 0;
@@ -751,6 +750,8 @@ class Profit
                     continue;
                 }
 
+                $v = $ye[$code]->where('quarterly', $quarterly)->first();
+
                 if ($quarterly == 4) {
                     $p = $now[$code]->where('quarterly', '<=', 3);
                     $value->revenue -= $p->sum('revenue');
@@ -758,12 +759,13 @@ class Profit
                     $value->fee -= $p->sum('fee');
                     $value->profit -= $p->sum('profit');
                     $value->eps -= $p->sum('eps');
+                    $value->outside -= $p->sum('outside');
+                    $value->other -= $p->sum('other');
 
                     $grossRatio = round(($value->gross / $value->revenue) * 100, 2);
                     $feeRatio = round(($value->fee / $value->revenue) * 100, 2);
                     $profitRatio = round(($value->profit / $value->revenue) * 100, 2);
 
-                    $v = $ye[$code]->where('quarterly', $quarterly)->first();
                     $p = $ye[$code]->where('quarterly', '<=', 3);
 
                     if (! is_null($v)) {
@@ -785,8 +787,6 @@ class Profit
                         }
                     }
                 } else {
-                    $v = $ye[$code]->where('quarterly', $quarterly)->first();
-
                     if (! is_null($v)) {
                         $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
                         $grossYoy = round((($value->gross_ratio / $v->gross_ratio) - 1) * 100, 2);
@@ -821,12 +821,14 @@ class Profit
                     '毛利率' => $grossRatio,
                     '費用率' => $feeRatio,
                     '利益率' => $profitRatio,
-                    'eps' => $eps,
+                    'eps' => $value->eps,
                     '營收年增' => $revenueYoy,
                     '毛利年增' => $grossYoy,
                     '費用年增' => $feeYoy,
                     '利益年增' => $profitYoy,
                     'eps年增' => $epsYoy,
+                    '業外' => $value->outside,
+                    '其他' => $value->other,
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             } catch (\ErrorException $e) {
@@ -836,12 +838,14 @@ class Profit
                     '毛利率' => $grossRatio,
                     '費用率' => $feeRatio,
                     '利益率' => $profitRatio,
-                    'eps' => $eps,
+                    'eps' => $value->eps,
                     '營收年增' => $revenueYoy,
                     '毛利年增' => $grossYoy,
                     '費用年增' => $feeYoy,
                     '利益年增' => $profitYoy,
                     'eps年增' => $epsYoy,
+                    '業外' => $value->outside,
+                    '其他' => $value->other,
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             }
