@@ -761,6 +761,9 @@ class Profit
                     $value->eps -= $p->sum('eps');
                     $value->outside -= $p->sum('outside');
                     $value->other -= $p->sum('other');
+                    $value->tax -= $p->sum('tax');
+                    $value->profit_pre -= $p->sum('profit_pre');
+                    $value->profit_after -= $p->sum('profit_after');
 
                     $grossRatio = round(($value->gross / $value->revenue) * 100, 2);
                     $feeRatio = round(($value->fee / $value->revenue) * 100, 2);
@@ -827,6 +830,10 @@ class Profit
                     '費用年增' => $feeYoy,
                     '利益年增' => $profitYoy,
                     'eps年增' => $epsYoy,
+                    '營收' => $value->revenue,
+                    '稅前' => $value->profit_pre,
+                    '稅後' => $value->profit_after,
+                    '所得稅' => $value->tax,
                     '業外' => $value->outside,
                     '其他' => $value->other,
                     '產業分類' => $classification[$value['classification_id']],
@@ -844,6 +851,10 @@ class Profit
                     '費用年增' => $feeYoy,
                     '利益年增' => $profitYoy,
                     'eps年增' => $epsYoy,
+                    '營收' => $value->revenue,
+                    '稅前' => $value->profit_pre,
+                    '稅後' => $value->profit_after,
+                    '所得稅' => $value->tax,
                     '業外' => $value->outside,
                     '其他' => $value->other,
                     '產業分類' => $classification[$value['classification_id']],
