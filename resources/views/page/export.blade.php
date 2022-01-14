@@ -11,7 +11,7 @@
                 var blob = new Blob(["\ufeff" + response.data], {type: 'text/csv;charset=utf-8;'})
                 hiddenElement.href = URL.createObjectURL(blob)
                 hiddenElement.target = '_blank';
-                hiddenElement.download = 'profit.csv';
+                hiddenElement.download = $('#year').val() + '-Q' + $('#quarterly').val() + '-profit.csv';
                 hiddenElement.click();
 
                 toastr.success('下載成功')
@@ -27,7 +27,7 @@
                 var blob = new Blob(["\ufeff" + response.data], {type: 'text/csv;charset=utf-8;'})
                 hiddenElement.href = URL.createObjectURL(blob)
                 hiddenElement.target = '_blank'
-                hiddenElement.download = 'revenues.csv'
+                hiddenElement.download = $('#year').val() + '-' + $('#month').val() + '-revenues.csv'
                 hiddenElement.click()
 
                 toastr.success('下載成功')
