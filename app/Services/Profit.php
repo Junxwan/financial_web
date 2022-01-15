@@ -745,6 +745,7 @@ class Profit
                 $grossYoy = 0;
                 $feeYoy = 0;
                 $profitYoy = 0;
+                $mainEps = 0;
 
                 if ($value->revenue == 0) {
                     continue;
@@ -759,6 +760,7 @@ class Profit
                     $value->fee -= $p->sum('fee');
                     $value->profit -= $p->sum('profit');
                     $value->eps -= $p->sum('eps');
+                    $value->profit -= $p->sum('profit');
                     $value->outside -= $p->sum('outside');
                     $value->other -= $p->sum('other');
                     $value->tax -= $p->sum('tax');
@@ -818,6 +820,8 @@ class Profit
                     $epsYoy = round((($value->eps / $v->eps) - 1) * 100, 2);
                 }
 
+                $epsWeight = $this->epsWeight($value->eps, $value->profit, $value->outside, $value->tax);
+
                 $data[] = [
                     'code' => $value->code,
                     'name' => $value->name,
@@ -831,11 +835,16 @@ class Profit
                     '利益年增' => $profitYoy,
                     'eps年增' => $epsYoy,
                     '營收' => $value->revenue,
+                    '利益' => $value->profit,
                     '稅前' => $value->profit_pre,
                     '稅後' => $value->profit_after,
                     '所得稅' => $value->tax,
                     '業外' => $value->outside,
                     '其他' => $value->other,
+                    '本業比' => $epsWeight['profitRate'],
+                    '本業eps' => $epsWeight['profitEps'],
+                    '業外比' => $epsWeight['outsideRate'],
+                    '業外eps' => $epsWeight['outsideEps'],
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             } catch (\ErrorException $e) {
@@ -852,11 +861,16 @@ class Profit
                     '利益年增' => $profitYoy,
                     'eps年增' => $epsYoy,
                     '營收' => $value->revenue,
+                    '利益' => $value->profit,
                     '稅前' => $value->profit_pre,
                     '稅後' => $value->profit_after,
                     '所得稅' => $value->tax,
                     '業外' => $value->outside,
                     '其他' => $value->other,
+                    '本業比' => $epsWeight['profitRate'],
+                    '本業eps' => $epsWeight['profitEps'],
+                    '業外比' => $epsWeight['outsideRate'],
+                    '業外eps' => $epsWeight['outsideEps'],
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             }
@@ -937,6 +951,46 @@ class Profit
         return [
             'column' => $column,
             'data' => $data,
+        ];
+    }
+
+    /**
+     * @param $eps
+     * @param $profit
+     * @param $outside
+     * @param $tax
+     *
+     * @return array
+     */
+    private function epsWeight($eps, $profit, $outside, $tax)
+    {
+        $profitAfter = $profit + $outside - $tax;
+
+        $outsideRate = $outside / ($profitAfter + $tax);
+        $outsideEps = round($outsideRate * $eps, 2);
+
+        $profitRate = $profit / ($profitAfter + $tax);
+        $profitEps = round($profitRate * $eps, 2);
+
+        if (($profitAfter + $tax) < 0) {
+            $outsideRate = abs($outsideRate);
+
+            if ($outside < 0) {
+                $outsideRate = -$outsideRate;
+            }
+
+            $profitRate = abs($profitRate);
+
+            if ($profit < 0) {
+                $profitRate = -$profitRate;
+            }
+        }
+
+        return [
+            'outsideRate' => round($outsideRate, 4),
+            'outsideEps' => $outsideEps,
+            'profitRate' => round($profitRate, 4),
+            'profitEps' => $profitEps,
         ];
     }
 }
