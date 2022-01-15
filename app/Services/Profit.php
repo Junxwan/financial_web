@@ -745,7 +745,6 @@ class Profit
                 $grossYoy = 0;
                 $feeYoy = 0;
                 $profitYoy = 0;
-                $mainEps = 0;
 
                 if ($value->revenue == 0) {
                     continue;
@@ -760,7 +759,6 @@ class Profit
                     $value->fee -= $p->sum('fee');
                     $value->profit -= $p->sum('profit');
                     $value->eps -= $p->sum('eps');
-                    $value->profit -= $p->sum('profit');
                     $value->outside -= $p->sum('outside');
                     $value->other -= $p->sum('other');
                     $value->tax -= $p->sum('tax');
