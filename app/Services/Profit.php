@@ -750,7 +750,7 @@ class Profit
                     continue;
                 }
 
-                $v = $ye[$code]->where('quarterly', $quarterly)->first();
+                $yv = $ye[$code]->where('quarterly', $quarterly)->first();
 
                 if ($quarterly == 4) {
                     $p = $now[$code]->where('quarterly', '<=', 3);
@@ -771,18 +771,18 @@ class Profit
 
                     $p = $ye[$code]->where('quarterly', '<=', 3);
 
-                    if (! is_null($v)) {
-                        $v->revenue -= $p->sum('revenue');
-                        $v->gross -= $p->sum('gross');
-                        $v->fee -= $p->sum('fee');
-                        $v->profit -= $p->sum('profit');
-                        $v->eps -= $p->sum('eps');
+                    if (! is_null($yv)) {
+                        $yv->revenue -= $p->sum('revenue');
+                        $yv->gross -= $p->sum('gross');
+                        $yv->fee -= $p->sum('fee');
+                        $yv->profit -= $p->sum('profit');
+                        $yv->eps -= $p->sum('eps');
 
-                        $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
-                        $grossYoy = round((($grossRatio / round(($v->gross / $v->revenue) * 100, 2)) - 1) * 100, 2);
-                        $feeYoy = round((($feeRatio / round(($v->fee / $v->revenue) * 100, 2)) - 1) * 100, 2);
+                        $revenueYoy = round((($value->revenue / $yv->revenue) - 1) * 100, 2);
+                        $grossYoy = round((($grossRatio / round(($yv->gross / $yv->revenue) * 100, 2)) - 1) * 100, 2);
+                        $feeYoy = round((($feeRatio / round(($yv->fee / $yv->revenue) * 100, 2)) - 1) * 100, 2);
 
-                        $pr = round(($v->profit / $v->revenue) * 100, 2);
+                        $pr = round(($yv->profit / $yv->revenue) * 100, 2);
                         if ($pr < 0) {
                             $profitYoy = round((($profitRatio + (-$pr) * 2 / (-$pr)) - 1) * 100, 2);
                         } else {
@@ -790,32 +790,28 @@ class Profit
                         }
                     }
                 } else {
-                    if (! is_null($v)) {
-                        $revenueYoy = round((($value->revenue / $v->revenue) - 1) * 100, 2);
-                        $grossYoy = round((($value->gross_ratio / $v->gross_ratio) - 1) * 100, 2);
-                        $feeYoy = round((($value->fee_ratio / $v->fee_ratio) - 1) * 100, 2);
+                    if (! is_null($yv)) {
+                        $revenueYoy = round((($value->revenue / $yv->revenue) - 1) * 100, 2);
+                        $grossYoy = round((($value->gross_ratio / $yv->gross_ratio) - 1) * 100, 2);
+                        $feeYoy = round((($value->fee_ratio / $yv->fee_ratio) - 1) * 100, 2);
 
-                        if ($v->profit_ratio < 0) {
-                            $profitYoy = round((($value->profit_ratio + (-$v->profit_ratio) * 2 / (-$v->profit_ratio)) - 1) * 100,
+                        if ($yv->profit_ratio < 0) {
+                            $profitYoy = round((($value->profit_ratio + (-$yv->profit_ratio) * 2 / (-$yv->profit_ratio)) - 1) * 100,
                                 2);
-                        } elseif ($v->profit_ratio == 0) {
+                        } elseif ($yv->profit_ratio == 0) {
                             $profitYoy = $value->profit_ratio * 100;
                         } else {
-                            $profitYoy = round((($value->profit_ratio / $v->profit_ratio) - 1) * 100, 2);
+                            $profitYoy = round((($value->profit_ratio / $yv->profit_ratio) - 1) * 100, 2);
                         }
                     }
                 }
 
-                if ($v->eps == 0) {
-                    $epsYoy = $value->eps * 100;
-                } elseif ($value->eps > 0 && $v->eps < 0) {
-                    $epsYoy = round(((($value->eps + (-$v->eps) * 2) / (-$v->eps)) - 1) * 100, 2);
-                } elseif ($value->eps < 0 && $v->eps < 0) {
-                    $epsYoy = -round((($value->eps / $v->eps) - 1) * 100, 2);
-                } elseif ($value->eps < 0 && $v->eps > 0) {
-                    $epsYoy = -round(((((-$value->eps) + $v->eps * 2) / $v->eps) - 1) * 100, 2);
+                if ($yv->eps <= 0) {
+                    $epsYoy = round($value->eps * 100, 2);
+                } elseif ($value->eps <= 0) {
+                    $epsYoy = round(($value->eps - $yv->eps) * 100, 2);
                 } else {
-                    $epsYoy = round((($value->eps / $v->eps) - 1) * 100, 2);
+                    $epsYoy = round((($value->eps / $yv->eps) - 1) * 100, 2);
                 }
 
                 $epsWeight = $this->epsWeight($value->eps, $value->profit, $value->outside, $value->tax);
