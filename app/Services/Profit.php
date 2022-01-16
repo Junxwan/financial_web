@@ -783,18 +783,18 @@ class Profit
 
                         $yv->gross_ratio = round(($yv->gross / $yv->revenue) * 100, 2);
                         if ($yv->gross_ratio <= 0) {
-                            $grossYoy = round($grossRatio * 100, 2);
+                            $grossYoy = round($grossRatio * 10, 2);
                         } elseif ($grossRatio <= 0) {
-                            $grossYoy = round(($grossRatio - $yv->gross_ratio) * 100, 2);
+                            $grossYoy = round(($grossRatio - $yv->gross_ratio) * 10, 2);
                         } else {
                             $grossYoy = round((($grossRatio / $yv->gross_ratio) - 1) * 100, 2);
                         }
 
                         $yv->profit_ratio = round(($yv->profit / $yv->revenue) * 100, 2);
                         if ($yv->profit_ratio <= 0) {
-                            $profitYoy = round($profitRatio * 100, 2);
+                            $profitYoy = round($profitRatio * 10, 2);
                         } elseif ($grossRatio <= 0) {
-                            $profitYoy = round(($profitRatio - $yv->profit_ratio) * 100, 2);
+                            $profitYoy = round(($profitRatio - $yv->profit_ratio) * 10, 2);
                         } else {
                             $profitYoy = round((($profitRatio / $yv->profit_ratio) - 1) * 100, 2);
                         }
@@ -805,17 +805,17 @@ class Profit
                         $feeYoy = round((($value->fee_ratio / $yv->fee_ratio) - 1) * 100, 2);
 
                         if ($yv->gross_ratio <= 0) {
-                            $grossYoy = round($grossRatio * 100, 2);
+                            $grossYoy = round($grossRatio * 10, 2);
                         } elseif ($grossRatio <= 0) {
-                            $grossYoy = round(($grossRatio - $yv->gross_ratio) * 100, 2);
+                            $grossYoy = round(($grossRatio - $yv->gross_ratio) * 10, 2);
                         } else {
                             $grossYoy = round((($grossRatio / $yv->gross_ratio) - 1) * 100, 2);
                         }
 
                         if ($yv->profit_ratio <= 0) {
-                            $profitYoy = round($profitRatio * 100, 2);
+                            $profitYoy = round($profitRatio * 10, 2);
                         } elseif ($grossRatio <= 0) {
-                            $profitYoy = round(($profitRatio - $yv->profit_ratio) * 100, 2);
+                            $profitYoy = round(($profitRatio - $yv->profit_ratio) * 10, 2);
                         } else {
                             $profitYoy = round((($profitRatio / $yv->profit_ratio) - 1) * 100, 2);
                         }
