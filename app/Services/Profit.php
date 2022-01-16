@@ -711,6 +711,7 @@ class Profit
             'profits.gross_ratio',
             'profits.fee',
             'profits.fee_ratio',
+            'profits.research',
             'profits.profit',
             'profits.profit_ratio',
             'profits.outside',
@@ -757,6 +758,7 @@ class Profit
                     $value->revenue -= $p->sum('revenue');
                     $value->gross -= $p->sum('gross');
                     $value->fee -= $p->sum('fee');
+                    $value->research -= $p->sum('research');
                     $value->profit -= $p->sum('profit');
                     $value->eps -= $p->sum('eps');
                     $value->outside -= $p->sum('outside');
@@ -855,6 +857,9 @@ class Profit
                     '本業eps' => $epsWeight['profitEps'],
                     '業外比' => $epsWeight['outsideRate'],
                     '業外eps' => $epsWeight['outsideEps'],
+                    '費用' => $value->fee,
+                    '研發' => $value->research,
+                    '費用(排除研發)' => $value->fee - $value->research,
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             } catch (\ErrorException $e) {
@@ -881,6 +886,9 @@ class Profit
                     '本業eps' => $epsWeight['profitEps'],
                     '業外比' => $epsWeight['outsideRate'],
                     '業外eps' => $epsWeight['outsideEps'],
+                    '費用' => $value->fee,
+                    '研發' => $value->research,
+                    '費用(排除研發)' => $value->fee - $value->research,
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             }
