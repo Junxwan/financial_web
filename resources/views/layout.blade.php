@@ -35,7 +35,7 @@
     @yield('css')
 </head>
 
-<body class="dark-mode sidebar-mini layout-navbar-fixed" style="height: auto;">
+<body class="dark-mode sidebar-mini layout-navbar-fixed sidebar-collapse" style="height: auto;">
 @yield('body')
 
 <script src="{{ asset('js/jquery.min.js') }}"></script>

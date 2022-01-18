@@ -272,6 +272,51 @@
 
                     Highcharts.chart('month-revenue-bar4', {
                         title: {
+                            text: '年增/月收盤'
+                        },
+                        xAxis: {
+                            type: 'datetime',
+                            labels: {
+                                formatter: function () {
+                                    return Highcharts.dateFormat('%Y-%m', this.value);
+                                }
+                            }
+                        },
+                        yAxis: [{
+                            title: {
+                                text: '年增'
+                            },
+                        }, {
+                            title: {
+                                text: '月收盤'
+                            },
+                            opposite: true
+                        }],
+                        tooltip: {
+                            shared: true,
+                            xDateFormat: '%Y-%m',
+                            formatter: function () {
+                                console.log(this)
+                                return Highcharts.dateFormat('%Y-%m', this.x) + '<br>累績年增: ' + '<span style="color:#7dbbd2">' + this.y + '</span>' +
+                                    '<br>收盤: <span style="color:#7dbbd2">' + this.points[1].y
+                            }
+                        },
+                        series: [{
+                            name: '年增',
+                            type: 'column',
+                            data: yoys,
+                            color: '#45617d',
+                            borderColor: '#45617d'
+                        }, {
+                            name: '月收盤',
+                            yAxis: 1,
+                            type: 'line',
+                            data: monthPrice,
+                        }]
+                    });
+
+                    Highcharts.chart('month-revenue-bar5', {
+                        title: {
                             text: 'qoq/月收盤'
                         },
                         xAxis: {
@@ -726,47 +771,6 @@
                     if (typeof v !== 'undefined') {
                         $(this).find('.input-date').html(v.year + "Q" + v.quarterly)
                         $(this).find('.input-value').val(Math.round(v.eps * 100) / 100)
-                    }
-                })
-
-                // 總結
-                $('.form-group-total').each(function () {
-                    v = response.data[$(this).data('index')]
-
-                    if (typeof v !== 'undefined') {
-                        $(this).find('span').html(v.year + "Q" + v.quarterly)
-                        $(this).find('input').each(function () {
-                            name = $(this).data('name')
-
-                            switch (name) {
-                                case 'year':
-                                    value = (v.year - 2000) + "Q" + v.quarterly
-                                    break
-                                case 'eps':
-                                    value = Math.round(v[name] * 100) / 100
-                                    break
-                                case 'non_eps':
-                                    if (v.profit < 0 && v.outside > 0) {
-                                        value = v.eps
-                                    } else {
-                                        value = Math.round((v.eps * Math.round((v.outside / v.profit_main) * 10000) / 100)) / 100
-                                    }
-                                    break
-                                case 'this':
-                                    if (v.profit < 0) {
-                                        value = 0
-                                    } else if (v.eps > 0) {
-                                        value = (1 - Math.round(((Math.round((v.eps * Math.round((v.outside / v.profit_main) * 10000) / 100)) / 100) / v.eps) * 100) / 100) * 100
-                                    } else {
-                                        value = 0
-                                    }
-                                    break;
-                                default:
-                                    value = amountText(Math.round(v[$(this).data('name')]))
-                            }
-
-                            $(this).val(value)
-                        })
                     }
                 })
 
@@ -1241,11 +1245,26 @@
                 $("#eps-year>thead>tr").append('<th scope="col">季別/年度</th>')
 
                 response.data.forEach(function (v) {
+                    let e = 0
+                    if (v.q1 !== undefined) {
+                        e += v.q1
+                    }
+                    if (v.q2 !== undefined) {
+                        e += v.q2
+                    }
+                    if (v.q3 !== undefined) {
+                        e += v.q3
+                    }
+                    if (v.q4 !== undefined) {
+                        e += v.q4
+                    }
+
                     $("#eps-year>thead>tr").append("<th>" + v.year + "</th>")
                     $("#eps-year>tbody>tr:nth-child(1)").append("<td>" + (v.q1 !== undefined ? v.q1 : '') + "</td>")
                     $("#eps-year>tbody>tr:nth-child(2)").append("<td>" + (v.q2 !== undefined ? v.q2 : '') + "</td>")
                     $("#eps-year>tbody>tr:nth-child(3)").append("<td>" + (v.q3 !== undefined ? v.q3 : '') + "</td>")
                     $("#eps-year>tbody>tr:nth-child(4)").append("<td>" + (v.q4 !== undefined ? v.q4 : '') + "</td>")
+                    $("#eps-year>tbody>tr:nth-child(5)").append("<td>" + Math.round(e*100)/100 + "</td>")
 
                     if (v.eps !== '') {
                         eps.push([v.year, v.eps])
@@ -1803,6 +1822,11 @@
                     <div id="month-revenue-bar4"></div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="month-revenue-bar5"></div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card card-default" id="quarterly-revenue-title">
@@ -1957,6 +1981,9 @@
                         <tr>
                             <th scope="row">Q4</th>
                         </tr>
+                        <tr>
+                            <th scope="row">年</th>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
@@ -1998,50 +2025,6 @@
                 </div>
             </div>
             <div class="card-body" style="display: block;">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" class="form-control input-width-1" value="季度" readonly>
-                                <input type="text" class="form-control input-width-1" value="營" readonly>
-                                <input type="text" class="form-control input-width-1" value="毛" readonly>
-                                <input type="text" class="form-control input-width-1" value="費" readonly>
-                                <input type="text" class="form-control input-width-1" value="業" readonly>
-                                <input type="text" class="form-control input-width-1" value="其" readonly>
-                                <input type="text" class="form-control input-width-1" value="利" readonly>
-                                <input type="text" class="form-control input-width-1" value="稅後" readonly>
-                                <input type="text" class="form-control input-width-1" value="所得" readonly>
-                                <input type="text" class="form-control input-width-1" value="非" readonly>
-                                <input type="text" class="form-control input-width-1" value="母" readonly>
-                                <input type="text" class="form-control input-width-1" value="e" readonly>
-                                <input type="text" class="form-control input-width-1" value="非e" readonly>
-                                <input type="text" class="form-control input-width-1" value="本%" readonly>
-                            </div>
-
-                            @for ($i = 1; $i <= 12; $i++)
-                                <div class="input-group form-group-total" data-index="{{ $i-1 }}">
-                                    <input type="text" class="form-control input-width-1" data-name="year" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="revenue" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="gross" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="fee" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="outside" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="other" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="profit" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="profit_after"
-                                           readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="tax" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="profit_non"
-                                           readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="profit_main"
-                                           readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="eps" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="non_eps" readonly>
-                                    <input type="text" class="form-control input-width-1" data-name="this" readonly>
-                                </div>
-                            @endfor
-                        </div>
-                    </div>
-                </div>
                 <div class="row">
                     <div class="col-md-12 card-body table-responsive p-0" style="height: 400px;">
                         <table id="profit-table" class="table table-dark table-head-fixed text-nowrap">
