@@ -746,6 +746,7 @@ class Profit
                 $grossYoy = 0;
                 $feeYoy = 0;
                 $profitYoy = 0;
+                $value->net_profit_ratio = 0;
 
                 if ($value->revenue == 0) {
                     continue;
@@ -834,6 +835,8 @@ class Profit
 
                 $epsWeight = $this->epsWeight($value->eps, $value->profit, $value->outside, $value->tax);
 
+                $value->net_profit_ratio = round((($value->profit - $value->outside) / $value->revenue) * 100, 2);
+
                 $data[] = [
                     'code' => $value->code,
                     'name' => $value->name,
@@ -860,6 +863,7 @@ class Profit
                     '費用' => $value->fee,
                     '研發' => $value->research,
                     '費用(排除研發)' => $value->fee - $value->research,
+                    '淨利率' => $value->net_profit_ratio,
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             } catch (\ErrorException $e) {
@@ -889,6 +893,7 @@ class Profit
                     '費用' => $value->fee,
                     '研發' => $value->research,
                     '費用(排除研發)' => $value->fee - $value->research,
+                    '淨利率' => $value->net_profit_ratio,
                     '產業分類' => $classification[$value['classification_id']],
                 ];
             }
