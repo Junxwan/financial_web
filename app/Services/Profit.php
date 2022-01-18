@@ -835,7 +835,7 @@ class Profit
 
                 $epsWeight = $this->epsWeight($value->eps, $value->profit, $value->outside, $value->tax);
 
-                $value->net_profit_ratio = round((($value->profit - $value->outside) / $value->revenue) * 100, 2);
+                $value->net_profit_ratio = round(($value->profit_after / $value->revenue) * 100, 2);
 
                 $data[] = [
                     'code' => $value->code,
