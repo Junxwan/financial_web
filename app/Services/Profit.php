@@ -289,8 +289,10 @@ class Profit
                 if ($ye->eps < 0 && $v->eps > 0) {
                     $v->y_eps_ratio = round((((((-$ye->eps) * 2) + $v->eps) / (-$ye->eps)) - 1) * 100,
                         2);
-                } else {
+                } elseif ($ye->eps != 0) {
                     $v->y_eps_ratio = round((($v->eps / $ye->eps) - 1) * 100, 2);
+                } else {
+                    $v->y_eps_ratio = round($v->eps * 100, 2);
                 }
             }
 
